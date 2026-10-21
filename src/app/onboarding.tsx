@@ -9,6 +9,7 @@ import { Body, Button, Card, Label, Muted, Row, Screen, Stepper } from '../compo
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
 import { ensurePermission, notificationsSupported } from '../lib/notifications';
+import { supabaseConfigured } from '../lib/supabase';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { radius, serif, useColors } from '../lib/theme';
 import type { ISODate, PillType } from '../lib/types';
@@ -75,7 +76,7 @@ export default function Onboarding() {
             <Logo size={96} />
           </View>
           <Text style={{ fontFamily: serif, fontSize: 32, color: c.text, textAlign: 'center' }}>Hola, te damos la bienvenida a Ciclo</Text>
-          <Body style={{ textAlign: 'center' }}>Registra tu período, entiende tu cuerpo y cuídate a tu ritmo. Tus datos quedan respaldados en tu cuenta.</Body>
+          <Body style={{ textAlign: 'center' }}>Registra tu período, entiende tu cuerpo y cuídate a tu ritmo. {supabaseConfigured ? 'Tus datos quedan respaldados en tu cuenta.' : 'Todo se guarda en este teléfono, sin cuentas.'}</Body>
           <Card>
             <Label>¿Cómo te llamo? (opcional)</Label>
             <TextInput value={name} onChangeText={setName} placeholder="Tu nombre" placeholderTextColor={c.muted} style={input} autoCapitalize="words" />
@@ -148,7 +149,7 @@ export default function Onboarding() {
           <Text style={{ fontFamily: serif, fontSize: 28, color: c.text }}>Todo listo{name.trim() ? `, ${name.trim()}` : ''} 🌷</Text>
           <Card tint={c.rosaSuave}>
             <Label>Tu privacidad, primero 🔒</Label>
-            <Body>• Tus datos se guardan en tu teléfono y se respaldan en tu cuenta: solo tú puedes verlos.</Body>
+            <Body>{supabaseConfigured ? '• Tus datos se guardan en tu teléfono y se respaldan en tu cuenta: solo tú puedes verlos.' : '• Tus datos se guardan solo en este teléfono.'}</Body>
             <Body>• Sin publicidad. Nunca vendemos ni compartimos tus datos.</Body>
             <Body>• Puedes respaldarlos o borrarlos cuando quieras desde Perfil.</Body>
           </Card>

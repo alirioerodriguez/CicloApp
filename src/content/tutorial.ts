@@ -1,4 +1,5 @@
 // Tutorial que se muestra al entrar por primera vez (y desde Perfil → Ver el tutorial). Editable.
+import { supabaseConfigured } from '../lib/supabase';
 
 export interface Slide {
   emoji: string;
@@ -15,7 +16,7 @@ export const TUTORIAL: Slide[] = [
     logo: true,
     titulo: 'Te damos la bienvenida a Ciclo',
     texto: 'Registra tu período, entiende tu cuerpo y cuídate a tu ritmo. Te mostramos todo en un minuto.',
-    puntos: ['Predicciones que aprenden de ti', 'Ideas y ejercicios según tu fase', 'Privada: solo tu cuenta ve tus datos'],
+    puntos: ['Predicciones que aprenden de ti', 'Ideas y ejercicios según tu fase', supabaseConfigured ? 'Privada: solo tu cuenta ve tus datos' : 'Privada: todo queda en tu teléfono'],
   },
   {
     emoji: '☀️',
@@ -85,8 +86,12 @@ export const TUTORIAL: Slide[] = [
     titulo: 'Tu privacidad',
     texto: 'Tus datos son tuyos.',
     puntos: [
-      'Tus datos se guardan en el teléfono y se respaldan en tu cuenta: si cambias de teléfono, entras con tu correo y están ahí.',
-      'Nadie más puede verlos: cada cuenta solo accede a lo suyo. Sin publicidad.',
+      ...(supabaseConfigured
+        ? [
+            'Tus datos se guardan en el teléfono y se respaldan en tu cuenta: si cambias de teléfono, entras con tu correo y están ahí.',
+            'Nadie más puede verlos: cada cuenta solo accede a lo suyo. Sin publicidad.',
+          ]
+        : ['Todo se guarda solo en este teléfono: sin cuentas, sin servidores, sin publicidad.']),
       'Puedes proteger la app con huella o Face ID.',
       'También puedes descargar una copia en un archivo cuando quieras.',
       'Personaliza el color y el modo Noche o Día en Perfil.',

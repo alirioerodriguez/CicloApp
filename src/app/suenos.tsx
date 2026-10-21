@@ -7,6 +7,7 @@ import { pick } from '../content/cuidate';
 import { FRASES_SIGNO, SIGNOS, TIPOS_SUENO } from '../content/suenos';
 import { diffDays, longDate, today } from '../lib/dates';
 import { newId, useStore } from '../lib/store';
+import { supabaseConfigured } from '../lib/supabase';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 
 export default function Suenos() {
@@ -113,7 +114,7 @@ export default function Suenos() {
           <Body>{d.texto}</Body>
         </Card>
       ))}
-      <Muted style={{ textAlign: 'center' }}>Tus sueños son privados: solo tu cuenta puede verlos y nunca van en el resumen para tu médica.</Muted>
+      <Muted style={{ textAlign: 'center' }}>Tus sueños son privados{supabaseConfigured ? ': solo tu cuenta puede verlos' : ' y se guardan solo en tu teléfono'}. Nunca van en el resumen para tu médica.</Muted>
     </Screen>
   );
 }

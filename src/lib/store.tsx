@@ -4,6 +4,7 @@ import { AppState, Platform } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { summarize, type Summary } from './cycle';
+import { deleteRemote, pullRemote, pushRemote } from './supabase';
 import { addDays, today } from './dates';
 import type { AppData, DayLog, ISODate, Settings } from './types';
 
@@ -123,40 +124,99 @@ interface Store {
   setMision: (m: { id: string; inicio: number } | null) => void;
   replaceAll: (data: AppData) => void;
   resetAll: () => void;
+  sync: SyncState;
 }
+
+export type SyncState = 'local' | 'sincronizando' | 'al-dia' | 'sin-conexion';
 
 const Ctx = createContext<Store | null>(null);
 
-export function StoreProvider({ children }: { children: ReactNode }) {
+// Los datos se guardan en el teléfono (para usar la app sin conexión) y se respaldan en Supabase
+// con la cuenta de la usuaria. Gana la versión más nueva (por fecha de modificación).
+export function StoreProvider({ children, userId }: { children: ReactNode; userId: string | null }) {
   const [data, setData] = useState<AppData>(emptyData);
   const [ready, setReady] = useState(false);
+  const [sync, setSync] = useState<SyncState>('local');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fromLoad = useRef(true); // el primer cambio viene de cargar, no de la usuaria
+  const key = userId ? `${KEY}:${userId}` : KEY;
+  const stampKey = `${key}:updatedAt`;
 
   useEffect(() => {
-    AsyncStorage.getItem(KEY)
-      .then((raw) => {
-        if (raw) setData(normalize(JSON.parse(raw)));
-      })
-      .catch(() => {})
-      .finally(() => setReady(true));
-  }, []);
+    let cancel = false;
+    setReady(false);
+    fromLoad.current = true;
+    (async () => {
+      let local: AppData | null = null;
+      let localStamp: string | null = null;
+      try {
+        const raw = await AsyncStorage.getItem(key);
+        // Primera vez con cuenta: se adoptan los datos que ya había en este teléfono sin cuenta.
+        const legacy = !raw && userId ? await AsyncStorage.getItem(KEY) : null;
+        if (raw ?? legacy) local = normalize(JSON.parse((raw ?? legacy)!));
+        localStamp = await AsyncStorage.getItem(stampKey);
+      } catch {
+        // Datos locales dañados: se sigue con lo que haya en la nube.
+      }
+      let chosen = local;
+      if (userId) {
+        try {
+          setSync('sincronizando');
+          const remote = await pullRemote(userId);
+          if (remote && (!localStamp || remote.updatedAt > localStamp)) {
+            chosen = normalize(remote.data);
+            await AsyncStorage.setItem(stampKey, remote.updatedAt);
+          } else if (local) {
+            const stamp = localStamp ?? new Date().toISOString();
+            await pushRemote(userId, local, stamp);
+          }
+          setSync('al-dia');
+        } catch {
+          setSync('sin-conexion');
+        }
+      }
+      if (cancel) return;
+      setData(chosen ?? emptyData());
+      setReady(true);
+    })();
+    return () => {
+      cancel = true;
+    };
+  }, [key, stampKey, userId]);
 
-  // Guardado con una pequeña espera para no escribir en cada toque.
+  // Guardado con una pequeña espera para no escribir en cada toque; a la nube, un poco después.
   const latest = useRef(data);
   latest.current = data;
   useEffect(() => {
     if (!ready) return;
+    if (fromLoad.current) {
+      fromLoad.current = false;
+      return;
+    }
+    const stamp = new Date().toISOString();
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      AsyncStorage.setItem(KEY, JSON.stringify(data)).catch(() => {});
+      AsyncStorage.multiSet([
+        [key, JSON.stringify(data)],
+        [stampKey, stamp],
+      ]).catch(() => {});
     }, 300);
-  }, [data, ready]);
+    if (!userId) return;
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    setSync('sincronizando');
+    pushTimer.current = setTimeout(() => {
+      pushRemote(userId, data, stamp)
+        .then(() => setSync('al-dia'))
+        .catch(() => setSync('sin-conexion'));
+    }, 2000);
+  }, [data, ready, key, stampKey, userId]);
 
   // Si la app se cierra o pasa a segundo plano, se guarda al instante.
   useEffect(() => {
     if (!ready) return;
     const flush = () => {
-      AsyncStorage.setItem(KEY, JSON.stringify(latest.current)).catch(() => {});
+      AsyncStorage.setItem(key, JSON.stringify(latest.current)).catch(() => {});
     };
     const sub = AppState.addEventListener('change', (s) => {
       if (s !== 'active') flush();
@@ -166,7 +226,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       sub.remove();
       if (Platform.OS === 'web') window.removeEventListener('pagehide', flush);
     };
-  }, [ready]);
+  }, [ready, key]);
 
   const setLog = useCallback((date: ISODate, patch: Partial<DayLog>) => {
     setData((d) => {
@@ -206,7 +266,10 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const [mision, setMision] = useState<{ id: string; inicio: number } | null>(null);
 
   const replaceAll = useCallback((nd: AppData) => setData(normalize(nd)), []);
-  const resetAll = useCallback(() => setData(emptyData()), []);
+  const resetAll = useCallback(() => {
+    setData(emptyData());
+    if (userId) deleteRemote(userId).catch(() => {});
+  }, [userId]);
 
   // Solo en desarrollo web: permite cargar datos de prueba desde la consola.
   useEffect(() => {
@@ -217,8 +280,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
   const getLog = useCallback((date: ISODate) => data.logs[date] ?? emptyLog(date), [data.logs]);
 
   const value = useMemo(
-    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, setMision, replaceAll, resetAll }),
-    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, replaceAll, resetAll],
+    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, setMision, replaceAll, resetAll, sync }),
+    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, replaceAll, resetAll, sync],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

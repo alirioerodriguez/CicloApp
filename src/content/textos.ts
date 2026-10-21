@@ -37,7 +37,7 @@ export const NOTIF = {
   autoexamen: 'Hoy es un buen día para tu autoexamen de mamas 🎀 Toma 2 minutos.',
   control: 'En {dias} días tienes: {control} 🩺',
   respaldo: [
-    'Haz un respaldo: tus datos viven solo en tu teléfono 🔒',
+    'Guarda una copia extra de tus datos en un archivo 🔒',
     'Hace tiempo que no guardas una copia. ¿La hacemos? 📦',
     'Tus registros son valiosos. Guarda un respaldo hoy 💾',
     'Si cambias de teléfono, el respaldo te salva. Toma un minuto 📲',
@@ -90,7 +90,7 @@ export const VACIOS = {
   },
   primerDia: {
     titulo: 'Bienvenida 🌸',
-    texto: 'Aquí llevas tu ciclo a tu manera. Todo queda solo en tu teléfono. ¿Empezamos con cómo te sientes hoy?',
+    texto: 'Aquí llevas tu ciclo a tu manera. Tus datos son privados y quedan respaldados en tu cuenta. ¿Empezamos con cómo te sientes hoy?',
   },
 };
 

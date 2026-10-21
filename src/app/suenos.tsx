@@ -113,7 +113,7 @@ export default function Suenos() {
           <Body>{d.texto}</Body>
         </Card>
       ))}
-      <Muted style={{ textAlign: 'center' }}>Tus sueños se guardan solo en tu teléfono y nunca van en el resumen para tu médica.</Muted>
+      <Muted style={{ textAlign: 'center' }}>Tus sueños son privados: solo tu cuenta puede verlos y nunca van en el resumen para tu médica.</Muted>
     </Screen>
   );
 }

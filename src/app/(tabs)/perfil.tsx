@@ -12,7 +12,9 @@ import { PillPicker } from '../../components/PillPicker';
 import { pillStatus } from '../../lib/cycle';
 import { diffDays, longDate, shortDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported } from '../../lib/notifications';
+import { useAuth } from '../../lib/auth';
 import { useStore } from '../../lib/store';
+import { signOut } from '../../lib/supabase';
 import { radius, useColors } from '../../lib/theme';
 import type { Settings } from '../../lib/types';
 
@@ -36,7 +38,8 @@ function LinkRow({ emoji, label, hint, to }: { emoji: string; label: string; hin
 
 export default function Perfil() {
   const c = useColors();
-  const { data, summary, updateSettings, replaceAll, resetAll } = useStore();
+  const { data, summary, updateSettings, replaceAll, resetAll, sync } = useStore();
+  const { session } = useAuth();
   const s = data.settings;
   const r = s.reminders;
   const [pickPack, setPickPack] = useState(false);
@@ -218,10 +221,28 @@ export default function Perfil() {
         </Card>
       )}
 
+      {session && (
+        <Card>
+          <Label>👤 Tu cuenta</Label>
+          <Body>{session.user.email}</Body>
+          <Muted>
+            {{ local: 'Solo en este teléfono', sincronizando: 'Guardando en tu cuenta…', 'al-dia': '✓ Respaldado en tu cuenta', 'sin-conexion': 'Sin conexión: se respalda cuando vuelva internet' }[sync]}
+          </Muted>
+          <Button
+            small
+            kind="ghost"
+            label="Cerrar sesión"
+            onPress={async () => {
+              if (await confirm('¿Cerrar sesión?', 'Tus datos quedan guardados en tu cuenta. Para verlos de nuevo, entra con tu correo y contraseña.', 'Cerrar sesión')) signOut();
+            }}
+          />
+        </Card>
+      )}
+
       <Card tint={backupAge == null || backupAge > 30 ? c.duraznoSuave : undefined}>
         <Label>💾 Tus datos</Label>
         <Muted>
-          Todo vive solo en este teléfono. Si lo cambias o se pierde, sin respaldo se pierde el historial.{' '}
+          Tus datos se respaldan solos en tu cuenta. Además puedes guardar una copia en un archivo.{' '}
           {s.lastBackup ? `Último respaldo: ${longDate(s.lastBackup)}.` : 'Aún no has hecho ningún respaldo.'}
         </Muted>
         <Button
@@ -262,7 +283,7 @@ export default function Perfil() {
         kind="danger"
         label="Borrar todos mis datos"
         onPress={async () => {
-          if (await confirm('¿Borrar todo?', 'Se eliminarán todos tus registros y ajustes de este teléfono. No se puede deshacer.', 'Borrar')) {
+          if (await confirm('¿Borrar todo?', 'Se eliminarán todos tus registros y ajustes, en este teléfono y en tu cuenta. No se puede deshacer.', 'Borrar')) {
             resetAll();
             router.replace('/onboarding');
           }

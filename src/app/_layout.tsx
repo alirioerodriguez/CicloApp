@@ -7,7 +7,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, AppState, Platform, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Login } from '../components/Login';
 import { Logo } from '../components/Logo';
+import { AuthProvider, useAuth } from '../lib/auth';
 import { MisionBanner } from '../components/MisionBanner';
 import { Button } from '../components/ui';
 import { rescheduleAll } from '../lib/notifications';
@@ -120,9 +122,34 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError && !timedOut) return null;
   return (
     <SafeAreaProvider>
-      <StoreProvider>
-        <Themed />
-      </StoreProvider>
+      <AuthProvider>
+        <AuthGate />
+      </AuthProvider>
     </SafeAreaProvider>
+  );
+}
+
+// Sin sesión se muestra el inicio con correo y contraseña. Si Supabase aún no está configurado, la app funciona solo en el teléfono.
+function AuthGate() {
+  const { loading, session, configured } = useAuth();
+  if (loading) {
+    return (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator />
+      </View>
+    );
+  }
+  if (configured && !session) {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <Login />
+      </>
+    );
+  }
+  return (
+    <StoreProvider key={session?.user.id ?? 'local'} userId={session?.user.id ?? null}>
+      <Themed />
+    </StoreProvider>
   );
 }

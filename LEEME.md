@@ -97,3 +97,20 @@ Copia uno en `src/content/ejercicios.ts`, cambia el texto y las dos poses (A y B
 
 ### Para recibir los resultados de las pruebas por correo
 Escribe tu correo en `CORREO_RESULTADOS` dentro de `src/content/pruebas.ts`. Si queda vacío, cada usuaria los comparte por donde quiera. Los resultados nunca incluyen datos del ciclo.
+
+## Cuentas y nube (Supabase) — listo, pero apagado por ahora
+
+La app ya tiene inicio de sesión con **correo y contraseña** y respaldo automático en **Supabase**. Mientras no haya claves, funciona como siempre: todo en el teléfono, sin cuenta.
+
+Para encenderlo (cuando haya un proyecto libre en Supabase):
+
+1. Crea un proyecto en Supabase y ejecuta el SQL de `supabase/migrations/20261021120000_ciclo_data.sql` (crea la tabla con seguridad por usuaria).
+2. Copia `.env.example` como `.env` y completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_KEY` (la *publishable key*, nunca la secreta).
+3. En Vercel, agrega esas dos mismas variables en el proyecto y vuelve a publicar.
+4. En Supabase → Authentication → URL Configuration, pon la dirección de la web de Vercel como *Site URL* (para los correos de confirmación y de nueva contraseña).
+
+Al entrar por primera vez, los datos que ya había en el teléfono se suben solos a la cuenta.
+
+## Versión web (Vercel)
+
+`vercel.json` ya está configurado: Vercel ejecuta `npx expo export -p web` y publica la carpeta `dist`. En la web no hay recordatorios ni bloqueo con huella.

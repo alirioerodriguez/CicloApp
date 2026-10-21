@@ -1,0 +1,128 @@
+import { Fraunces_600SemiBold, Fraunces_400Regular_Italic } from '@expo-google-fonts/fraunces';
+import { PlusJakartaSans_400Regular, PlusJakartaSans_500Medium, PlusJakartaSans_600SemiBold, PlusJakartaSans_700Bold } from '@expo-google-fonts/plus-jakarta-sans';
+import { useFonts } from 'expo-font';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, AppState, Platform, Text, View } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { Logo } from '../components/Logo';
+import { MisionBanner } from '../components/MisionBanner';
+import { Button } from '../components/ui';
+import { rescheduleAll } from '../lib/notifications';
+import { StoreProvider, useStore } from '../lib/store';
+import { ThemePrefs, serif, useColors } from '../lib/theme';
+
+function Gate() {
+  const c = useColors();
+  const { ready, data, summary } = useStore();
+  const [locked, setLocked] = useState(true);
+  const lockEnabled = data.settings.lock && Platform.OS !== 'web';
+
+  // Bloqueo con huella / Face ID al abrir y al volver a la app.
+  useEffect(() => {
+    if (!ready) return;
+    if (!lockEnabled) setLocked(false);
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'background' && lockEnabled) setLocked(true);
+    });
+    return () => sub.remove();
+  }, [ready, lockEnabled]);
+
+  const unlock = async () => {
+    const res = await LocalAuthentication.authenticateAsync({ promptMessage: 'Desbloquea tu app de ciclo' });
+    if (res.success) setLocked(false);
+  };
+  useEffect(() => {
+    if (ready && lockEnabled && locked) unlock();
+  }, [ready, lockEnabled, locked]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reprogramar recordatorios cuando cambian los datos (con una pausa).
+  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    if (!ready) return;
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => rescheduleAll(data, summary).catch(() => {}), 1500);
+  }, [ready, data, summary]);
+
+  if (!ready) {
+    return (
+      <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={c.rosa} />
+      </View>
+    );
+  }
+
+  if (lockEnabled && locked) {
+    return (
+      <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', gap: 18, padding: 30 }}>
+        <Logo size={72} />
+        <Text style={{ fontFamily: serif, fontSize: 26, color: c.text }}>Tu espacio está protegido</Text>
+        <Button label="Desbloquear" onPress={unlock} />
+      </View>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: c.bg }}>
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
+      <Stack.Screen name="(tabs)" />
+      <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="dia/[fecha]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="alimentacion" />
+      <Stack.Screen name="info" />
+      <Stack.Screen name="tutorial" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="salud" />
+      <Stack.Screen name="suenos" />
+      <Stack.Screen name="ejercicios" />
+      <Stack.Screen name="ejercicio/[id]" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="respirar" options={{ presentation: 'modal' }} />
+      <Stack.Screen name="pruebas" />
+    </Stack>
+    <MisionBanner />
+    </View>
+  );
+}
+
+// Aplica el tono y el modo (Noche/Día) elegidos en Perfil a toda la app.
+function Themed() {
+  const { data } = useStore();
+  const prefs = { tono: data.settings.tono, modo: data.settings.modo };
+  return (
+    <ThemePrefs.Provider value={prefs}>
+      <ThemedStatusBar />
+      <Gate />
+    </ThemePrefs.Provider>
+  );
+}
+
+function ThemedStatusBar() {
+  const c = useColors();
+  return <StatusBar style={c.dark ? 'light' : 'dark'} />;
+}
+
+export default function RootLayout() {
+  const [fontsLoaded, fontError] = useFonts({
+    Fraunces_600SemiBold,
+    Fraunces_400Regular_Italic,
+    PlusJakartaSans_400Regular,
+    PlusJakartaSans_500Medium,
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+  });
+  // Si las fuentes fallan o tardan, la app abre igual con la fuente del sistema.
+  const [timedOut, setTimedOut] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setTimedOut(true), 3000);
+    return () => clearTimeout(t);
+  }, []);
+  if (!fontsLoaded && !fontError && !timedOut) return null;
+  return (
+    <SafeAreaProvider>
+      <StoreProvider>
+        <Themed />
+      </StoreProvider>
+    </SafeAreaProvider>
+  );
+}

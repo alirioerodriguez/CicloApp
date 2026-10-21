@@ -1,0 +1,247 @@
+// Estado global de la app, guardado en el teléfono (AsyncStorage). Sin internet.
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AppState, Platform } from 'react-native';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
+import { summarize, type Summary } from './cycle';
+import { addDays, today } from './dates';
+import type { AppData, DayLog, ISODate, Settings } from './types';
+
+const KEY = 'ciclo:data:v1';
+
+export const DEFAULT_SETTINGS: Settings = {
+  onboarded: false,
+  tutorialVisto: false,
+  name: '',
+  cycleLength: 28,
+  periodLength: 5,
+  pillMode: false,
+  pillName: '',
+  pillType: '21-7',
+  pillPackStart: null,
+  condiciones: [],
+  ocultarRetrasos: false,
+  reminders: {
+    pill: { on: false, hour: 21, minute: 0 },
+    water: { on: false, hours: [10, 13, 16, 19] },
+    period: { on: true, daysBefore: 2, hour: 9 },
+    pack: { on: true, hour: 9 },
+    registro: { on: false, hour: 21, minute: 30 },
+    autoexamen: { on: true, hour: 10 },
+    controles: { on: true, daysBefore: 3, hour: 9 },
+  },
+  lock: false,
+  lastBackup: null,
+  logrosVistos: [],
+  discreet: false,
+  tono: 'rosa',
+  modo: 'auto',
+  signo: null,
+};
+
+export const emptyData = (): AppData => ({
+  version: 1,
+  settings: DEFAULT_SETTINGS,
+  logs: {},
+  dreams: [],
+  controles: [],
+  autoexamenes: [],
+  quistes: [],
+  pruebas: { misiones: {}, sus: [], ideas: [] },
+});
+
+export function emptyLog(date: ISODate): DayLog {
+  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false };
+}
+
+function isEmptyLog(l: DayLog) {
+  return (
+    !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad
+  );
+}
+
+// Traduce ids de catálogos anteriores (por ejemplo, de un respaldo viejo).
+function migrateIds(moods: string[], symptoms: string[]) {
+  const rename = (ids: string[], map: Record<string, string | null>) =>
+    ids.flatMap((id) => (id in map ? (map[id] ? [map[id]!] : []) : [id]));
+  const extra = moods.map((m) => ANIMO_A_SINTOMA[m]).filter(Boolean);
+  return {
+    moods: [...new Set(rename(moods, ID_RENOMBRADOS.moods))],
+    symptoms: [...new Set([...rename(symptoms, ID_RENOMBRADOS.symptoms), ...extra])],
+  };
+}
+
+// Acepta datos viejos o incompletos (por ejemplo, de un respaldo) sin romperse.
+export function normalize(raw: unknown): AppData {
+  const r = (raw ?? {}) as Partial<AppData>;
+  const s = (r.settings ?? {}) as Partial<Settings>;
+  const settings: Settings = {
+    ...DEFAULT_SETTINGS,
+    ...s,
+    // Versiones anteriores llamaban '28' al esquema 21 + 7 placebo.
+    pillType: (s.pillType as string) === '28' ? '21-7p' : s.pillType ?? DEFAULT_SETTINGS.pillType,
+    reminders: {
+      pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
+      water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },
+      period: { ...DEFAULT_SETTINGS.reminders.period, ...s.reminders?.period },
+      pack: { ...DEFAULT_SETTINGS.reminders.pack, ...s.reminders?.pack },
+      registro: { ...DEFAULT_SETTINGS.reminders.registro, ...s.reminders?.registro },
+      autoexamen: { ...DEFAULT_SETTINGS.reminders.autoexamen, ...s.reminders?.autoexamen },
+      controles: { ...DEFAULT_SETTINGS.reminders.controles, ...s.reminders?.controles },
+    },
+  };
+  const logs: Record<ISODate, DayLog> = {};
+  for (const [date, l] of Object.entries(r.logs ?? {})) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+    const log = { ...emptyLog(date), ...(l as Partial<DayLog>), date };
+    logs[date] = { ...log, ...migrateIds(log.moods, log.symptoms) };
+  }
+  const base = emptyData();
+  return {
+    version: 1,
+    settings,
+    logs,
+    dreams: Array.isArray(r.dreams) ? r.dreams : base.dreams,
+    controles: Array.isArray(r.controles) ? r.controles : base.controles,
+    autoexamenes: Array.isArray(r.autoexamenes) ? r.autoexamenes : base.autoexamenes,
+    quistes: Array.isArray(r.quistes) ? r.quistes : base.quistes,
+    pruebas: { ...base.pruebas, ...r.pruebas },
+  };
+}
+
+interface Store {
+  ready: boolean;
+  data: AppData;
+  summary: Summary;
+  getLog: (date: ISODate) => DayLog;
+  setLog: (date: ISODate, patch: Partial<DayLog>) => void;
+  togglePeriodDay: (date: ISODate) => void;
+  startPeriodToday: () => void;
+  updateSettings: (patch: Partial<Settings>) => void;
+  update: (fn: (d: AppData) => AppData) => void; // para diario, controles, quistes y pruebas
+  mision: { id: string; inicio: number } | null; // prueba en curso (no se guarda)
+  setMision: (m: { id: string; inicio: number } | null) => void;
+  replaceAll: (data: AppData) => void;
+  resetAll: () => void;
+}
+
+const Ctx = createContext<Store | null>(null);
+
+export function StoreProvider({ children }: { children: ReactNode }) {
+  const [data, setData] = useState<AppData>(emptyData);
+  const [ready, setReady] = useState(false);
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    AsyncStorage.getItem(KEY)
+      .then((raw) => {
+        if (raw) setData(normalize(JSON.parse(raw)));
+      })
+      .catch(() => {})
+      .finally(() => setReady(true));
+  }, []);
+
+  // Guardado con una pequeña espera para no escribir en cada toque.
+  const latest = useRef(data);
+  latest.current = data;
+  useEffect(() => {
+    if (!ready) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      AsyncStorage.setItem(KEY, JSON.stringify(data)).catch(() => {});
+    }, 300);
+  }, [data, ready]);
+
+  // Si la app se cierra o pasa a segundo plano, se guarda al instante.
+  useEffect(() => {
+    if (!ready) return;
+    const flush = () => {
+      AsyncStorage.setItem(KEY, JSON.stringify(latest.current)).catch(() => {});
+    };
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s !== 'active') flush();
+    });
+    if (Platform.OS === 'web') window.addEventListener('pagehide', flush);
+    return () => {
+      sub.remove();
+      if (Platform.OS === 'web') window.removeEventListener('pagehide', flush);
+    };
+  }, [ready]);
+
+  const setLog = useCallback((date: ISODate, patch: Partial<DayLog>) => {
+    setData((d) => {
+      const next = { ...(d.logs[date] ?? emptyLog(date)), ...patch, date };
+      const logs = { ...d.logs };
+      if (isEmptyLog(next)) delete logs[date];
+      else logs[date] = next;
+      return { ...d, logs };
+    });
+  }, []);
+
+  const togglePeriodDay = useCallback((date: ISODate) => {
+    setData((d) => {
+      const cur = d.logs[date] ?? emptyLog(date);
+      const next = { ...cur, flow: cur.flow > 0 ? 0 : 2 };
+      const logs = { ...d.logs };
+      if (isEmptyLog(next)) delete logs[date];
+      else logs[date] = next;
+      return { ...d, logs };
+    });
+  }, []);
+
+  // Botón "Me vino hoy": marca solo hoy; los días siguientes se registran a medida que pasan.
+  const startPeriodToday = useCallback(() => {
+    const t = today();
+    setData((d) => {
+      const cur = d.logs[t] ?? emptyLog(t);
+      return { ...d, logs: { ...d.logs, [t]: { ...cur, flow: cur.flow || 2 } } };
+    });
+  }, []);
+
+  const updateSettings = useCallback((patch: Partial<Settings>) => {
+    setData((d) => ({ ...d, settings: { ...d.settings, ...patch } }));
+  }, []);
+
+  const update = useCallback((fn: (d: AppData) => AppData) => setData(fn), []);
+  const [mision, setMision] = useState<{ id: string; inicio: number } | null>(null);
+
+  const replaceAll = useCallback((nd: AppData) => setData(normalize(nd)), []);
+  const resetAll = useCallback(() => setData(emptyData()), []);
+
+  // Solo en desarrollo web: permite cargar datos de prueba desde la consola.
+  useEffect(() => {
+    if (__DEV__ && Platform.OS === 'web') (window as unknown as Record<string, unknown>).__cicloReplace = replaceAll;
+  }, [replaceAll]);
+
+  const summary = useMemo(() => summarize(data), [data]);
+  const getLog = useCallback((date: ISODate) => data.logs[date] ?? emptyLog(date), [data.logs]);
+
+  const value = useMemo(
+    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, setMision, replaceAll, resetAll }),
+    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, replaceAll, resetAll],
+  );
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+}
+
+export function useStore(): Store {
+  const s = useContext(Ctx);
+  if (!s) throw new Error('useStore fuera de StoreProvider');
+  return s;
+}
+
+// Marca los días del período inicial que se cargan en la bienvenida.
+export function seedFirstPeriod(logs: Record<ISODate, DayLog>, start: ISODate, length: number): Record<ISODate, DayLog> {
+  const out = { ...logs };
+  const t = today();
+  for (let i = 0; i < length; i++) {
+    const d = addDays(start, i);
+    if (d > t) break;
+    out[d] = { ...(out[d] ?? emptyLog(d)), flow: out[d]?.flow || 2 };
+  }
+  return out;
+}
+
+// Id corto y suficiente para registros locales (sueños, controles, quistes).
+export function newId(): string {
+  return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 7)}`;
+}

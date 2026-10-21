@@ -1,0 +1,209 @@
+// Piezas visuales reutilizables.
+import * as Haptics from 'expo-haptics';
+import type { ReactNode } from 'react';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { fonts, radius, serif, useColors } from '../lib/theme';
+
+// Las fuentes personalizadas no se "engordan" solas: se elige la variante según el fontWeight.
+export function font(style?: StyleProp<TextStyle>, base: keyof typeof fonts = 'regular'): TextStyle {
+  const flat = StyleSheet.flatten(style) ?? {};
+  if (flat.fontFamily) return flat;
+  const w = String(flat.fontWeight ?? '');
+  const key = w === '700' || w === '800' || w === 'bold' ? 'bold' : w === '600' ? 'semibold' : w === '500' ? 'medium' : base;
+  const { fontWeight: _omit, ...rest } = flat;
+  return { ...rest, fontFamily: fonts[key] };
+}
+
+export function tap() {
+  if (Platform.OS !== 'web') Haptics.selectionAsync().catch(() => {});
+}
+
+// Alert con botones no funciona en web; ahí se usa el confirm del navegador.
+export function confirm(title: string, message: string, ok: string): Promise<boolean> {
+  if (Platform.OS === 'web') return Promise.resolve(window.confirm(`${title}\n\n${message}`));
+  return new Promise((resolve) =>
+    Alert.alert(title, message, [
+      { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+      { text: ok, style: 'destructive', onPress: () => resolve(true) },
+    ]),
+  );
+}
+
+export function notify(title: string, message: string) {
+  if (Platform.OS === 'web') window.alert(`${title}\n\n${message}`);
+  else Alert.alert(title, message);
+}
+
+export function Screen({ children, title, subtitle, right }: { children: ReactNode; title?: string; subtitle?: string; right?: ReactNode }) {
+  const c = useColors();
+  const insets = useSafeAreaInsets();
+  return (
+    <ScrollView
+      style={{ flex: 1, backgroundColor: c.bg }}
+      contentContainerStyle={{ padding: 18, paddingTop: insets.top + 14, paddingBottom: 40, gap: 14, maxWidth: 640, width: '100%', alignSelf: 'center' }}
+      keyboardShouldPersistTaps="handled"
+    >
+      {title ? (
+        <View style={{ flexDirection: 'row', alignItems: 'flex-end', marginBottom: 2 }}>
+          <View style={{ flex: 1 }}>
+            {subtitle ? <Text style={{ color: c.rosa, fontSize: 12, fontFamily: fonts.bold, letterSpacing: 2, textTransform: 'uppercase', marginBottom: 4 }}>{subtitle}</Text> : null}
+            <Text style={{ fontFamily: serif, fontSize: 32, color: c.text, letterSpacing: -0.5 }}>{title}</Text>
+          </View>
+          {right}
+        </View>
+      ) : null}
+      {children}
+    </ScrollView>
+  );
+}
+
+export function Card({ children, style, tint }: { children: ReactNode; style?: StyleProp<ViewStyle>; tint?: string }) {
+  const c = useColors();
+  return (
+    <View style={[{ backgroundColor: tint ?? c.card, borderRadius: radius.lg, padding: 18, borderWidth: StyleSheet.hairlineWidth, borderColor: c.line, gap: 10 }, style]}>
+      {children}
+    </View>
+  );
+}
+
+export function Label({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+  const c = useColors();
+  return <Text style={font([{ fontSize: 15, color: c.text }, style], 'bold')}>{children}</Text>;
+}
+
+export function Muted({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+  const c = useColors();
+  return <Text style={font([{ fontSize: 13.5, color: c.muted, lineHeight: 19 }, style])}>{children}</Text>;
+}
+
+export function Body({ children, style }: { children: ReactNode; style?: StyleProp<TextStyle> }) {
+  const c = useColors();
+  return <Text style={font([{ fontSize: 15, color: c.text, lineHeight: 22 }, style])}>{children}</Text>;
+}
+
+export function Chip({ label, emoji, selected, onPress, color }: { label: string; emoji?: string; selected?: boolean; onPress?: () => void; color?: string }) {
+  const c = useColors();
+  const accent = color ?? c.rosa;
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ selected: !!selected }}
+      onPress={() => {
+        tap();
+        onPress?.();
+      }}
+      style={({ pressed }) => ({
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingVertical: 8,
+        paddingHorizontal: 13,
+        borderRadius: radius.pill,
+        borderWidth: 1.5,
+        borderColor: selected ? accent : c.line,
+        backgroundColor: selected ? accent + '33' : c.card,
+        opacity: pressed ? 0.7 : 1,
+      })}
+    >
+      {emoji ? <Text style={{ fontSize: 15 }}>{emoji}</Text> : null}
+      <Text style={{ fontSize: 13.5, fontFamily: selected ? fonts.bold : fonts.medium, color: c.text }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Button({ label, onPress, kind = 'primary', small, disabled }: { label: string; onPress: () => void; kind?: 'primary' | 'soft' | 'ghost' | 'danger'; small?: boolean; disabled?: boolean }) {
+  const c = useColors();
+  const bg = { primary: c.rosa, soft: c.rosaSuave, ghost: 'transparent', danger: 'transparent' }[kind];
+  const fg = { primary: c.onAccent, soft: c.text, ghost: c.rosa, danger: '#D0506A' }[kind];
+  return (
+    <Pressable
+      accessibilityRole="button"
+      disabled={disabled}
+      onPress={() => {
+        tap();
+        onPress();
+      }}
+      style={({ pressed }) => ({
+        backgroundColor: bg,
+        paddingVertical: small ? 9 : 14,
+        paddingHorizontal: small ? 14 : 20,
+        borderRadius: radius.pill,
+        alignItems: 'center',
+        opacity: disabled ? 0.4 : pressed ? 0.75 : 1,
+        borderWidth: kind === 'ghost' || kind === 'danger' ? 1.5 : 0,
+        borderColor: kind === 'danger' ? '#D0506A55' : c.rosa + '66',
+      })}
+    >
+      <Text style={{ color: fg, fontFamily: fonts.bold, fontSize: small ? 13.5 : 15.5 }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+export function Stepper({ value, onChange, min = 0, max = 99, step = 1, format }: { value: number; onChange: (v: number) => void; min?: number; max?: number; step?: number; format?: (v: number) => string }) {
+  const c = useColors();
+  const btn = (txt: string, next: number, disabled: boolean) => (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={txt === '−' ? 'menos' : 'más'}
+      disabled={disabled}
+      onPress={() => {
+        tap();
+        onChange(next);
+      }}
+      style={{ width: 38, height: 38, borderRadius: 19, backgroundColor: c.rosaSuave, alignItems: 'center', justifyContent: 'center', opacity: disabled ? 0.35 : 1 }}
+    >
+      <Text style={{ fontSize: 20, color: c.text, fontFamily: fonts.semibold, marginTop: -2 }}>{txt}</Text>
+    </Pressable>
+  );
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+      {btn('−', Math.max(min, value - step), value <= min)}
+      <Text style={{ minWidth: 54, textAlign: 'center', fontSize: 17, fontFamily: fonts.bold, color: c.text, fontVariant: ['tabular-nums'] }}>{format ? format(value) : value}</Text>
+      {btn('+', Math.min(max, value + step), value >= max)}
+    </View>
+  );
+}
+
+export function Row({ label, hint, children }: { label: string; hint?: string; children?: ReactNode }) {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 44 }}>
+      <View style={{ flex: 1 }}>
+        <Body style={{ fontWeight: '600' }}>{label}</Body>
+        {hint ? <Muted>{hint}</Muted> : null}
+      </View>
+      {children}
+    </View>
+  );
+}
+
+export function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
+  const c = useColors();
+  return (
+    <Row label={label} hint={hint}>
+      <Switch value={value} onValueChange={onChange} trackColor={{ true: c.rosa, false: c.line }} thumbColor="#fff" />
+    </Row>
+  );
+}
+
+export function Divider() {
+  const c = useColors();
+  return <View style={{ height: StyleSheet.hairlineWidth, backgroundColor: c.line, marginVertical: 4 }} />;
+}
+
+// Barra horizontal simple para estadísticas.
+export function Bar({ value, max, color, label, right }: { value: number; max: number; color: string; label: string; right: string }) {
+  const c = useColors();
+  const pct = max > 0 ? Math.max(4, (value / max) * 100) : 0;
+  return (
+    <View style={{ gap: 5 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <Text style={{ color: c.text, fontSize: 14, fontFamily: fonts.medium }}>{label}</Text>
+        <Text style={{ color: c.muted, fontSize: 13, fontFamily: fonts.regular, fontVariant: ['tabular-nums'] }}>{right}</Text>
+      </View>
+      <View style={{ height: 10, borderRadius: 5, backgroundColor: c.line, overflow: 'hidden' }}>
+        <View style={{ width: `${pct}%`, height: '100%', borderRadius: 5, backgroundColor: color }} />
+      </View>
+    </View>
+  );
+}

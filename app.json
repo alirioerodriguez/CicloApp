@@ -1,0 +1,52 @@
+{
+  "expo": {
+    "name": "Ciclo",
+    "slug": "ciclo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "scheme": "ciclo",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#FBF7F4",
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.alirio.ciclo",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Para proteger tus datos con Face ID."
+      }
+    },
+    "android": {
+      "package": "com.alirio.ciclo",
+      "adaptiveIcon": {
+        "backgroundColor": "#F7DCE7",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-sharing",
+      [
+        "expo-notifications",
+        {
+          "color": "#E7799F"
+        }
+      ],
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Para proteger tus datos con Face ID."
+        }
+      ],
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": false
+    }
+  }
+}

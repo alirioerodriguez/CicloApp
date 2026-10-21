@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
-import { Bar, Body, Button, Card, Label, Muted, Screen } from '../../components/ui';
+import { Bar, Body, Button, Card, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { detectAlertas } from '../../lib/alertas';
 import { moodById, symptomById } from '../../content/catalogo';
 import { LOGROS, VACIOS, confianza } from '../../content/textos';
@@ -60,8 +60,8 @@ export default function Estadisticas() {
       </View>
       <Muted>{confianza(s.cycles.length)} de tu ciclo: mientras más ciclos registres, más se ajusta a ti.</Muted>
 
+      <Grilla max={2}>
       <Alertas />
-
 
       {s.regular != null && (
         <Card>
@@ -138,6 +138,7 @@ export default function Estadisticas() {
           <Bar label="Tomas registradas" value={adherence.taken} max={adherence.expected} right={`${adherence.taken} de ${adherence.expected}`} color={c.salvia} />
         </Card>
       )}
+      </Grilla>
 
       <Logros />
     </Screen>

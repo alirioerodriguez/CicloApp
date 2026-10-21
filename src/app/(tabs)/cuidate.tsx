@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Body, Button, Card, Chip, Label, Muted, Screen } from '../../components/ui';
+import { Body, Button, Card, Chip, Columnas, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { EjercicioCard } from '../../components/EjercicioCard';
 import { ALIMENTOS } from '../../content/alimentos';
 import { POR_FASE, ejercicioById } from '../../content/ejercicios';
@@ -36,32 +36,39 @@ export default function Cuidate() {
         {phase && phase !== realPhase ? <Muted>Estás viendo otra fase. Hoy estás en: {CUIDATE[realPhase].nombre.toLowerCase()}.</Muted> : null}
       </Card>
 
-      <Card>
-        <Label>✨ Recomendación del día</Label>
-        <Body>{pick(content.recomendaciones, seed)}</Body>
-      </Card>
+      <Grilla>
+        <Card>
+          <Label>✨ Recomendación del día</Label>
+          <Body>{pick(content.recomendaciones, seed)}</Body>
+        </Card>
 
-      <Card>
-        <Label>💗 Un mimo para hoy</Label>
-        <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-          <Text style={{ fontSize: 34 }}>{mimo.emoji}</Text>
-          <Body style={{ flex: 1 }}>{mimo.texto}</Body>
-        </View>
-      </Card>
+        <Card>
+          <Label>💗 Un mimo para hoy</Label>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <Text style={{ fontSize: 34 }}>{mimo.emoji}</Text>
+            <Body style={{ flex: 1 }}>{mimo.texto}</Body>
+          </View>
+        </Card>
 
-      <Card tint={c.lavandaSuave}>
-        <Text style={{ fontFamily: 'Fraunces_400Regular_Italic', fontSize: 21, color: c.text, lineHeight: 29 }}>“{pick(content.frases, seed)}”</Text>
-      </Card>
+        <Card tint={c.lavandaSuave}>
+          <Text style={{ fontFamily: 'Fraunces_400Regular_Italic', fontSize: 21, color: c.text, lineHeight: 29 }}>“{pick(content.frases, seed)}”</Text>
+        </Card>
+      </Grilla>
 
       <Button label="🔄 Otra idea" kind="soft" onPress={() => setShuffle((x) => x + 1)} />
 
-      <Label style={{ marginTop: 4 }}>🧘‍♀️ Movimiento para hoy</Label>
-      <Muted>{POR_FASE[shown].intro}</Muted>
-      {POR_FASE[shown].ids.slice(0, 2).map((id) => (
-        <EjercicioCard key={id} ej={ejercicioById(id)!} />
-      ))}
-      <Button small kind="ghost" label="Ver todos los ejercicios y el alivio inmediato →" onPress={() => router.push('/ejercicios')} />
-
+      <Columnas
+        izquierda={
+          <>
+            <Label style={{ marginTop: 4 }}>🧘‍♀️ Movimiento para hoy</Label>
+            <Muted>{POR_FASE[shown].intro}</Muted>
+            {POR_FASE[shown].ids.slice(0, 2).map((id) => (
+              <EjercicioCard key={id} ej={ejercicioById(id)!} />
+            ))}
+            <Button small kind="ghost" label="Ver todos los ejercicios y el alivio inmediato →" onPress={() => router.push('/ejercicios')} />
+          </>
+        }
+        derecha={
       <Card>
         <Label>🍽️ Comidas que te pueden ayudar ahora</Label>
         {foods.slice(0, 4).map((f) => (
@@ -75,6 +82,8 @@ export default function Cuidate() {
         ))}
         <Button small kind="ghost" label="Ver toda la alimentación →" onPress={() => router.push('/alimentacion')} />
       </Card>
+        }
+      />
 
       <Label style={{ marginTop: 6 }}>Explorar otras fases</Label>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>

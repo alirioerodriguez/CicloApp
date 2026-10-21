@@ -1,8 +1,9 @@
 // Piezas visuales reutilizables.
 import * as Haptics from 'expo-haptics';
-import type { ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLayout } from '../lib/layout';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 
 // Las fuentes personalizadas no se "engordan" solas: se elige la variante según el fontWeight.
@@ -35,13 +36,23 @@ export function notify(title: string, message: string) {
   else Alert.alert(title, message);
 }
 
-export function Screen({ children, title, subtitle, right }: { children: ReactNode; title?: string; subtitle?: string; right?: ReactNode }) {
+// `angosta`: pantallas de lectura o formularios que no ganan nada con todo el ancho del escritorio.
+export function Screen({ children, title, subtitle, right, angosta }: { children: ReactNode; title?: string; subtitle?: string; right?: ReactNode; angosta?: boolean }) {
   const c = useColors();
   const insets = useSafeAreaInsets();
+  const L = useLayout();
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: c.bg }}
-      contentContainerStyle={{ padding: 18, paddingTop: insets.top + 14, paddingBottom: 40, gap: 14, maxWidth: 640, width: '100%', alignSelf: 'center' }}
+      contentContainerStyle={{
+        padding: L.padding,
+        paddingTop: insets.top + (L.ancho ? 28 : 14),
+        paddingBottom: 40,
+        gap: 14,
+        maxWidth: angosta ? Math.min(L.maxWidth, 760) : L.maxWidth,
+        width: '100%',
+        alignSelf: 'center',
+      }}
       keyboardShouldPersistTaps="handled"
     >
       {title ? (
@@ -55,6 +66,44 @@ export function Screen({ children, title, subtitle, right }: { children: ReactNo
       ) : null}
       {children}
     </ScrollView>
+  );
+}
+
+// Dos columnas en tablet y escritorio; en el teléfono se apilan (primero la izquierda).
+export function Columnas({ izquierda, derecha, desde = 'tablet' }: { izquierda: ReactNode; derecha: ReactNode; desde?: 'tablet' | 'escritorio' }) {
+  const L = useLayout();
+  const dos = desde === 'tablet' ? L.ancho : L.tamano === 'escritorio';
+  if (!dos) {
+    return (
+      <>
+        {izquierda}
+        {derecha}
+      </>
+    );
+  }
+  return (
+    <View style={{ flexDirection: 'row', gap: L.tamano === 'escritorio' ? 24 : 16, alignItems: 'flex-start' }}>
+      <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{izquierda}</View>
+      <View style={{ flex: 1, gap: 14, minWidth: 0 }}>{derecha}</View>
+    </View>
+  );
+}
+
+// Grilla de tarjetas: 1 columna en el teléfono, 2 en tablet y hasta `max` en escritorio.
+export function Grilla({ children, max = 3 }: { children: ReactNode; max?: number }) {
+  const L = useLayout();
+  const cols = L.tamano === 'escritorio' ? max : L.tamano === 'tablet' ? Math.min(2, max) : 1;
+  if (cols === 1) return <>{children}</>;
+  const items = Children.toArray(children);
+  return (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
+      {items.map((child, i) => (
+        <View key={i} style={{ flexBasis: `${100 / cols - 3}%`, flexGrow: 1, minWidth: 0 }}>
+          {/* Las tarjetas de una misma fila quedan del mismo alto. */}
+          {isValidElement<{ style?: StyleProp<ViewStyle> }>(child) ? cloneElement(child, { style: [child.props.style, { flexGrow: 1 }] }) : child}
+        </View>
+      ))}
+    </View>
   );
 }
 

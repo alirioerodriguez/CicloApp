@@ -63,7 +63,7 @@ export default function Onboarding() {
   const back = () => setStep((s) => Math.max(0, s - 1));
 
   return (
-    <Screen>
+    <Screen angosta>
       <View style={{ flexDirection: 'row', gap: 6, marginBottom: 6 }}>
         {Array.from({ length: STEPS }, (_, i) => (
           <View key={i} style={{ flex: 1, height: 5, borderRadius: 3, backgroundColor: i <= step ? c.rosa : c.line }} />

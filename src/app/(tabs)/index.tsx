@@ -3,7 +3,8 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { DayEditor } from '../../components/DayEditor';
-import { Body, Button, Card, Label, Muted, Screen } from '../../components/ui';
+import { Body, Button, Card, Columnas, Label, Muted, Screen } from '../../components/ui';
+import { useLayout } from '../../lib/layout';
 import { CUIDATE } from '../../content/cuidate';
 import { LOGROS, PASTILLA_AYER, VACIOS, saludo } from '../../content/textos';
 import { detectAlertas } from '../../lib/alertas';
@@ -92,6 +93,7 @@ function missedPillYesterday(data: ReturnType<typeof useStore>['data']): boolean
 
 export default function Hoy() {
   const c = useColors();
+  const L = useLayout();
   const { data, summary: s, updateSettings } = useStore();
   const name = data.settings.name;
   const estado = !s.lastStart ? 'general' : s.inPeriod ? 'periodo' : s.lateDays > 0 ? 'retraso' : 'sinPeriodo';
@@ -110,6 +112,10 @@ export default function Hoy() {
     <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Text style={{ fontSize: 34 }}>🌸</Text>}>
       <Body style={{ marginTop: -6 }}>{hello.texto}</Body>
 
+      <Columnas
+        desde="escritorio"
+        izquierda={
+          <>
       {nuevos.map((l) => (
         <Card key={l.id} tint={c.duraznoSuave}>
           <Label>{l.titulo}</Label>
@@ -155,8 +161,15 @@ export default function Hoy() {
       )}
 
       <Status />
-      <Text style={{ fontFamily: serif, fontSize: 22, color: c.text, marginTop: 8 }}>Tu día</Text>
-      <DayEditor date={today()} />
+          </>
+        }
+        derecha={
+          <>
+            <Text style={{ fontFamily: serif, fontSize: 22, color: c.text, marginTop: L.tamano === 'escritorio' ? 0 : 8 }}>Tu día</Text>
+            <DayEditor date={today()} />
+          </>
+        }
+      />
     </Screen>
   );
 }

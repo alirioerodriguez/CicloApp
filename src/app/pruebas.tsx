@@ -119,7 +119,7 @@ export default function Pruebas() {
   if (calificar) {
     const m = MISIONES.find((x) => x.id === calificar.id);
     return (
-      <Screen subtitle="Prueba terminada" title={m?.titulo ?? 'Prueba'}>
+      <Screen angosta subtitle="Prueba terminada" title={m?.titulo ?? 'Prueba'}>
         <Card tint={calificar.ok ? c.salviaSuave : c.duraznoSuave}>
           <Body>
             {calificar.ok ? '¡Bien! ' : 'Gracias por intentarlo. '}
@@ -139,7 +139,7 @@ export default function Pruebas() {
   }
 
   return (
-    <Screen title="Ayúdanos a mejorar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
+    <Screen angosta title="Ayúdanos a mejorar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Card tint={c.lavandaSuave}>
         <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>🧪 Laboratorio de Ciclo</Text>
         <Body>Haz pruebas cortas para descubrir qué es fácil y qué no. Cada misión empieza en "Hoy": búscala como lo harías normalmente y avísanos si lo lograste.</Body>

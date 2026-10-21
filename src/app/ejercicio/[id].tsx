@@ -63,7 +63,7 @@ export default function EjercicioScreen() {
 
   if (!ej) {
     return (
-      <Screen title="Ejercicio">
+      <Screen angosta title="Ejercicio">
         <Body>No encontramos ese ejercicio.</Body>
         <Button label="Volver" onPress={() => router.back()} />
       </Screen>
@@ -99,7 +99,7 @@ export default function EjercicioScreen() {
           : `${rep} de ${ej.reps}`;
 
   return (
-    <Screen subtitle={ej.dosis} title={ej.nombre} right={<Button small kind="soft" label="Cerrar" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />}>
+    <Screen angosta subtitle={ej.dosis} title={ej.nombre} right={<Button small kind="soft" label="Cerrar" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />}>
       <Card style={{ alignItems: 'center', paddingVertical: 10 }}>
         <Figura
           key={key.current}

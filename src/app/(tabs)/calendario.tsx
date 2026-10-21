@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Legend, MonthGrid } from '../../components/MonthGrid';
-import { Body, Button, Card, Label, Muted, Row, Screen } from '../../components/ui';
+import { Body, Button, Card, Columnas, Label, Muted, Row, Screen } from '../../components/ui';
 import { AVISO_ANTICONCEPTIVO, confianza } from '../../content/textos';
 import { calendarMarks } from '../../lib/cycle';
 import { longDate, shortDate, today } from '../../lib/dates';
@@ -18,6 +18,10 @@ export default function Calendario() {
 
   return (
     <Screen title="Calendario">
+      <Columnas
+        desde="escritorio"
+        izquierda={
+          <>
       <Card tint={editing ? c.rosaSuave : undefined}>
         <MonthGrid
           marks={marks}
@@ -32,7 +36,9 @@ export default function Calendario() {
       <Muted style={{ textAlign: 'center' }}>
         {editing ? 'Toca cada día que tuviste sangrado para marcarlo o desmarcarlo.' : 'Toca un día para ver o editar lo que registraste.'}
       </Muted>
-
+          </>
+        }
+        derecha={
       <Card>
         <Label>Lo que viene</Label>
         {s.nextStart ? (
@@ -59,6 +65,8 @@ export default function Calendario() {
           <Muted>{AVISO_ANTICONCEPTIVO}</Muted>
         )}
       </Card>
+        }
+      />
     </Screen>
   );
 }

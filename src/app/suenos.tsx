@@ -27,7 +27,7 @@ export default function Suenos() {
   };
 
   return (
-    <Screen title="Diario de sueños" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
+    <Screen angosta title="Diario de sueños" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Card tint={c.lavandaSuave}>
         {signo && !pickSigno ? (
           <>

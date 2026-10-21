@@ -1,7 +1,7 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Body, Button, Card, Chip, Label, Muted, Screen } from '../components/ui';
+import { Body, Button, Card, Chip, Columnas, Label, Muted, Screen } from '../components/ui';
 import { ALIMENTOS, AVISO_PASTILLA, CATEGORIAS, CON_MODERACION, TIP_HIERRO, type Categoria } from '../content/alimentos';
 import { CUIDATE } from '../content/cuidate';
 import { useStore } from '../lib/store';
@@ -34,6 +34,9 @@ export default function Alimentacion() {
         )}
       </View>
 
+      <Columnas
+        desde="escritorio"
+        izquierda={
       <Card>
         {list.length === 0 && <Muted>Nada con esos filtros.</Muted>}
         {list.map((f, i) => (
@@ -46,7 +49,9 @@ export default function Alimentacion() {
           </View>
         ))}
       </Card>
-
+        }
+        derecha={
+          <>
       <Card tint={c.salviaSuave}>
         <Label>🩸 Truco para el hierro</Label>
         <Body>{TIP_HIERRO}</Body>
@@ -70,6 +75,9 @@ export default function Alimentacion() {
           <Body>{AVISO_PASTILLA}</Body>
         </Card>
       )}
+          </>
+        }
+      />
       <Muted style={{ textAlign: 'center' }}>Información general. Si tienes anemia u otra condición, sigue lo que te indique tu médico.</Muted>
     </Screen>
   );

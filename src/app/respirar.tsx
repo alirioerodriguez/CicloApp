@@ -53,7 +53,7 @@ export default function Respirar() {
   };
 
   return (
-    <Screen title="Respira conmigo" right={<Button small kind="soft" label="Cerrar" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />}>
+    <Screen angosta title="Respira conmigo" right={<Button small kind="soft" label="Cerrar" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />}>
       <Body>Exhalar más largo que inhalar ayuda al cuerpo a soltar la tensión. Siéntate o acuéstate cómoda.</Body>
       <View style={{ height: 300, alignItems: 'center', justifyContent: 'center' }}>
         <Animated.View style={{ width: 240, height: 240, borderRadius: 120, backgroundColor: c.rosaSuave, transform: [{ scale }], alignItems: 'center', justifyContent: 'center' }}>

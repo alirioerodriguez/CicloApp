@@ -28,7 +28,7 @@ export default function Info() {
   const combinada = pill && !PILL_PACKS[data.settings.pillType].soloProgestageno;
 
   return (
-    <Screen title="Cuándo consultar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/cuidate'))} />}>
+    <Screen angosta title="Cuándo consultar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/cuidate'))} />}>
       <Card tint={c.rosaSuave}>
         <Label>🚨 Busca atención hoy</Label>
         <List items={combinada ? [...URGENTE, URGENTE_COMBINADA] : URGENTE} />

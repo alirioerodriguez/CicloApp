@@ -255,7 +255,7 @@ function Quistes() {
 export default function Salud() {
   const { data, summary } = useStore();
   return (
-    <Screen title="Salud ginecológica" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
+    <Screen angosta title="Salud ginecológica" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Muted>Lo que anotas aquí es lo que más le sirve a tu ginecóloga.</Muted>
       <Controles />
       <Autoexamen />

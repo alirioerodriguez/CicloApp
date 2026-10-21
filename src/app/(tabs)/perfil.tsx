@@ -5,7 +5,7 @@ import { Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { MonthGrid } from '../../components/MonthGrid';
 import { TonePicker } from '../../components/TonePicker';
 import { CONDICIONES } from '../../content/condiciones';
-import { Body, Button, Card, Chip, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
+import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
 import { NO_DISPOSITIVO } from '../../content/info';
 import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
 import { PillPicker } from '../../components/PillPicker';
@@ -58,6 +58,9 @@ export default function Perfil() {
 
   return (
     <Screen title="Perfil">
+      <Columnas
+        izquierda={
+          <>
       <Card>
         <Label>Tú</Label>
         <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder="Tu nombre" placeholderTextColor={c.muted} style={input} />
@@ -128,7 +131,10 @@ export default function Perfil() {
           </>
         )}
       </Card>
-
+          </>
+        }
+        derecha={
+          <>
       <Card>
         <Label>🔔 Recordatorios</Label>
         {!notificationsSupported ? (
@@ -278,6 +284,9 @@ export default function Perfil() {
         <Muted>Un PDF con tus ciclos, duración, síntomas frecuentes y notas, para llevar a la consulta.</Muted>
         <Button kind="soft" label="Crear resumen PDF" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
       </Card>
+          </>
+        }
+      />
 
       <Button
         kind="danger"

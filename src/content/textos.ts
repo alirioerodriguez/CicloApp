@@ -1,7 +1,7 @@
 // Textos de la app: avisos, notificaciones, saludos, estados vacíos y logros. Editable.
 // {dias} se reemplaza por el número de días.
 // Fuentes de la parte de predicción: [16] [29] [35]–[38].
-import { supabaseConfigured } from '../lib/supabase';
+import { nubeConfigurada } from '../lib/nube';
 
 export const AVISO_ANTICONCEPTIVO =
   'Las fechas fértiles son solo una estimación. Esta app no sirve como método anticonceptivo ni para evitar un embarazo.';
@@ -91,7 +91,7 @@ export const VACIOS = {
   },
   primerDia: {
     titulo: 'Bienvenida',
-    texto: `Aquí llevas tu ciclo a tu manera. ${supabaseConfigured ? 'Tus datos son privados y quedan respaldados en tu cuenta.' : 'Todo queda solo en tu teléfono.'} ¿Empezamos con cómo te sientes hoy?`,
+    texto: `Aquí llevas tu ciclo a tu manera. ${nubeConfigurada ? 'Tus datos son privados y quedan respaldados en tu cuenta.' : 'Todo queda solo en tu teléfono.'} ¿Empezamos con cómo te sientes hoy?`,
   },
 };
 

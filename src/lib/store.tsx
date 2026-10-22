@@ -4,7 +4,7 @@ import { AppState, Platform } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { summarize, type Summary } from './cycle';
-import { deleteRemote, pullRemote, pushRemote } from './supabase';
+import { deleteRemote, pullRemote, pushRemote } from './nube';
 import { addDays, today } from './dates';
 import type { AppData, DayLog, ISODate, Settings } from './types';
 

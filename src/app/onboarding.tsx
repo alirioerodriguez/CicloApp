@@ -15,7 +15,7 @@ import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SE
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
 import { ensurePermission, notificationsSupported } from '../lib/notifications';
-import { supabaseConfigured } from '../lib/supabase';
+import { nubeConfigurada } from '../lib/nube';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
@@ -158,7 +158,7 @@ export default function Onboarding() {
           </View>
           <Text style={{ fontFamily: serif, fontSize: 32, lineHeight: 38, color: c.text, textAlign: 'center' }}>Hola, te damos la bienvenida a Savia</Text>
           <Body style={{ textAlign: 'center' }}>La vida que eres y la vida que das. Te acompañamos en tu ciclo, tu embarazo y tu menopausia.</Body>
-          <Muted style={{ textAlign: 'center' }}>{supabaseConfigured ? 'Tus datos quedan respaldados en tu cuenta.' : 'Sin cuentas ni nube: todo queda en tu teléfono.'}</Muted>
+          <Muted style={{ textAlign: 'center' }}>{nubeConfigurada ? 'Tus datos quedan respaldados en tu cuenta.' : 'Sin cuentas ni nube: todo queda en tu teléfono.'}</Muted>
         </>
       )}
 
@@ -327,7 +327,7 @@ export default function Onboarding() {
           </Card>
           <Card tint={c.rosaSuave}>
             <Label>Tu privacidad, primero</Label>
-            <Body>{supabaseConfigured ? '• Tus datos se guardan en tu teléfono y se respaldan en tu cuenta: solo tú puedes verlos.' : '• Tus datos se guardan solo en este teléfono.'}</Body>
+            <Body>{nubeConfigurada ? '• Tus datos se guardan en tu teléfono y se respaldan en tu cuenta: solo tú puedes verlos.' : '• Tus datos se guardan solo en este teléfono.'}</Body>
             <Body>• Sin publicidad. Nunca vendemos ni compartimos tus datos.</Body>
             <Body>• Puedes respaldarlos o borrarlos cuando quieras desde Perfil.</Body>
           </Card>

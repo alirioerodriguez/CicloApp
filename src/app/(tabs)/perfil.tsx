@@ -19,7 +19,7 @@ import { diffDays, longDate, shortDate, timeLabel, today } from '../../lib/dates
 import { ensurePermission, notificationsSupported } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
 import { useStore } from '../../lib/store';
-import { signOut } from '../../lib/supabase';
+import { signOut } from '../../lib/nube';
 import { radius, useColors } from '../../lib/theme';
 import type { Settings } from '../../lib/types';
 import { IconoBurbuja } from '../../components/Icono';

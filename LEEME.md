@@ -98,18 +98,22 @@ Copia uno en `src/content/ejercicios.ts`, cambia el texto y las dos poses (A y B
 ### Para recibir los resultados de las pruebas por correo
 Escribe tu correo en `CORREO_RESULTADOS` dentro de `src/content/pruebas.ts`. Si queda vacío, cada usuaria los comparte por donde quiera. Los resultados nunca incluyen datos del ciclo.
 
-## Cuentas y nube (Supabase) — listo, pero apagado por ahora
+## Cuentas y nube (Neon) — listo, se enciende con una variable
 
-La app ya tiene inicio de sesión con **correo y contraseña** y respaldo automático en **Supabase**. Mientras no haya claves, funciona como siempre: todo en el teléfono, sin cuenta.
+La app tiene inicio de sesión con **Google** (en la web) y con **correo y contraseña**, y respaldo automático en **Neon** (Postgres con *Managed Better Auth*, plan gratis). Mientras no haya URL configurada, funciona como siempre: todo en el teléfono, sin cuenta.
 
-Para encenderlo (cuando haya un proyecto libre en Supabase):
+Para encenderlo:
 
-1. Crea un proyecto en Supabase y ejecuta el SQL de `supabase/migrations/20261021120000_ciclo_data.sql` (crea la tabla con seguridad por usuaria).
-2. Copia `.env.example` como `.env` y completa `EXPO_PUBLIC_SUPABASE_URL` y `EXPO_PUBLIC_SUPABASE_KEY` (la *publishable key*, nunca la secreta).
-3. En Vercel, agrega esas dos mismas variables en el proyecto y vuelve a publicar.
-4. En Supabase → Authentication → URL Configuration, pon la dirección de la web de Vercel como *Site URL* (para los correos de confirmación y de nueva contraseña).
+1. En [console.neon.tech](https://console.neon.tech) crea un proyecto (plan Free).
+2. En el proyecto, activa **Auth** (Managed Better Auth). Google ya viene con credenciales de prueba de Neon; para producción, crea las tuyas en Google Cloud y pégalas en Auth → OAuth.
+3. En **Auth → Configuración**, agrega `https://cicloapp.vercel.app` (y `http://localhost:8081` para probar) como dominio de confianza.
+4. En **Data API**, marca *Use Neon Auth* y actívalo.
+5. En el **SQL Editor**, ejecuta `neon/ciclo_data.sql` (crea la tabla con seguridad por usuaria) y luego *Refresh schema cache* en Data API.
+6. Copia la URL HTTPS de la base de datos (sin usuario ni contraseña, ver `.env.example`) en `EXPO_PUBLIC_NEON_URL`: en `.env` para probar en tu compu y en Vercel → Settings → Environment Variables para la web. Vuelve a publicar.
 
 Al entrar por primera vez, los datos que ya había en el teléfono se suben solos a la cuenta.
+
+**Apple:** Neon Auth no ofrece inicio de sesión con Apple por ahora. Además, Apple exige una cuenta de desarrollador paga (USD 99 al año) y la app publicada en la App Store.
 
 ## Versión web (Vercel)
 

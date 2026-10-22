@@ -99,6 +99,11 @@ export function DayEditor({ date }: { date: ISODate }) {
             );
           })}
         </View>
+        {log.flow === 1 && (
+          <Muted>
+            Lo anotamos como manchado: no reinicia tu ciclo. Si hoy empezó tu período, elige Leve o más.
+          </Muted>
+        )}
         {log.flow >= 4 && <Muted style={{ color: c.text }}>{URGENTE[0]}</Muted>}
       </Card>
 

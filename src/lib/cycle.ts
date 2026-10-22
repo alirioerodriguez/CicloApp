@@ -32,23 +32,28 @@ export function sinAtrasos(s: Settings): boolean {
 }
 
 // Días con flujo, agrupados en períodos. Se tolera un día sin flujo en medio.
-// En ciclo especial el manchado (flow 1) no cuenta como período.
+// El manchado (flow 1) nunca inicia un período: el día 1 es el primer día de flujo real.
+// Fuera de ciclo especial, el manchado pegado a un período sí lo alarga (el final suele ser manchado).
 export function getPeriods(logs: Record<ISODate, DayLog>, minFlow = 1): Period[] {
   const days = Object.values(logs)
-    .filter((l) => l.flow >= minFlow)
-    .map((l) => l.date)
-    .sort();
+    .filter((l) => l.flow >= 1)
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
   const periods: Period[] = [];
-  for (const d of days) {
+  for (const { date: d, flow } of days) {
     const last = periods[periods.length - 1];
-    if (last && diffDays(d, last.end) <= 2) {
+    if (last && diffDays(d, last.end) <= 2 && flow >= minFlow) {
       last.end = d;
       last.length = diffDays(d, last.start) + 1;
-    } else {
+    } else if (flow >= 2) {
       periods.push({ start: d, end: d, length: 1 });
     }
   }
   return periods;
+}
+
+// ¿Este día cuenta como período? (para el calendario)
+export function enPeriodo(d: ISODate, periods: Period[]): boolean {
+  return periods.some((p) => d >= p.start && d <= p.end);
 }
 
 export function getCycles(periods: Period[], maxCycle = MAX_CYCLE): CycleRecord[] {
@@ -171,9 +176,8 @@ export function calendarMarks(data: AppData, s: Summary, ref: ISODate = todayISO
     (marks[d] ??= {})[k] = true;
   };
 
-  const minFlow = data.settings.etapa === 'especial' ? 2 : 1;
   for (const l of Object.values(data.logs)) {
-    if (l.flow >= minFlow) mark(l.date, 'period');
+    if (l.flow >= 1 && enPeriodo(l.date, s.periods)) mark(l.date, 'period');
     if (l.intimidad) mark(l.date, 'intimidad');
   }
 

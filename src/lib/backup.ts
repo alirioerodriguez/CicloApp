@@ -114,7 +114,7 @@ function cycleDayGrid(data: AppData, s: Summary, ids: { id: string; label: strin
   return `<table class="grid"><tr><th></th>${head}</tr>${rows.join('')}</table>`;
 }
 
-function reportHtml(data: AppData, s: Summary): string {
+export function reportHtml(data: AppData, s: Summary): string {
   const st = data.settings;
   const logs = Object.values(data.logs);
   const alertas = detectAlertas(data, s);

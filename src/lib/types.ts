@@ -25,6 +25,13 @@ export interface DayLog {
   loquios: Loquios | null;
   tomas: Toma[];
   cicatriz: string | null;
+  // Modo menopausia.
+  bochornos: number | null;
+  intensidad: string | null; // del bochorno más fuerte
+  despertares: number | null;
+  despertoPor: string[];
+  sentir: { sueno: number; animo: number; energia: number } | null; // 0 a 4
+  menoExtra: string[]; // otros síntomas: niebla mental, mareos…
 }
 
 export type Loquios = 'rojo' | 'rosado' | 'amarillento' | 'no';
@@ -40,6 +47,8 @@ export interface RedApoyo {
   nombre: string;
   compartir: CompartirRed[];
 }
+
+export type EtapaMeno = 'peri' | 'meno' | 'post';
 
 export interface DatosEmbarazo {
   hechos: string[]; // controles, exámenes, pendientes y bolso marcados como listos
@@ -83,6 +92,7 @@ export interface Settings {
   ttcRegistro: SenalTtc[]; // qué señales quiere registrar en modo "busco un embarazo"
   posparto: Posparto;
   embarazo: { fpp: ISODate | null }; // fecha probable de parto: de aquí salen las semanas
+  meno: { etapa: EtapaMeno; trh: boolean; trhTipo: string; suplementos: string[] };
   red: RedApoyo;
   silencioEmbarazo: boolean; // tras una pérdida o "prefiero no decir": sin avisos ni sugerencias de embarazo
   cycleLength: number; // valor inicial; luego se aprende de los datos
@@ -154,6 +164,9 @@ export interface AppData {
   // Escala de Edimburgo adaptada (4 preguntas, 0–3), una por semana: clave = lunes de esa semana.
   edimburgo: Record<ISODate, number[]>;
   embarazo: DatosEmbarazo;
+  // Escala MRS (11 síntomas, 0 a 4) una vez por semana, y chequeos marcados como al día.
+  mrs: Record<ISODate, number[]>;
+  chequeosMeno: string[];
   pruebas: {
     misiones: Record<string, PruebaResultado>;
     sus: number[]; // 10 respuestas 1–5

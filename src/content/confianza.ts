@@ -29,6 +29,7 @@ export const INTRO_RED =
 // Consejo para quien acompaña, según la etapa.
 export const AYUDA_RED: Partial<Record<Etapa, string>> & { general: string } = {
   embarazo: 'Ofrécete a acompañarla a su próximo control y encárgate de una comida hoy.',
+  meno: 'Baja la temperatura del cuarto esta noche.',
   posparto: 'Encárgate de una toma de noche para que ella duerma 4 horas seguidas.',
   ttc: 'Acompáñala sin presión: pregúntale cómo se siente con la búsqueda.',
   general: 'Pregúntale qué necesita, sin dar por hecho cómo se siente.',
@@ -59,6 +60,14 @@ export const ADAPTADO: Partial<Record<Etapa, Record<string, string>>> = {
     marcha: 'Sin impacto: buena opción mientras vuelves al ejercicio.',
     caminata: 'Desde los primeros días, paseos cortos con tu bebé.',
   },
+  meno: {
+    sentadilla: 'Fundamental, mejor con mancuernas: estimula la densidad de los huesos de la cadera.',
+    zancada: 'Fuerza para piernas y cadera: ayuda a tus huesos y a tu equilibrio.',
+    'gato-vaca': 'Ideal por la mañana para la rigidez de las articulaciones.',
+    plancha: 'Fortalece el centro y protege tu columna.',
+    tijera: 'Impacto suave y controlado, si tus huesos y suelo pélvico lo permiten.',
+    caminata: 'Casi todos los días: corazón y huesos lo agradecen.',
+  },
   ttc: {
     caminata: 'Moverte con constancia ayuda a regular tu ciclo. A ritmo en que puedas conversar.',
     tijera: 'Puedes seguir entrenando como siempre: el ejercicio moderado no afecta la búsqueda.',
@@ -82,6 +91,7 @@ export const ADAPTADO_ESPECIAL: Partial<Record<Condicion, Record<string, string>
 export const NOMBRE_ETAPA: Partial<Record<Etapa, string>> = {
   embarazo: 'Embarazo',
   posparto: 'Posparto',
+  meno: 'Menopausia',
   ttc: 'Busco un embarazo',
   especial: 'Ciclo especial',
 };

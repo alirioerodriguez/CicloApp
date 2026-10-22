@@ -2,6 +2,7 @@
 import { AYUDA_RED } from '../content/confianza';
 import { CUIDATE } from '../content/cuidate';
 import { semanasEmbarazo } from '../content/embarazo';
+import { etapaMeno } from '../content/menopausia';
 import { etapaPosparto, semanasPosparto } from '../content/posparto';
 import type { Summary } from './cycle';
 import { longDate, today } from './dates';
@@ -21,8 +22,8 @@ function energia(data: AppData, s: Summary): string {
   }
   if (log?.moods.includes('con_energia')) return 'alta';
   if (log?.symptoms.includes('cansancio')) return 'baja';
-  // En embarazo no hay fases: solo lo que ella registró.
-  if (data.settings.etapa === 'embarazo') return log ? 'media' : 'sin dato';
+  // En embarazo y menopausia no hay fases: solo lo que ella registró.
+  if (data.settings.etapa === 'embarazo' || data.settings.etapa === 'meno') return log ? 'media' : 'sin dato';
   return { menstrual: 'baja', folicular: 'alta', ovulatoria: 'alta', lutea: 'media', pastilla: 'media' }[s.phase ?? 'lutea'];
 }
 
@@ -35,6 +36,9 @@ export function tarjetaRed(data: AppData, s: Summary): TarjetaRed {
   if (quiere.includes('fase')) {
     if (st.etapa === 'embarazo') {
       partes.push(`${nombre} está en la semana ${semanasEmbarazo(st.embarazo.fpp)} de su embarazo.`);
+    } else if (st.etapa === 'meno') {
+      const n = data.logs[today()]?.bochornos;
+      partes.push(n != null ? `${nombre} tuvo ${n} ${n === 1 ? 'bochorno' : 'bochornos'} hoy.` : `${nombre} está en su ${etapaMeno(st.meno.etapa).nombre.toLowerCase()}.`);
     } else if (st.etapa === 'posparto') {
       const sem = semanasPosparto(st.posparto);
       partes.push(`${nombre} está en la semana ${sem} de su posparto (${etapaPosparto(sem).nombre.toLowerCase()}).`);
@@ -47,7 +51,7 @@ export function tarjetaRed(data: AppData, s: Summary): TarjetaRed {
     const e = energia(data, s);
     if (e !== 'sin dato') partes.push(`${partes.length ? 'Su' : `La`} energía hoy es ${e}.`);
   }
-  const sinPeriodo = st.etapa === 'posparto' || st.etapa === 'embarazo';
+  const sinPeriodo = st.etapa === 'posparto' || st.etapa === 'embarazo' || st.etapa === 'meno';
   if (quiere.includes('periodo') && !sinPeriodo && s.nextStart && !s.inPeriod) {
     partes.push(s.ventana ? `Su período podría llegar entre el ${longDate(s.ventana[0])} y el ${longDate(s.ventana[1])}.` : `Su período se espera cerca del ${longDate(s.nextStart)}.`);
   }

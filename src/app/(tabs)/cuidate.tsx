@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Body, Button, Card, Chip, Columnas, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { CuidateEmbarazo } from '../../components/CuidateEmbarazo';
+import { CuidateMeno } from '../../components/CuidateMeno';
 import { CuidatePosparto } from '../../components/CuidatePosparto';
 import { EjercicioCard } from '../../components/EjercicioCard';
 import { ALIMENTOS } from '../../content/alimentos';
@@ -17,6 +18,7 @@ export default function Cuidate() {
   const { data } = useStore();
   if (data.settings.etapa === 'posparto') return <CuidatePosparto />;
   if (data.settings.etapa === 'embarazo') return <CuidateEmbarazo />;
+  if (data.settings.etapa === 'meno') return <CuidateMeno />;
   return <CuidateCiclo />;
 }
 

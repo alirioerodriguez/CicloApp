@@ -6,6 +6,7 @@ import { MonthGrid } from '../../components/MonthGrid';
 import { TonePicker } from '../../components/TonePicker';
 import { EtapaPicker } from '../../components/EtapaPicker';
 import { SEMANA_MAX, SEMANA_MIN, fppDesdeSemanas, semanasEmbarazo } from '../../content/embarazo';
+import { ETAPAS_MENO } from '../../content/menopausia';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../../content/posparto';
 import { CONDICIONES } from '../../content/condiciones';
 import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../../content/etapas';
@@ -86,6 +87,7 @@ export default function Perfil() {
             // Buscando un embarazo no se usa anticonceptivo.
             else if (etapa === 'ttc') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
             // Sin fecha del parto, se empieza en la semana 0 y se ajusta abajo.
+            else if (etapa === 'meno') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
             else if (etapa === 'embarazo') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false, embarazo: s.embarazo.fpp ? s.embarazo : { fpp: fppDesdeSemanas(12) } });
             else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
             else updateSettings({ etapa });
@@ -133,6 +135,18 @@ export default function Perfil() {
             <Row label="Semanas de embarazo" hint={`Fecha probable de parto: ${longDate(s.embarazo.fpp)}`}>
               <Stepper value={semanasEmbarazo(s.embarazo.fpp)} onChange={(v) => updateSettings({ embarazo: { fpp: fppDesdeSemanas(v) } })} min={SEMANA_MIN} max={SEMANA_MAX} />
             </Row>
+          </>
+        )}
+
+        {s.etapa === 'meno' && (
+          <>
+            <Divider />
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {ETAPAS_MENO.map((e) => (
+                <Chip key={e.id} label={e.nombre} selected={s.meno.etapa === e.id} onPress={() => updateSettings({ meno: { ...s.meno, etapa: e.id } })} />
+              ))}
+            </View>
+            <Toggle label="Uso tratamiento hormonal (TRH)" value={s.meno.trh} onChange={(trh) => updateSettings({ meno: { ...s.meno, trh } })} />
           </>
         )}
 

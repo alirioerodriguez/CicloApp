@@ -4,6 +4,7 @@ import { NOMBRE_ETAPA } from '../content/confianza';
 import { ANTICONCEPTIVOS, etapaById } from '../content/etapas';
 import { CICATRIZ_ALERTA, EDIMBURGO, lunes, nivelEdimburgo, semanasPosparto } from '../content/posparto';
 import { EXAMENES, presionAlta, semanasEmbarazo } from '../content/embarazo';
+import { CHEQUEOS_MENO, MRS, NIVELES_MRS, diasSinPeriodo, etapaMeno, puntajeMrs } from '../content/menopausia';
 import { detectAlertas } from './alertas';
 import type { Summary } from './cycle';
 import { addDays, today } from './dates';
@@ -32,7 +33,7 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   const etapa = NOMBRE_ETAPA[st.etapa] ?? etapaById(st.etapa).label;
   const semanas = semanasPosparto(st.posparto);
   const semEmb = semanasEmbarazo(st.embarazo.fpp);
-  const modo = `${st.etapa === 'posparto' ? `Posparto · semana ${semanas}` : st.etapa === 'embarazo' ? `Embarazo · semana ${semEmb}` : etapa} · últimos ${meses} meses`;
+  const modo = `${st.etapa === 'posparto' ? `Posparto · semana ${semanas}` : st.etapa === 'embarazo' ? `Embarazo · semana ${semEmb}` : st.etapa === 'meno' ? etapaMeno(st.meno.etapa).nombre : etapa} · últimos ${meses} meses`;
 
   // Lo más frecuente: síntomas y ánimo bajo, como % de los días registrados.
   const cuenta = new Map<string, number>();
@@ -54,7 +55,31 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   let kpis: Consulta['kpis'];
   const conversar: string[] = [];
 
-  if (st.etapa === 'embarazo') {
+  if (st.etapa === 'meno') {
+    const hf = logs.map((l) => l.bochornos).filter((x): x is number => x != null);
+    const semanasMrs = Object.keys(data.mrs).filter((k) => k >= desde).sort();
+    const r = semanasMrs.length ? data.mrs[semanasMrs[semanasMrs.length - 1]] : null;
+    const mrs = r ? puntajeMrs(r) : null;
+    const dias = diasSinPeriodo(data);
+    kpis = [
+      { valor: hf.length ? coma(hf.reduce((a, b) => a + b, 0) / hf.length) : '—', label: 'bochornos/día' },
+      { valor: mrs ? String(mrs.total) : '—', label: 'MRS de 44' },
+      { valor: dias == null ? '—' : String(dias), label: 'días sin período' },
+    ];
+    // En menopausia, lo más frecuente sale de la última escala MRS.
+    if (r) {
+      const top = MRS.map((q, i) => ({ label: q.label, pct: Math.max(0, r[i]) / 4, nivel: NIVELES_MRS[Math.max(0, r[i])] }))
+        .filter((x) => x.pct > 0)
+        .sort((a, b) => b.pct - a.pct)
+        .slice(0, 4);
+      frecuentes.splice(0, frecuentes.length, ...top);
+    }
+    conversar.push(st.meno.trh ? `Usa TRH (${st.meno.trhTipo.toLowerCase()}): revisar dosis y efecto en los bochornos.` : 'Sin TRH: conversar opciones.');
+    if (mrs && mrs.total > 16) conversar.push('Síntomas fuertes en la escala MRS.');
+    if (st.meno.etapa === 'post' && logs.some((l) => l.flow > 0)) conversar.push('Registró un sangrado después de la menopausia: evaluar.');
+    const pend = CHEQUEOS_MENO.filter((x) => !data.chequeosMeno.includes(x.id)).map((x) => x.titulo.toLowerCase());
+    if (pend.length) conversar.push(`Chequeos pendientes: ${pend.join(', ')}.`);
+  } else if (st.etapa === 'embarazo') {
     const medidas = Object.entries(data.embarazo.medidas).filter(([f]) => f >= desde).sort(([a], [b]) => a.localeCompare(b));
     const ultima = (k: 'kg' | 'sys' | 'dia') => [...medidas].reverse().find(([, m]) => m[k] != null)?.[1][k] ?? null;
     const sys = ultima('sys');

@@ -3,7 +3,7 @@ import { Pressable, Text, View } from 'react-native';
 import { fonts, radius, useColors } from '../lib/theme';
 import { tap } from './ui';
 
-export function Check({ label, sub, on, onPress, chip, chipResaltado }: { label: string; sub?: string; on: boolean; onPress: () => void; chip?: string; chipResaltado?: boolean }) {
+export function Check({ label, sub, on, onPress, chip, chipResaltado, textoHecho = 'Hecho' }: { label: string; sub?: string; on: boolean; onPress: () => void; chip?: string; chipResaltado?: boolean; textoHecho?: string }) {
   const c = useColors();
   return (
     <Pressable
@@ -35,7 +35,7 @@ export function Check({ label, sub, on, onPress, chip, chipResaltado }: { label:
             overflow: 'hidden',
           }}
         >
-          {on ? 'Hecho' : chip}
+          {on ? textoHecho : chip}
         </Text>
       )}
     </Pressable>

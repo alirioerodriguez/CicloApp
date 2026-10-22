@@ -20,6 +20,7 @@ export const DEFAULT_SETTINGS: Settings = {
   ttcRegistro: ['moco', 'lh', 'relacion'],
   posparto: { nacimiento: null, parto: 'vaginal', alimentacion: 'pecho' },
   embarazo: { fpp: null },
+  meno: { etapa: 'meno', trh: false, trhTipo: 'Parche', suplementos: [] },
   red: { on: false, nombre: '', compartir: ['fase', 'energia', 'ayuda'] },
   silencioEmbarazo: false,
   cycleLength: 28,
@@ -58,17 +59,20 @@ export const emptyData = (): AppData => ({
   quistes: [],
   edimburgo: {},
   embarazo: { hechos: [], patadas: {}, medidas: {} },
+  mrs: {},
+  chequeosMeno: [],
   pruebas: { misiones: {}, sus: [], ideas: [] },
 });
 
 export function emptyLog(date: ISODate): DayLog {
-  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null, loquios: null, tomas: [], cicatriz: null };
+  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null, loquios: null, tomas: [], cicatriz: null, bochornos: null, intensidad: null, despertares: null, despertoPor: [], sentir: null, menoExtra: [] };
 }
 
 function isEmptyLog(l: DayLog) {
   return (
     !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad &&
-    !l.moco && l.temp == null && !l.lh && !l.loquios && !l.tomas.length && !l.cicatriz
+    !l.moco && l.temp == null && !l.lh && !l.loquios && !l.tomas.length && !l.cicatriz &&
+    l.bochornos == null && l.despertares == null && !l.despertoPor.length && !l.sentir && !l.menoExtra.length
   );
 }
 
@@ -97,6 +101,7 @@ export function normalize(raw: unknown): AppData {
     posparto: { ...DEFAULT_SETTINGS.posparto, ...s.posparto },
     red: { ...DEFAULT_SETTINGS.red, ...s.red },
     embarazo: { ...DEFAULT_SETTINGS.embarazo, ...s.embarazo },
+    meno: { ...DEFAULT_SETTINGS.meno, ...s.meno },
     reminders: {
       pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
       water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },
@@ -124,6 +129,8 @@ export function normalize(raw: unknown): AppData {
     quistes: Array.isArray(r.quistes) ? r.quistes : base.quistes,
     edimburgo: r.edimburgo && typeof r.edimburgo === 'object' ? r.edimburgo : base.edimburgo,
     embarazo: { ...base.embarazo, ...r.embarazo },
+    mrs: r.mrs && typeof r.mrs === 'object' ? r.mrs : base.mrs,
+    chequeosMeno: Array.isArray(r.chequeosMeno) ? r.chequeosMeno : base.chequeosMeno,
     pruebas: { ...base.pruebas, ...r.pruebas },
   };
 }

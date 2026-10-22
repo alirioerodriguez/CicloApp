@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { HoyEmbarazo } from '../../components/HoyEmbarazo';
+import { HoyMeno } from '../../components/HoyMeno';
 import { HoyPosparto } from '../../components/HoyPosparto';
 import { Logo } from '../../components/Logo';
 import { ModoCard } from '../../components/ModoCard';
@@ -99,6 +100,7 @@ export default function Hoy() {
   const { data } = useStore();
   if (data.settings.etapa === 'posparto') return <HoyPosparto />;
   if (data.settings.etapa === 'embarazo') return <HoyEmbarazo />;
+  if (data.settings.etapa === 'meno') return <HoyMeno />;
   return <HoyCiclo />;
 }
 

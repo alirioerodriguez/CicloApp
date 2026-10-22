@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Legend, MonthGrid } from '../../components/MonthGrid';
+import { CalendarioMeno } from '../../components/CalendarioMeno';
 import { RecuperacionPosparto } from '../../components/RecuperacionPosparto';
 import { SemanasEmbarazo } from '../../components/SemanasEmbarazo';
 import { Body, Button, Card, Columnas, Label, Muted, Row, Screen } from '../../components/ui';
@@ -16,6 +17,7 @@ export default function Calendario() {
   // En posparto esta pestaña es "Tu recuperación".
   if (data.settings.etapa === 'posparto') return <RecuperacionPosparto />;
   if (data.settings.etapa === 'embarazo') return <SemanasEmbarazo />;
+  if (data.settings.etapa === 'meno') return <CalendarioMeno />;
   return <CalendarioCiclo />;
 }
 

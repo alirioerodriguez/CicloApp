@@ -7,7 +7,8 @@ import { MonthGrid } from '../components/MonthGrid';
 import { Logo } from '../components/Logo';
 import { PillPicker } from '../components/PillPicker';
 import { TonePicker } from '../components/TonePicker';
-import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper } from '../components/ui';
+import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper, Toggle } from '../components/ui';
+import { ETAPAS_MENO } from '../content/menopausia';
 import { SEMANA_MAX, SEMANA_MIN, bebe, fppDesdeSemanas, semanasEmbarazo } from '../content/embarazo';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../content/posparto';
 import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../content/etapas';
@@ -17,16 +18,17 @@ import { ensurePermission, notificationsSupported } from '../lib/notifications';
 import { supabaseConfigured } from '../lib/supabase';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
-import type { Anticonceptivo, Condicion, Etapa, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
+import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
 
-type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'listo';
+type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno' | 'listo';
 
-const FLUJOS: Record<'ciclo' | 'especial' | 'ttc' | 'embarazo' | 'posparto', Paso[]> = {
+const FLUJOS: Record<'ciclo' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno', Paso[]> = {
   ciclo: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'pastilla', 'listo'],
   especial: ['bienvenida', 'cuenta', 'periodo', 'especial', 'listo'],
   ttc: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'ttc', 'listo'],
   embarazo: ['bienvenida', 'cuenta', 'embarazo', 'listo'],
   posparto: ['bienvenida', 'cuenta', 'posparto', 'listo'],
+  meno: ['bienvenida', 'cuenta', 'meno', 'listo'],
 };
 
 export default function Onboarding() {
@@ -49,15 +51,18 @@ export default function Onboarding() {
   const [pillHour, setPillHour] = useState(21);
   const [ppSemanas, setPpSemanas] = useState(s0.posparto.nacimiento ? semanasPosparto(s0.posparto) : 2);
   const [semanasEmb, setSemanasEmb] = useState(s0.embarazo.fpp ? semanasEmbarazo(s0.embarazo.fpp) : 12);
+  const [menoEtapa, setMenoEtapa] = useState<EtapaMeno>(s0.meno.etapa);
+  const [trh, setTrh] = useState(s0.meno.trh);
   const [parto, setParto] = useState<Posparto['parto']>(s0.posparto.parto);
   const [alimentacion, setAlimentacion] = useState<Posparto['alimentacion']>(s0.posparto.alimentacion);
 
-  const flujo = FLUJOS[etapa === 'especial' || etapa === 'ttc' || etapa === 'embarazo' || etapa === 'posparto' ? etapa : 'ciclo'];
+  const flujo = FLUJOS[etapa];
+  const meno = etapa === 'meno';
   const posparto = etapa === 'posparto';
   const embarazada = etapa === 'embarazo';
   const paso = flujo[Math.min(i, flujo.length - 1)];
   // Buscando un embarazo no se usa anticonceptivo.
-  const antiFinal: Anticonceptivo = etapa === 'ttc' || embarazada ? 'ninguno' : anti ?? 'ninguno';
+  const antiFinal: Anticonceptivo = etapa === 'ttc' || embarazada || meno ? 'ninguno' : anti ?? 'ninguno';
   const pastilla = antiFinal === 'pastilla';
 
   const input = { borderRadius: radius.md, backgroundColor: c.bg, borderWidth: 1, borderColor: c.line, padding: 14, fontSize: 17, color: c.text, fontFamily: fonts.regular };
@@ -78,6 +83,7 @@ export default function Onboarding() {
         ttcRegistro: ttc,
         posparto: posparto ? { nacimiento: nacimientoHace(ppSemanas), parto, alimentacion } : s0.posparto,
         embarazo: embarazada ? { fpp: fppDesdeSemanas(semanasEmb) } : s0.embarazo,
+        meno: meno ? { ...s0.meno, etapa: menoEtapa, trh } : s0.meno,
         cycleLength: etapa === 'especial' ? 35 : cycleLength,
         periodLength,
         pillMode: pastilla,
@@ -87,7 +93,7 @@ export default function Onboarding() {
         reminders: {
           ...s0.reminders,
           pill: { on: pastilla && granted, hour: pillHour, minute: 0 },
-          period: { ...s0.reminders.period, on: granted && etapa !== 'especial' && !posparto && !embarazada },
+          period: { ...s0.reminders.period, on: granted && etapa !== 'especial' && !posparto && !embarazada && !meno },
           pack: { ...s0.reminders.pack, on: pastilla && granted },
         },
       },
@@ -176,7 +182,7 @@ export default function Onboarding() {
               if (e === 'especial' && !condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x))) setCondiciones([...condiciones, 'sop']);
             }}
           />
-          <Muted>La menopausia llega muy pronto. Tu historial se queda contigo cuando cambies de modo.</Muted>
+          <Muted>Tu historial se queda contigo cuando cambies de modo.</Muted>
         </>
       )}
 
@@ -269,6 +275,33 @@ export default function Onboarding() {
         </>
       )}
 
+      {paso === 'meno' && (
+        <>
+          {h1('¿Cuándo fue tu último período?')}
+          <Muted>La menopausia se confirma tras 12 meses seguidos sin período.</Muted>
+          <View style={{ gap: 10 }}>
+            {ETAPAS_MENO.map((e) => {
+              const on = menoEtapa === e.id;
+              return (
+                <Pressable
+                  key={e.id}
+                  accessibilityRole="radio"
+                  accessibilityState={{ selected: on }}
+                  onPress={() => setMenoEtapa(e.id)}
+                  style={{ padding: 16, borderRadius: radius.lg, borderWidth: on ? 2 : 1, borderColor: on ? c.rosa : c.line, backgroundColor: on ? c.rosaSuave : c.card, gap: 2 }}
+                >
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 16, color: c.text }}>{e.cuando}</Text>
+                  <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: c.muted }}>{e.nombre}</Text>
+                </Pressable>
+              );
+            })}
+          </View>
+          <Card>
+            <Toggle label="Uso tratamiento hormonal" hint="Lo puedes cambiar luego" value={trh} onChange={setTrh} />
+          </Card>
+        </>
+      )}
+
       {paso === 'posparto' && (
         <>
           {h1('¿Hace cuánto nació tu bebé?')}
@@ -297,7 +330,7 @@ export default function Onboarding() {
             <Body>• Sin publicidad. Nunca vendemos ni compartimos tus datos.</Body>
             <Body>• Puedes respaldarlos o borrarlos cuando quieras desde Perfil.</Body>
           </Card>
-          <Muted>Savia te acompaña, pero no reemplaza a tu médico. {etapa === 'ttc' || posparto || embarazada ? '' : AVISO_ANTICONCEPTIVO}</Muted>
+          <Muted>Savia te acompaña, pero no reemplaza a tu médico. {etapa === 'ttc' || posparto || embarazada || meno ? '' : AVISO_ANTICONCEPTIVO}</Muted>
           {notificationsSupported && <Muted>Al continuar te pediremos permiso para enviarte recordatorios. Puedes ajustarlos cuando quieras.</Muted>}
         </>
       )}

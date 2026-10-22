@@ -6,7 +6,7 @@ export interface EtapaInfo {
   emoji: string;
   label: string;
   sub: string;
-  // El modo menopausia llega en el próximo bloque.
+  // Para mostrar un modo como "Muy pronto" mientras se construye.
   disponible: boolean;
 }
 
@@ -16,7 +16,7 @@ export const ETAPAS: EtapaInfo[] = [
   { id: 'ttc', emoji: '🌱', label: 'Busco un embarazo', sub: 'Ventana fértil, moco cervical, temperatura y LH', disponible: true },
   { id: 'embarazo', emoji: '🤰', label: 'Estoy embarazada', sub: 'Semana a semana, controles y tu bebé', disponible: true },
   { id: 'posparto', emoji: '🍼', label: 'Posparto o lactancia', sub: 'Tu recuperación, tu ánimo y la lactancia', disponible: true },
-  { id: 'meno', emoji: '🌗', label: 'Perimenopausia o menopausia', sub: 'Ciclos que cambian, bochornos y salud ósea', disponible: false },
+  { id: 'meno', emoji: '🌗', label: 'Perimenopausia o menopausia', sub: 'Ciclos que cambian, bochornos y salud ósea', disponible: true },
 ];
 
 export const etapaById = (id: Etapa) => ETAPAS.find((e) => e.id === id) ?? ETAPAS[0];

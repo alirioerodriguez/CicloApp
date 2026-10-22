@@ -22,11 +22,12 @@ describe('Inglés', () => {
     const html = reportHtml(d, summarize(d, '2026-10-05'));
     expect(html).toContain('lang="en"');
     expect(html).toContain('Cycle summary');
-    expect(html).toContain('Last menstrual period (LMP)');
-    expect(html).toContain('Average cycle length');
-    expect(html).toMatch(/\d+ days \(\d+ cycles logged\)/);
+    expect(html).toContain('Gynecology visit report');
+    expect(html).toContain('Last menstrual period');
+    expect(html).toContain('Average cycle');
+    expect(html).toContain('Cycles logged');
     expect(html).toContain('Does not include intimacy, personal notes, mood or dream journal.');
-    expect(html).not.toMatch(/Resumen de ciclo|Datos clave|días/);
+    expect(html).not.toMatch(/Resumen de ciclo|Datos clave|días|Generado/);
   });
 
   test('las notificaciones con días salen en inglés', () => {

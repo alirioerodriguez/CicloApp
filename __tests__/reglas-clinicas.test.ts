@@ -175,8 +175,10 @@ describe('Privacidad del resumen para la ginecóloga', () => {
     const html = reportHtml(d, summarize(d, '2026-10-05'));
     expect(html).toContain('1 día<');
     expect(html).not.toContain('1 días');
-    expect(html).toMatch(/\d,\d \/ 10/);
-    expect(html).toContain('Dolor menstrual de 7/10 o más en los últimos 2 ciclos.');
+    expect(html).toMatch(/\d,\d<small>\/ 10/);
+    expect(html).toContain('<b>Dolor menstrual de 7/10 o más</b> en los últimos 2 ciclos.');
     expect(html).not.toContain('coméntalo con tu ginecóloga');
+    expect(html).toContain('Informe para consulta ginecológica');
+    expect(html.match(/class="pagina"/g)).toHaveLength(2);
   });
 });

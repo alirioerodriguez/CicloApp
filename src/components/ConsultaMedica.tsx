@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
 import { Text } from './Texto';
+import { AnimoEnPdf } from './AnimoEnPdf';
 import { exportBackup, exportCsv, shareReport } from '../lib/backup';
 import { consulta, consultaTexto } from '../lib/consulta';
 import { useStore } from '../lib/store';
@@ -85,6 +86,7 @@ export function ConsultaMedica({ enPestana }: { enPestana?: boolean }) {
         }
         derecha={
           <>
+            <AnimoEnPdf />
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <View style={{ flex: 1 }}>
                 <Button label="Descargar PDF" onPress={() => shareReport(data, summary).catch(fallo('No se pudo crear el PDF'))} />

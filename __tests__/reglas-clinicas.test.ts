@@ -153,7 +153,30 @@ describe('Privacidad del resumen para la ginecóloga', () => {
     expect(html).not.toMatch(/intimidad:|relaciones sexuales registradas/i);
     expect(html).not.toContain('NOTA-PRIVADA');
     expect(html).not.toContain('SUENO-SECRETO');
-    expect(html).not.toMatch(/ánimo(s)? por día|Notas de la usuaria/);
+    expect(html).not.toMatch(/ánimo(s)? por día|Notas de la usuaria|Ánimos más frecuentes|Triste/);
     expect(html).toContain('Síntomas más frecuentes');
+  });
+
+  test('el ánimo sale solo si ella lo elige; las notas y la intimidad nunca', () => {
+    const d = datos(['2026-09-01', '2026-09-29'], { pdfAnimo: true }, 4, [
+      { date: '2026-09-10', intimidad: true, note: 'NOTA-PRIVADA', moods: ['triste'], symptoms: ['colicos'] },
+    ]);
+    const html = reportHtml(d, summarize(d, '2026-10-05'));
+    expect(html).toContain('Ánimos más frecuentes');
+    expect(html).toContain('Triste');
+    expect(html).not.toContain('NOTA-PRIVADA');
+    expect(html).toContain('No incluye intimidad, notas personales ni diario de sueños.');
+  });
+
+  test('singular, decimales con coma y temas escritos para la médica', () => {
+    const d = datos(['2026-08-01', '2026-08-29', '2026-09-26'], {}, 4, [{ date: '2026-09-10', flow: 1, symptoms: ['manchado'] }]);
+    for (const f of ['2026-08-01', '2026-08-29', '2026-09-26']) d.logs[f] = { ...d.logs[f], pain: 8, symptoms: ['coagulos'] };
+    d.logs['2026-08-02'] = { ...d.logs['2026-08-02'], pain: 5 };
+    const html = reportHtml(d, summarize(d, '2026-10-05'));
+    expect(html).toContain('1 día<');
+    expect(html).not.toContain('1 días');
+    expect(html).toMatch(/\d,\d \/ 10/);
+    expect(html).toContain('Dolor menstrual de 7/10 o más en los últimos 2 ciclos.');
+    expect(html).not.toContain('coméntalo con tu ginecóloga');
   });
 });

@@ -25,6 +25,7 @@ import type { Settings } from '../../lib/types';
 import { IconoBurbuja } from '../../components/Icono';
 import { t } from '../../lib/region';
 import { SelectorRegion } from '../../components/ElegirPais';
+import { AnimoEnPdf } from '../../components/AnimoEnPdf';
 
 const WATER_HOURS = [8, 10, 12, 14, 16, 18, 20];
 
@@ -435,7 +436,8 @@ export default function Perfil() {
         />
         <Divider />
         <Body style={{ fontWeight: '600' }}>Resumen para tu médico</Body>
-        <Muted>Un PDF con tus ciclos, sangrado, dolor y síntomas, para llevar a la consulta. Tus notas, tu ánimo y tu intimidad no se incluyen.</Muted>
+        <Muted>Un PDF con tus ciclos, sangrado, dolor y síntomas, para llevar a la consulta.</Muted>
+        <AnimoEnPdf />
         <Button kind="soft" label="Crear resumen PDF" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
       </Card>
           </>

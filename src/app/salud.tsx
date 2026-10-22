@@ -13,6 +13,7 @@ import { newId, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Control, ISODate, Quiste } from '../lib/types';
 import { t } from '../lib/region';
+import { AnimoEnPdf } from '../components/AnimoEnPdf';
 
 function DateBadge({ date }: { date: ISODate }) {
   const c = useColors();
@@ -263,6 +264,7 @@ export default function Salud() {
       <Autoexamen />
       <Ovarios />
       <Quistes />
+      <AnimoEnPdf />
       <Button kind="soft" label="Llevar esto a mi consulta (PDF)" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
     </Screen>
   );

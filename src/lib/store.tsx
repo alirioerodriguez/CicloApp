@@ -31,6 +31,7 @@ export const DEFAULT_SETTINGS: Settings = {
   pillPackStart: null,
   condiciones: [],
   ocultarRetrasos: false,
+  pdfAnimo: false,
   reminders: {
     pill: { on: false, hour: 21, minute: 0 },
     water: { on: false, hours: [10, 13, 16, 19] },

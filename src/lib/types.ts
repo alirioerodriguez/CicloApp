@@ -103,6 +103,7 @@ export interface Settings {
   pillPackStart: ISODate | null; // día 1 del blíster actual (o de cualquiera)
   condiciones: Condicion[];
   ocultarRetrasos: boolean; // sin avisos de retraso ni sugerencias de prueba de embarazo
+  pdfAnimo: boolean; // la usuaria eligió incluir sus estados de ánimo en el PDF para la médica
   reminders: {
     pill: ReminderTime;
     water: { on: boolean; hours: number[] };

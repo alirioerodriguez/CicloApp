@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Legend, MonthGrid } from '../../components/MonthGrid';
 import { RecuperacionPosparto } from '../../components/RecuperacionPosparto';
+import { SemanasEmbarazo } from '../../components/SemanasEmbarazo';
 import { Body, Button, Card, Columnas, Label, Muted, Row, Screen } from '../../components/ui';
 import { AVISO_ANTICONCEPTIVO, confianza } from '../../content/textos';
 import { calendarMarks, sinAtrasos, sinOvulacion } from '../../lib/cycle';
@@ -14,6 +15,7 @@ export default function Calendario() {
   const { data } = useStore();
   // En posparto esta pestaña es "Tu recuperación".
   if (data.settings.etapa === 'posparto') return <RecuperacionPosparto />;
+  if (data.settings.etapa === 'embarazo') return <SemanasEmbarazo />;
   return <CalendarioCiclo />;
 }
 

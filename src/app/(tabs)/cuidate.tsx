@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Body, Button, Card, Chip, Columnas, Grilla, Label, Muted, Screen } from '../../components/ui';
+import { CuidateEmbarazo } from '../../components/CuidateEmbarazo';
 import { CuidatePosparto } from '../../components/CuidatePosparto';
 import { EjercicioCard } from '../../components/EjercicioCard';
 import { ALIMENTOS } from '../../content/alimentos';
@@ -15,6 +16,7 @@ import type { Phase } from '../../lib/types';
 export default function Cuidate() {
   const { data } = useStore();
   if (data.settings.etapa === 'posparto') return <CuidatePosparto />;
+  if (data.settings.etapa === 'embarazo') return <CuidateEmbarazo />;
   return <CuidateCiclo />;
 }
 

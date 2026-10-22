@@ -2,6 +2,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
+import { HoyEmbarazo } from '../../components/HoyEmbarazo';
 import { HoyPosparto } from '../../components/HoyPosparto';
 import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
@@ -96,6 +97,7 @@ function missedPillYesterday(data: ReturnType<typeof useStore>['data']): boolean
 export default function Hoy() {
   const { data } = useStore();
   if (data.settings.etapa === 'posparto') return <HoyPosparto />;
+  if (data.settings.etapa === 'embarazo') return <HoyEmbarazo />;
   return <HoyCiclo />;
 }
 

@@ -3,6 +3,7 @@ import { MOODS, symptomById } from '../content/catalogo';
 import { NOMBRE_ETAPA } from '../content/confianza';
 import { ANTICONCEPTIVOS, etapaById } from '../content/etapas';
 import { CICATRIZ_ALERTA, EDIMBURGO, lunes, nivelEdimburgo, semanasPosparto } from '../content/posparto';
+import { EXAMENES, presionAlta, semanasEmbarazo } from '../content/embarazo';
 import { detectAlertas } from './alertas';
 import type { Summary } from './cycle';
 import { addDays, today } from './dates';
@@ -30,7 +31,8 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   const quien = st.edad ? `${nombre} · ${st.edad} años` : nombre;
   const etapa = NOMBRE_ETAPA[st.etapa] ?? etapaById(st.etapa).label;
   const semanas = semanasPosparto(st.posparto);
-  const modo = `${st.etapa === 'posparto' ? `Posparto · semana ${semanas}` : etapa} · últimos ${meses} meses`;
+  const semEmb = semanasEmbarazo(st.embarazo.fpp);
+  const modo = `${st.etapa === 'posparto' ? `Posparto · semana ${semanas}` : st.etapa === 'embarazo' ? `Embarazo · semana ${semEmb}` : etapa} · últimos ${meses} meses`;
 
   // Lo más frecuente: síntomas y ánimo bajo, como % de los días registrados.
   const cuenta = new Map<string, number>();
@@ -52,7 +54,24 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   let kpis: Consulta['kpis'];
   const conversar: string[] = [];
 
-  if (st.etapa === 'posparto') {
+  if (st.etapa === 'embarazo') {
+    const medidas = Object.entries(data.embarazo.medidas).filter(([f]) => f >= desde).sort(([a], [b]) => a.localeCompare(b));
+    const ultima = (k: 'kg' | 'sys' | 'dia') => [...medidas].reverse().find(([, m]) => m[k] != null)?.[1][k] ?? null;
+    const sys = ultima('sys');
+    const dia = ultima('dia');
+    const kg = ultima('kg');
+    kpis = [
+      { valor: String(semEmb), label: 'semanas' },
+      { valor: sys && dia ? `${sys}/${dia}` : '—', label: 'última presión' },
+      { valor: kg ? coma(kg) : '—', label: 'kg (último)' },
+    ];
+    if (medidas.some(([, m]) => presionAlta(m.sys, m.dia))) conversar.push('Hubo registros de presión de 140/90 o más.');
+    const patadas = Object.entries(data.embarazo.patadas).filter(([f]) => f >= desde).sort(([a], [b]) => a.localeCompare(b));
+    const ultimaP = patadas[patadas.length - 1];
+    if (ultimaP) conversar.push(`Patadas: ${ultimaP[1].n} movimientos en ${Math.max(1, Math.round(ultimaP[1].segundos / 60))} minutos (${ultimaP[0]}).`);
+    const pend = EXAMENES.filter((x) => !data.embarazo.hechos.includes(`examen:${x.id}`)).map((x) => x.titulo.toLowerCase());
+    if (pend.length) conversar.push(`Exámenes sin marcar: ${pend.join(', ')}.`);
+  } else if (st.etapa === 'posparto') {
     const semanasEdim = Object.keys(data.edimburgo).filter((k) => k >= desde).sort();
     const ultima = semanasEdim.length ? data.edimburgo[semanasEdim[semanasEdim.length - 1]] : null;
     const completa = ultima && ultima.every((x) => x >= 0);

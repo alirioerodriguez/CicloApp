@@ -41,6 +41,12 @@ export interface RedApoyo {
   compartir: CompartirRed[];
 }
 
+export interface DatosEmbarazo {
+  hechos: string[]; // controles, exámenes, pendientes y bolso marcados como listos
+  patadas: Record<ISODate, { n: number; segundos: number }>;
+  medidas: Record<ISODate, { kg: number | null; sys: number | null; dia: number | null }>;
+}
+
 export interface Posparto {
   nacimiento: ISODate | null; // fecha del parto: de aquí salen las semanas
   parto: 'vaginal' | 'cesarea';
@@ -76,6 +82,7 @@ export interface Settings {
   anticonceptivo: Anticonceptivo;
   ttcRegistro: SenalTtc[]; // qué señales quiere registrar en modo "busco un embarazo"
   posparto: Posparto;
+  embarazo: { fpp: ISODate | null }; // fecha probable de parto: de aquí salen las semanas
   red: RedApoyo;
   silencioEmbarazo: boolean; // tras una pérdida o "prefiero no decir": sin avisos ni sugerencias de embarazo
   cycleLength: number; // valor inicial; luego se aprende de los datos
@@ -146,6 +153,7 @@ export interface AppData {
   quistes: Quiste[];
   // Escala de Edimburgo adaptada (4 preguntas, 0–3), una por semana: clave = lunes de esa semana.
   edimburgo: Record<ISODate, number[]>;
+  embarazo: DatosEmbarazo;
   pruebas: {
     misiones: Record<string, PruebaResultado>;
     sus: number[]; // 10 respuestas 1–5

@@ -5,6 +5,7 @@ import { Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { MonthGrid } from '../../components/MonthGrid';
 import { TonePicker } from '../../components/TonePicker';
 import { EtapaPicker } from '../../components/EtapaPicker';
+import { SEMANA_MAX, SEMANA_MIN, fppDesdeSemanas, semanasEmbarazo } from '../../content/embarazo';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../../content/posparto';
 import { CONDICIONES } from '../../content/condiciones';
 import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../../content/etapas';
@@ -85,6 +86,7 @@ export default function Perfil() {
             // Buscando un embarazo no se usa anticonceptivo.
             else if (etapa === 'ttc') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
             // Sin fecha del parto, se empieza en la semana 0 y se ajusta abajo.
+            else if (etapa === 'embarazo') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false, embarazo: s.embarazo.fpp ? s.embarazo : { fpp: fppDesdeSemanas(12) } });
             else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
             else updateSettings({ etapa });
             setCambio(true);
@@ -122,6 +124,15 @@ export default function Perfil() {
               ))}
             </View>
             <Muted>{SIN_OVULACION.includes(s.anticonceptivo) ? NOTA_HORMONAL : NOTA_ESPECIAL}</Muted>
+          </>
+        )}
+
+        {s.etapa === 'embarazo' && s.embarazo.fpp && (
+          <>
+            <Divider />
+            <Row label="Semanas de embarazo" hint={`Fecha probable de parto: ${longDate(s.embarazo.fpp)}`}>
+              <Stepper value={semanasEmbarazo(s.embarazo.fpp)} onChange={(v) => updateSettings({ embarazo: { fpp: fppDesdeSemanas(v) } })} min={SEMANA_MIN} max={SEMANA_MAX} />
+            </Row>
           </>
         )}
 
@@ -179,7 +190,7 @@ export default function Perfil() {
         <Label>Más para ti</Label>
         <LinkRow emoji="📋" label="Modo consulta médica" hint="Resumen para tu médica y exportar tus datos" to="/consulta" />
         <LinkRow emoji="🤝" label="Tu red de apoyo" hint={s.red.on ? `Compartes con ${s.red.nombre || 'alguien de confianza'}` : 'Comparte lo que elijas con tu pareja'} to="/red" />
-        {s.etapa === 'ttc' && <LinkRow emoji="🌙" label="Un cambio en tu embarazo" hint="Nació tu bebé, una pérdida o prefieres no decir" to="/cambio" />}
+        {(s.etapa === 'ttc' || s.etapa === 'embarazo') && <LinkRow emoji="🌙" label="Un cambio en tu embarazo" hint="Nació tu bebé, una pérdida o prefieres no decir" to="/cambio" />}
         <LinkRow emoji="🩺" label="Salud ginecológica" hint="Controles, autoexamen, ovarios y quistes" to="/salud" />
         <LinkRow emoji="🧘‍♀️" label="Ejercicios y alivio" hint="Movimiento por fase y respiración" to="/ejercicios" />
         <LinkRow emoji="🌙" label="Diario de sueños" hint={`${data.dreams.length} ${data.dreams.length === 1 ? 'sueño' : 'sueños'}`} to="/suenos" />

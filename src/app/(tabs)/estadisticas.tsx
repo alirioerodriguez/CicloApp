@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { ConsultaMedica } from '../../components/ConsultaMedica';
+import { ControlesEmbarazo } from '../../components/ControlesEmbarazo';
 import { Bar, Body, Button, Card, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { detectAlertas } from '../../lib/alertas';
 import { moodById, symptomById } from '../../content/catalogo';
@@ -25,6 +26,7 @@ export default function Estadisticas() {
   const { data } = useStore();
   // En posparto esta pestaña es directamente el modo consulta.
   if (data.settings.etapa === 'posparto') return <ConsultaMedica enPestana />;
+  if (data.settings.etapa === 'embarazo') return <ControlesEmbarazo />;
   return <Resumen />;
 }
 

@@ -106,8 +106,8 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
     }
   }
 
-  // Período próximo (en posparto no se predice).
-  if (r.period.on && settings.etapa !== 'posparto' && summary.nextStart && summary.lateDays === 0) {
+  // Período próximo (en embarazo y posparto no se predice).
+  if (r.period.on && settings.etapa !== 'posparto' && settings.etapa !== 'embarazo' && summary.nextStart && summary.lateDays === 0) {
     const d = addDays(summary.nextStart, -r.period.daysBefore);
     const body = r.period.daysBefore === 1 ? NOTIF.periodoManana : fill(rotate(NOTIF.periodo, dayNum(d)), r.period.daysBefore);
     await once(...msg('Tu ciclo', body), at(d, r.period.hour));

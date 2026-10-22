@@ -28,6 +28,7 @@ export const INTRO_RED =
 
 // Consejo para quien acompaña, según la etapa.
 export const AYUDA_RED: Partial<Record<Etapa, string>> & { general: string } = {
+  embarazo: 'Ofrécete a acompañarla a su próximo control y encárgate de una comida hoy.',
   posparto: 'Encárgate de una toma de noche para que ella duerma 4 horas seguidas.',
   ttc: 'Acompáñala sin presión: pregúntale cómo se siente con la búsqueda.',
   general: 'Pregúntale qué necesita, sin dar por hecho cómo se siente.',
@@ -37,6 +38,16 @@ export const AYUDA_RED: Partial<Record<Etapa, string>> & { general: string } = {
 
 // Por id de ejercicio de la app.
 export const ADAPTADO: Partial<Record<Etapa, Record<string, string>>> = {
+  embarazo: {
+    sentadilla: 'Base más ancha (sumo) para dar espacio a la barriga y baja solo hasta 90°. Si hay dolor pélvico, apóyate en una silla.',
+    zancada: 'Paso corto y apoyada en una pared o silla para no perder el equilibrio.',
+    'gato-vaca': 'Ejercicio estrella: descomprime la espalda del peso del bebé.',
+    'rodillas-pecho': 'Separa las rodillas para dar espacio a la barriga.',
+    plancha: 'Después de la semana 20 cámbiala por plancha en pared o de rodillas, para cuidar la diástasis.',
+    tijera: 'Mejor sin impacto: cambia los saltos por marcha en el sitio.',
+    marcha: 'Buena opción sin impacto durante todo el embarazo.',
+    caminata: 'Camina a ritmo en que puedas conversar y evita el calor.',
+  },
   posparto: {
     sentadilla: 'Desde la semana 6, con permiso médico. Exhala y activa el suelo pélvico al subir.',
     zancada: 'Desde la semana 6, con permiso médico. Paso corto y sin rebotes.',
@@ -69,6 +80,7 @@ export const ADAPTADO_ESPECIAL: Partial<Record<Condicion, Record<string, string>
 };
 
 export const NOMBRE_ETAPA: Partial<Record<Etapa, string>> = {
+  embarazo: 'Embarazo',
   posparto: 'Posparto',
   ttc: 'Busco un embarazo',
   especial: 'Ciclo especial',

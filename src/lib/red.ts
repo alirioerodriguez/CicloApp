@@ -1,6 +1,7 @@
 // Tarjeta del día para la red de apoyo: solo lo que ella eligió compartir, nunca síntomas ni notas.
 import { AYUDA_RED } from '../content/confianza';
 import { CUIDATE } from '../content/cuidate';
+import { semanasEmbarazo } from '../content/embarazo';
 import { etapaPosparto, semanasPosparto } from '../content/posparto';
 import type { Summary } from './cycle';
 import { longDate, today } from './dates';
@@ -20,6 +21,8 @@ function energia(data: AppData, s: Summary): string {
   }
   if (log?.moods.includes('con_energia')) return 'alta';
   if (log?.symptoms.includes('cansancio')) return 'baja';
+  // En embarazo no hay fases: solo lo que ella registró.
+  if (data.settings.etapa === 'embarazo') return log ? 'media' : 'sin dato';
   return { menstrual: 'baja', folicular: 'alta', ovulatoria: 'alta', lutea: 'media', pastilla: 'media' }[s.phase ?? 'lutea'];
 }
 
@@ -30,7 +33,9 @@ export function tarjetaRed(data: AppData, s: Summary): TarjetaRed {
   const partes: string[] = [];
 
   if (quiere.includes('fase')) {
-    if (st.etapa === 'posparto') {
+    if (st.etapa === 'embarazo') {
+      partes.push(`${nombre} está en la semana ${semanasEmbarazo(st.embarazo.fpp)} de su embarazo.`);
+    } else if (st.etapa === 'posparto') {
       const sem = semanasPosparto(st.posparto);
       partes.push(`${nombre} está en la semana ${sem} de su posparto (${etapaPosparto(sem).nombre.toLowerCase()}).`);
       // Con pastilla no hay fases propias, y el método anticonceptivo no se comparte.
@@ -42,10 +47,11 @@ export function tarjetaRed(data: AppData, s: Summary): TarjetaRed {
     const e = energia(data, s);
     if (e !== 'sin dato') partes.push(`${partes.length ? 'Su' : `La`} energía hoy es ${e}.`);
   }
-  if (quiere.includes('periodo') && st.etapa !== 'posparto' && s.nextStart && !s.inPeriod) {
+  const sinPeriodo = st.etapa === 'posparto' || st.etapa === 'embarazo';
+  if (quiere.includes('periodo') && !sinPeriodo && s.nextStart && !s.inPeriod) {
     partes.push(s.ventana ? `Su período podría llegar entre el ${longDate(s.ventana[0])} y el ${longDate(s.ventana[1])}.` : `Su período se espera cerca del ${longDate(s.nextStart)}.`);
   }
-  if (quiere.includes('periodo') && s.inPeriod) partes.push('Está con su período.');
+  if (quiere.includes('periodo') && !sinPeriodo && s.inPeriod) partes.push('Está con su período.');
 
   return {
     mensaje: partes.join(' ') || `${nombre} eligió no compartir detalles hoy.`,

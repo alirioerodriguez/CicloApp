@@ -19,6 +19,7 @@ export const DEFAULT_SETTINGS: Settings = {
   anticonceptivo: 'ninguno',
   ttcRegistro: ['moco', 'lh', 'relacion'],
   posparto: { nacimiento: null, parto: 'vaginal', alimentacion: 'pecho' },
+  embarazo: { fpp: null },
   red: { on: false, nombre: '', compartir: ['fase', 'energia', 'ayuda'] },
   silencioEmbarazo: false,
   cycleLength: 28,
@@ -56,6 +57,7 @@ export const emptyData = (): AppData => ({
   autoexamenes: [],
   quistes: [],
   edimburgo: {},
+  embarazo: { hechos: [], patadas: {}, medidas: {} },
   pruebas: { misiones: {}, sus: [], ideas: [] },
 });
 
@@ -94,6 +96,7 @@ export function normalize(raw: unknown): AppData {
     anticonceptivo: s.anticonceptivo ?? (s.pillMode ? 'pastilla' : 'ninguno'),
     posparto: { ...DEFAULT_SETTINGS.posparto, ...s.posparto },
     red: { ...DEFAULT_SETTINGS.red, ...s.red },
+    embarazo: { ...DEFAULT_SETTINGS.embarazo, ...s.embarazo },
     reminders: {
       pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
       water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },
@@ -120,6 +123,7 @@ export function normalize(raw: unknown): AppData {
     autoexamenes: Array.isArray(r.autoexamenes) ? r.autoexamenes : base.autoexamenes,
     quistes: Array.isArray(r.quistes) ? r.quistes : base.quistes,
     edimburgo: r.edimburgo && typeof r.edimburgo === 'object' ? r.edimburgo : base.edimburgo,
+    embarazo: { ...base.embarazo, ...r.embarazo },
     pruebas: { ...base.pruebas, ...r.pruebas },
   };
 }

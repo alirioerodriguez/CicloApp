@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, View } from 'react-native';
 import { Text } from './Texto';
 import type { DayMarks } from '../lib/cycle';
-import { MONTHS, WEEKDAYS_SHORT, toISO, today } from '../lib/dates';
+import { inicialesSemana, meses, toISO, today } from '../lib/dates';
 import { fonts, serif, useColors } from '../lib/theme';
 import type { ISODate } from '../lib/types';
 import { tap } from './ui';
@@ -60,7 +60,7 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
           }}
         >
           <Text style={{ fontFamily: serif, fontSize: 21, color: c.text, textTransform: 'capitalize' }}>
-            {MONTHS[ym.m]} {ym.y}
+            {meses()[ym.m]} {ym.y}
           </Text>
           {!isCurrent && <Text style={{ fontSize: 11, color: c.rosa, textAlign: 'center', fontFamily: fonts.bold }}>volver a hoy</Text>}
         </Pressable>
@@ -68,7 +68,7 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
       </View>
 
       <View style={{ flexDirection: 'row' }}>
-        {WEEKDAYS_SHORT.map((w, i) => (
+        {inicialesSemana().map((w, i) => (
           <Text key={i} style={{ flex: 1, textAlign: 'center', fontSize: 12, fontFamily: fonts.bold, color: c.muted }}>
             {w}
           </Text>

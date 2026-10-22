@@ -15,6 +15,7 @@ import { Logo } from './Logo';
 import { Body, Card, Columnas, Label, Muted, Screen, tap } from './ui';
 import { Icono } from './Icono';
 import { QuizEntrada } from './QuizEntrada';
+import { t as traducir } from '../lib/region';
 
 const HERRAMIENTAS: { emoji: string; titulo: string; sub: string; to: Href }[] = [
   { emoji: '👣', titulo: 'Patadas', sub: 'Cuenta sus movimientos', to: '/patadas' },
@@ -48,7 +49,7 @@ export function HoyEmbarazo() {
   // Con los avisos del embarazo en pausa no se muestran tamaños ni semanas.
   if (data.settings.silencioEmbarazo) {
     return (
-      <Screen angosta subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`}>
+      <Screen angosta subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`}>
         <Card tint={c.lavandaSuave}>
           <Label>Avisos del embarazo en pausa</Label>
           <Body>Cuando quieras volver a verlos, actívalos en Perfil. Mientras tanto, aquí puedes registrar tu día.</Body>
@@ -80,7 +81,7 @@ export function HoyEmbarazo() {
   );
 
   return (
-    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
+    <Screen subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
       <Body style={{ marginTop: -6 }}>¿Cómo amaneces tú y tu bebé?</Body>
 
       <Columnas

@@ -53,11 +53,15 @@ export const region = () => actual;
 // Las frases con datos variables usan patrones: "Día {0} de tu ciclo".
 
 type Patron = { re: RegExp; plantilla: string };
+// Los patrones con más texto fijo van primero: "La app usa {0} días…" gana sobre "{0} de {1}".
+const fijo = (es: string) => es.replace(/\{\d+\}/g, '').length;
 const compilar = (p: Record<string, string>): Patron[] =>
-  Object.entries(p).map(([es, otro]) => ({
-    re: new RegExp('^' + es.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\d+)\}/g, '(.+?)') + '$', 's'),
-    plantilla: otro,
-  }));
+  Object.entries(p)
+    .sort(([a], [b]) => fijo(b) - fijo(a))
+    .map(([es, otro]) => ({
+      re: new RegExp('^' + es.replace(/[.*+?^$()|[\]\\]/g, '\\$&').replace(/\{(\d+)\}/g, '(.+?)') + '$', 's'),
+      plantilla: otro,
+    }));
 
 const tablas = {
   en: { dic: EN, patrones: compilar(EN_PATRONES), cache: new Map<string, string>() },
@@ -72,7 +76,10 @@ function traducirCon(tabla: (typeof tablas)['en'], s: string): string {
   // Espacios del borde (frases partidas en JSX) se conservan.
   const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s)!;
   let out = s;
+  const mayus = m[2].charAt(0).toUpperCase() + m[2].slice(1);
   if (m[2] && m[2] !== s && tabla.dic[m[2]] != null) out = m[1] + tabla.dic[m[2]] + m[3];
+  // "estimación en ajuste" en minúscula dentro de otra frase: se busca con mayúscula inicial.
+  else if (mayus !== m[2] && tabla.dic[mayus] != null) out = m[1] + tabla.dic[mayus].charAt(0).toLowerCase() + tabla.dic[mayus].slice(1) + m[3];
   else {
     for (const p of tabla.patrones) {
       const r = p.re.exec(m[2]);

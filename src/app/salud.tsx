@@ -7,7 +7,7 @@ import { MonthGrid } from '../components/MonthGrid';
 import { Body, Button, Card, Chip, Divider, Label, Muted, Row, Screen, Stepper, confirm, notify } from '../components/ui';
 import { AUTOEXAMEN, TIPOS_CONTROL, TIPOS_QUISTE, URGENTE_QUISTE } from '../content/salud';
 import { shareReport } from '../lib/backup';
-import { MONTHS, addDays, fromISO, inDays, shortDate, today } from '../lib/dates';
+import { meses, addDays, fromISO, inDays, shortDate, today } from '../lib/dates';
 import { addMonths, diasHasta, ovarioHistorial, proximoAutoexamen } from '../lib/salud';
 import { newId, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
@@ -21,7 +21,7 @@ function DateBadge({ date }: { date: ISODate }) {
   return (
     <View style={{ width: 52, paddingVertical: 6, borderRadius: radius.md, backgroundColor: c.rosaSuave, alignItems: 'center' }}>
       <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>{d.getDate()}</Text>
-      <Text style={{ fontFamily: fonts.bold, fontSize: 10.5, color: c.text, textTransform: 'uppercase' }}>{MONTHS[d.getMonth()].slice(0, 3)}</Text>
+      <Text style={{ fontFamily: fonts.bold, fontSize: 10.5, color: c.text, textTransform: 'uppercase' }}>{meses()[d.getMonth()].slice(0, 3)}</Text>
       {otherYear && <Text style={{ fontFamily: fonts.regular, fontSize: 10, color: c.muted }}>{d.getFullYear()}</Text>}
     </View>
   );

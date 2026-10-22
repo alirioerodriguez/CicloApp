@@ -19,6 +19,7 @@ import { addDays, diffDays, inDays, longDate, shortDate, today } from '../../lib
 import { useStore } from '../../lib/store';
 import { fonts, serif, useColors } from '../../lib/theme';
 import { QuizEntrada } from '../../components/QuizEntrada';
+import { t as traducir } from '../../lib/region';
 
 function Status() {
   const c = useColors();
@@ -124,7 +125,7 @@ function HoyCiclo() {
   }, [data, s]);
 
   return (
-    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
+    <Screen subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
       <Body style={{ marginTop: -6 }}>{hello.texto}</Body>
 
       <Columnas

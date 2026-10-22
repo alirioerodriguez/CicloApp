@@ -3,14 +3,20 @@
 // Los patrones usan {0}, {1}… para las partes que cambian.
 
 export const NEUTRO: Record<string, string> = {
+  "Cambur": "Plátano (banana)",
+  "Pimentón": "Pimiento",
+  "Auyama": "Calabaza",
+  "Auyama pequeña": "Calabaza pequeña",
+  "Lechosa": "Papaya",
+  "Mazorca": "Mazorca de maíz",
+  "Patilla": "Sandía",
+  "Patilla pequeña": "Sandía pequeña",
+  "Toronja": "Toronja (pomelo)",
   "Un empujoncito suave cada noche": "Un recordatorio suave cada noche",
   "Bolso del hospital": "Maleta del hospital",
   "Ají dulce": "Pimiento dulce",
-  "Auyama": "Calabaza",
-  "Cambur": "Plátano (banana)",
   "Chipichipi y pepitonas": "Almejas y mejillones",
   "Da energía y aporta potasio y fibra; mejor sancochado o al horno que frito.": "Da energía y aporta potasio y fibra; mejor hervido o al horno que frito.",
-  "Lechosa": "Papaya",
   "Lentejas y caraotas": "Lentejas y frijoles",
   "Ocumo": "Malanga",
   "Para aprovechar el hierro, acompaña la comida con vitamina C (guayaba, naranja, limón, lechosa). Si tomas café o té, déjalo para un rato antes o después.": "Para aprovechar el hierro, acompaña la comida con vitamina C (guayaba, naranja, limón, papaya). Si tomas café o té, déjalo para un rato antes o después.",

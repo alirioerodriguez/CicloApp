@@ -56,7 +56,7 @@ export default function TabsLayout() {
       <Tabs.Screen name="calendario" options={posparto ? { title: 'Recuperación', tabBarIcon: icon('🌷') } : { title: 'Calendario', tabBarIcon: icon('📅') }} />
       <Tabs.Screen name="index" options={{ title: 'Hoy', tabBarIcon: icon('🌸') }} />
       <Tabs.Screen name="cuidate" options={{ title: 'Cuídate', tabBarIcon: icon('🌿') }} />
-      <Tabs.Screen name="estadisticas" options={{ title: 'Resumen', tabBarIcon: icon('📊') }} />
+      <Tabs.Screen name="estadisticas" options={posparto ? { title: 'Consulta', tabBarIcon: icon('🩺') } : { title: 'Resumen', tabBarIcon: icon('📊') }} />
       <Tabs.Screen name="perfil" options={{ title: 'Perfil', tabBarIcon: icon('👤') }} />
     </Tabs>
   );

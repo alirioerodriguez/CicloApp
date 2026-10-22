@@ -91,6 +91,14 @@ export default function Perfil() {
           }}
         />
         {cambio && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ {CAMBIO_ETAPA}</Body>}
+        {s.silencioEmbarazo && (
+          <Toggle
+            label="🔕 Avisos del embarazo en pausa"
+            hint="Sin sugerencias de prueba ni avisos de atraso. Apágalo cuando quieras volver a verlos."
+            value={s.silencioEmbarazo}
+            onChange={(silencioEmbarazo) => updateSettings({ silencioEmbarazo })}
+          />
+        )}
 
         {s.etapa === 'especial' && (
           <>
@@ -169,6 +177,9 @@ export default function Perfil() {
 
       <Card style={{ gap: 4 }}>
         <Label>Más para ti</Label>
+        <LinkRow emoji="📋" label="Modo consulta médica" hint="Resumen para tu médica y exportar tus datos" to="/consulta" />
+        <LinkRow emoji="🤝" label="Tu red de apoyo" hint={s.red.on ? `Compartes con ${s.red.nombre || 'alguien de confianza'}` : 'Comparte lo que elijas con tu pareja'} to="/red" />
+        {s.etapa === 'ttc' && <LinkRow emoji="🌙" label="Un cambio en tu embarazo" hint="Nació tu bebé, una pérdida o prefieres no decir" to="/cambio" />}
         <LinkRow emoji="🩺" label="Salud ginecológica" hint="Controles, autoexamen, ovarios y quistes" to="/salud" />
         <LinkRow emoji="🧘‍♀️" label="Ejercicios y alivio" hint="Movimiento por fase y respiración" to="/ejercicios" />
         <LinkRow emoji="🌙" label="Diario de sueños" hint={`${data.dreams.length} ${data.dreams.length === 1 ? 'sueño' : 'sueños'}`} to="/suenos" />

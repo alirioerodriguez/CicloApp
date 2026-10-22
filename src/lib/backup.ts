@@ -21,20 +21,53 @@ function downloadOnWeb(name: string, text: string, type: string) {
   URL.revokeObjectURL(a.href);
 }
 
-export async function exportBackup(data: AppData): Promise<void> {
-  const name = `ciclo-respaldo-${today()}.json`;
-  const json = JSON.stringify(data, null, 2);
-  if (Platform.OS === 'web') return downloadOnWeb(name, json, 'application/json');
-
+// En la web se descarga; en el teléfono se abre el menú para compartir o guardar.
+async function exportFile(name: string, text: string, mimeType: string, UTI: string, dialogTitle: string): Promise<void> {
+  if (Platform.OS === 'web') return downloadOnWeb(name, text, mimeType);
   const file = new File(Paths.cache, name);
   if (file.exists) file.delete();
   file.create();
-  file.write(json);
-  await Sharing.shareAsync(file.uri, {
-    mimeType: 'application/json',
-    dialogTitle: 'Guarda tu respaldo (Drive, WhatsApp, correo…)',
-    UTI: 'public.json',
-  });
+  file.write(text);
+  await Sharing.shareAsync(file.uri, { mimeType, dialogTitle, UTI });
+}
+
+export async function exportBackup(data: AppData): Promise<void> {
+  await exportFile(`savia-respaldo-${today()}.json`, JSON.stringify(data, null, 2), 'application/json', 'public.json', 'Guarda tu respaldo (Drive, WhatsApp, correo…)');
+}
+
+// Historial día por día en CSV, para abrirlo en Excel o Google Sheets.
+export async function exportCsv(data: AppData): Promise<void> {
+  const cols = ['fecha', 'flujo', 'dolor', 'animo', 'sintomas', 'agua', 'sueno', 'pastilla', 'moco', 'temperatura', 'lh', 'loquios', 'tomas', 'cicatriz', 'nota'];
+  const cell = (v: string | number | null | undefined) => {
+    const t = v == null ? '' : String(v);
+    return /[",\n;]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
+  };
+  const rows = Object.values(data.logs)
+    .sort((a, b) => a.date.localeCompare(b.date))
+    .map((l) =>
+      [
+        l.date,
+        l.flow,
+        l.pain,
+        l.moods.map((m) => moodById(m).label).join(' | '),
+        l.symptoms.map((x) => symptomById(x).label).join(' | '),
+        l.water,
+        l.sleep,
+        l.pillTaken ? 'sí' : '',
+        l.moco,
+        l.temp,
+        l.lh,
+        l.loquios,
+        l.tomas.length || '',
+        l.cicatriz,
+        l.note,
+      ]
+        .map(cell)
+        .join(','),
+    );
+  // El BOM hace que Excel lea bien los acentos.
+  const csv = '﻿' + [cols.join(','), ...rows].join('\n');
+  await exportFile(`savia-historial-${today()}.csv`, csv, 'text/csv', 'public.comma-separated-values-text', 'Guarda tu historial');
 }
 
 // Devuelve null si se canceló; lanza error si el archivo no sirve.

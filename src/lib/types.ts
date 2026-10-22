@@ -33,6 +33,14 @@ export interface Toma {
   hora: string; // 'HH:MM'
 }
 
+// Red de apoyo: qué se comparte con la pareja o alguien de confianza (nunca síntomas ni notas).
+export type CompartirRed = 'fase' | 'energia' | 'periodo' | 'ayuda';
+export interface RedApoyo {
+  on: boolean;
+  nombre: string;
+  compartir: CompartirRed[];
+}
+
 export interface Posparto {
   nacimiento: ISODate | null; // fecha del parto: de aquí salen las semanas
   parto: 'vaginal' | 'cesarea';
@@ -68,6 +76,8 @@ export interface Settings {
   anticonceptivo: Anticonceptivo;
   ttcRegistro: SenalTtc[]; // qué señales quiere registrar en modo "busco un embarazo"
   posparto: Posparto;
+  red: RedApoyo;
+  silencioEmbarazo: boolean; // tras una pérdida o "prefiero no decir": sin avisos ni sugerencias de embarazo
   cycleLength: number; // valor inicial; luego se aprende de los datos
   periodLength: number;
   pillMode: boolean;

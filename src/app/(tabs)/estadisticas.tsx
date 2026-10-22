@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
+import { ConsultaMedica } from '../../components/ConsultaMedica';
 import { Bar, Body, Button, Card, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { detectAlertas } from '../../lib/alertas';
 import { moodById, symptomById } from '../../content/catalogo';
@@ -21,6 +22,13 @@ function Tile({ value, label, tint }: { value: string; label: string; tint: stri
 }
 
 export default function Estadisticas() {
+  const { data } = useStore();
+  // En posparto esta pestaña es directamente el modo consulta.
+  if (data.settings.etapa === 'posparto') return <ConsultaMedica enPestana />;
+  return <Resumen />;
+}
+
+function Resumen() {
   const c = useColors();
   const { data, summary: s } = useStore();
   const logs = useMemo(() => Object.values(data.logs), [data.logs]);
@@ -40,6 +48,7 @@ export default function Estadisticas() {
   if (logs.length < 3) {
     return (
       <Screen title="Resumen">
+        <Button kind="soft" label="🩺 Modo consulta médica" onPress={() => router.push('/consulta')} />
         <Card tint={c.lavandaSuave} style={{ alignItems: 'center', paddingVertical: 30 }}>
           <Text style={{ fontSize: 44 }}>🌱</Text>
           <Label style={{ textAlign: 'center' }}>{VACIOS.estadisticas.titulo}</Label>
@@ -52,6 +61,7 @@ export default function Estadisticas() {
 
   return (
     <Screen title="Resumen">
+      <Button kind="soft" label="🩺 Modo consulta médica" onPress={() => router.push('/consulta')} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         <Tile value={`${s.avgCycle} d`} label="Ciclo promedio" tint={c.rosaSuave} />
         <Tile value={`${s.avgPeriod} d`} label="Período promedio" tint={c.lavandaSuave} />

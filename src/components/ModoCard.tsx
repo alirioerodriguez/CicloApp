@@ -1,5 +1,6 @@
 // Tarjeta del modo en Hoy: ciclo especial (8b) o busco un embarazo (8c).
-import { Text, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable, Text, View } from 'react-native';
 import { CONDICIONES_ESPECIAL } from '../content/etapas';
 import { addDays, diffDays, shortDate, today } from '../lib/dates';
 import { useStore } from '../lib/store';
@@ -9,7 +10,8 @@ import { Body, Card, Chip, Muted } from './ui';
 export function ModoCard() {
   const { data } = useStore();
   if (data.settings.etapa === 'especial') return <Especial />;
-  if (data.settings.etapa === 'ttc') return <BuscoEmbarazo />;
+  // Con los avisos del embarazo en pausa, no se muestra la ventana fértil.
+  if (data.settings.etapa === 'ttc' && !data.settings.silencioEmbarazo) return <BuscoEmbarazo />;
   return null;
 }
 
@@ -91,6 +93,9 @@ function BuscoEmbarazo() {
         <Muted key={p}>{p}</Muted>
       ))}
       <Muted>Es una estimación. Nunca te avisaremos de un embarazo por un simple atraso.</Muted>
+      <Pressable accessibilityRole="button" onPress={() => router.push('/cambio')} hitSlop={8}>
+        <Text style={{ fontFamily: fonts.semibold, fontSize: 13.5, color: c.rosa }}>¿Hubo un cambio? Cuéntanos →</Text>
+      </Pressable>
     </Card>
   );
 }

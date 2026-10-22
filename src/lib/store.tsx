@@ -19,6 +19,8 @@ export const DEFAULT_SETTINGS: Settings = {
   anticonceptivo: 'ninguno',
   ttcRegistro: ['moco', 'lh', 'relacion'],
   posparto: { nacimiento: null, parto: 'vaginal', alimentacion: 'pecho' },
+  red: { on: false, nombre: '', compartir: ['fase', 'energia', 'ayuda'] },
+  silencioEmbarazo: false,
   cycleLength: 28,
   periodLength: 5,
   pillMode: false,
@@ -91,6 +93,7 @@ export function normalize(raw: unknown): AppData {
     // Antes de los modos, la pastilla se guardaba solo como pillMode.
     anticonceptivo: s.anticonceptivo ?? (s.pillMode ? 'pastilla' : 'ninguno'),
     posparto: { ...DEFAULT_SETTINGS.posparto, ...s.posparto },
+    red: { ...DEFAULT_SETTINGS.red, ...s.red },
     reminders: {
       pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
       water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },

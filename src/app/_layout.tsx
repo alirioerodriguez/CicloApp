@@ -81,6 +81,10 @@ function Gate() {
       <Stack.Screen name="ejercicio/[id]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="respirar" options={{ presentation: 'modal' }} />
       <Stack.Screen name="pruebas" />
+      <Stack.Screen name="consulta" />
+      <Stack.Screen name="cambio" />
+      <Stack.Screen name="perdida" options={{ gestureEnabled: false }} />
+      <Stack.Screen name="red" />
     </Stack>
     <MisionBanner />
     </View>

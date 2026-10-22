@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Figura } from '../../components/Figura';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../../components/ui';
+import { ADAPTADO, ADAPTADO_ESPECIAL, NOMBRE_ETAPA } from '../../content/confianza';
 import { AVISO_EJERCICIO, ejercicioById } from '../../content/ejercicios';
+import { useStore } from '../../lib/store';
 import { fonts, radius, serif, useColors } from '../../lib/theme';
 
 const DESCANSO = 20; // segundos entre series
@@ -15,6 +17,13 @@ export default function EjercicioScreen() {
   const c = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const ej = ejercicioById(id ?? '');
+  const { data } = useStore();
+  const etapa = data.settings.etapa;
+  const adaptado = !ej
+    ? null
+    : etapa === 'especial'
+      ? data.settings.condiciones.map((k) => ADAPTADO_ESPECIAL[k]?.[ej.id]).find(Boolean) ?? null
+      : ADAPTADO[etapa]?.[ej.id] ?? null;
   const [estado, setEstado] = useState<Estado>('listo');
   const [serie, setSerie] = useState(1);
   const [rep, setRep] = useState(0);
@@ -154,6 +163,12 @@ export default function EjercicioScreen() {
         ))}
         {ej.ojo ? <Muted>👀 {ej.ojo}</Muted> : null}
       </Card>
+      {adaptado && (
+        <Card tint={c.lavandaSuave}>
+          <Label>Adaptado a ti · {NOMBRE_ETAPA[etapa]}</Label>
+          <Body>{adaptado}</Body>
+        </Card>
+      )}
       <Card tint={c.salviaSuave}>
         <Label>Por qué ayuda</Label>
         <Body>{ej.porque}</Body>

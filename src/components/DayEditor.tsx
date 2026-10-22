@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { FLOW_LABELS, MOODS, SYMPTOMS } from '../content/catalogo';
 import { CUIDATE } from '../content/cuidate';
+import { MOCOS } from '../content/etapas';
 import { URGENTE } from '../content/info';
 import { pillStatus, summarize } from '../lib/cycle';
 import { nowTime } from '../lib/dates';
@@ -47,6 +48,7 @@ export function DayEditor({ date }: { date: ISODate }) {
     return [...SYMPTOMS].sort((a, b) => Number(common.includes(b.id)) - Number(common.includes(a.id)));
   }, [phase]);
   const showPill = data.settings.pillMode && (!pill || pill.takesToday);
+  const ttc = data.settings.etapa === 'ttc' ? data.settings.ttcRegistro : [];
 
   const painColor = (n: number) => (n <= 3 ? c.salvia : n <= 6 ? c.durazno : c.rosa);
 
@@ -132,6 +134,40 @@ export function DayEditor({ date }: { date: ISODate }) {
           ))}
         </View>
       </Card>
+
+      {ttc.length > 0 && (ttc.includes('moco') || ttc.includes('temp') || ttc.includes('lh')) && (
+        <Card tint={c.salviaSuave}>
+          <Label>🌱 Señales de fertilidad</Label>
+          {ttc.includes('moco') && (
+            <>
+              <Muted>Moco cervical</Muted>
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                {MOCOS.map((m) => (
+                  <Chip key={m.id} label={m.label} color={c.salvia} selected={log.moco === m.id} onPress={() => set({ moco: log.moco === m.id ? null : m.id })} />
+                ))}
+              </View>
+              {log.moco ? <Muted>{MOCOS.find((m) => m.id === log.moco)?.hint}</Muted> : null}
+            </>
+          )}
+          {ttc.includes('temp') && (
+            <Row label="Temperatura basal" hint="Al despertar, antes de levantarte">
+              {log.temp == null ? (
+                <Chip label="Anotar" onPress={() => set({ temp: 36.5 })} />
+              ) : (
+                <Stepper value={Math.round(log.temp * 10)} onChange={(v) => set({ temp: v / 10 })} min={340} max={390} format={(v) => `${(v / 10).toFixed(1).replace('.', ',')} °C`} />
+              )}
+            </Row>
+          )}
+          {ttc.includes('lh') && (
+            <Row label="Test de ovulación (LH)">
+              <View style={{ flexDirection: 'row', gap: 6 }}>
+                <Chip label="Negativo" color={c.salvia} selected={log.lh === 'neg'} onPress={() => set({ lh: log.lh === 'neg' ? null : 'neg' })} />
+                <Chip label="Positivo" color={c.salvia} selected={log.lh === 'pos'} onPress={() => set({ lh: log.lh === 'pos' ? null : 'pos' })} />
+              </View>
+            </Row>
+          )}
+        </Card>
+      )}
 
       <Card>
         <Label>¿Cómo te sientes?</Label>

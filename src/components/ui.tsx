@@ -72,7 +72,8 @@ export function Screen({ children, title, subtitle, right, angosta }: { children
 // Dos columnas en tablet y escritorio; en el teléfono se apilan (primero la izquierda).
 export function Columnas({ izquierda, derecha, desde = 'tablet' }: { izquierda: ReactNode; derecha: ReactNode; desde?: 'tablet' | 'escritorio' }) {
   const L = useLayout();
-  const dos = desde === 'tablet' ? L.ancho : L.tamano === 'escritorio';
+  // `desde="escritorio"` es para columnas con contenido denso (como el registro del día): piden más ancho.
+  const dos = desde === 'tablet' ? L.dosColumnas : L.contenido >= 800;
   if (!dos) {
     return (
       <>
@@ -92,7 +93,7 @@ export function Columnas({ izquierda, derecha, desde = 'tablet' }: { izquierda: 
 // Grilla de tarjetas: 1 columna en el teléfono, 2 en tablet y hasta `max` en escritorio.
 export function Grilla({ children, max = 3 }: { children: ReactNode; max?: number }) {
   const L = useLayout();
-  const cols = L.tamano === 'escritorio' ? max : L.tamano === 'tablet' ? Math.min(2, max) : 1;
+  const cols = L.tresColumnas ? max : L.dosColumnas ? Math.min(2, max) : 1;
   if (cols === 1) return <>{children}</>;
   const items = Children.toArray(children);
   return (

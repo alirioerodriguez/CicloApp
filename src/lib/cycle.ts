@@ -1,5 +1,6 @@
 // Lógica pura del ciclo: sin React, sin almacenamiento. Fácil de probar.
 import { CONDICIONES_RANGO } from '../content/condiciones';
+import { SIN_OVULACION } from '../content/etapas';
 import { addDays, diffDays, today as todayISO } from './dates';
 import type { AppData, DayLog, ISODate, Phase, PillType, Settings } from './types';
 
@@ -17,12 +18,24 @@ export interface CycleRecord {
 
 const MIN_CYCLE = 18;
 const MAX_CYCLE = 50;
+const MAX_CYCLE_ESPECIAL = 90; // ciclo especial: se aceptan ciclos de 35 a 90 días o más
 const HISTORY = 6; // ciclos que se usan para promediar
 
-// Días con flujo > 0, agrupados en períodos. Se tolera un día sin flujo en medio.
-export function getPeriods(logs: Record<ISODate, DayLog>): Period[] {
+// Sin ovulación propia (pastilla, implante o anillo): no hay días fértiles.
+export function sinOvulacion(s: Settings): boolean {
+  return s.pillMode || SIN_OVULACION.includes(s.anticonceptivo);
+}
+
+// En ciclo especial no se avisa de atrasos.
+export function sinAtrasos(s: Settings): boolean {
+  return s.ocultarRetrasos || s.etapa === 'especial';
+}
+
+// Días con flujo, agrupados en períodos. Se tolera un día sin flujo en medio.
+// En ciclo especial el manchado (flow 1) no cuenta como período.
+export function getPeriods(logs: Record<ISODate, DayLog>, minFlow = 1): Period[] {
   const days = Object.values(logs)
-    .filter((l) => l.flow > 0)
+    .filter((l) => l.flow >= minFlow)
     .map((l) => l.date)
     .sort();
   const periods: Period[] = [];
@@ -38,11 +51,11 @@ export function getPeriods(logs: Record<ISODate, DayLog>): Period[] {
   return periods;
 }
 
-export function getCycles(periods: Period[]): CycleRecord[] {
+export function getCycles(periods: Period[], maxCycle = MAX_CYCLE): CycleRecord[] {
   const out: CycleRecord[] = [];
   for (let i = 0; i < periods.length - 1; i++) {
     const length = diffDays(periods[i + 1].start, periods[i].start);
-    if (length >= MIN_CYCLE && length <= MAX_CYCLE) {
+    if (length >= MIN_CYCLE && length <= maxCycle) {
       out.push({ start: periods[i].start, length, periodLength: periods[i].length });
     }
   }
@@ -50,6 +63,11 @@ export function getCycles(periods: Period[]): CycleRecord[] {
 }
 
 const mean = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+const median = (xs: number[]) => {
+  const o = [...xs].sort((a, b) => a - b);
+  const m = Math.floor(o.length / 2);
+  return o.length % 2 ? o[m] : (o[m - 1] + o[m]) / 2;
+};
 
 export interface Summary {
   periods: Period[];
@@ -74,12 +92,14 @@ export interface Summary {
 
 export function summarize(data: AppData, ref: ISODate = todayISO()): Summary {
   const { settings, logs } = data;
-  const periods = getPeriods(logs);
-  const cycles = getCycles(periods);
+  const especial = settings.etapa === 'especial';
+  const periods = getPeriods(logs, especial ? 2 : 1);
+  const cycles = getCycles(periods, especial ? MAX_CYCLE_ESPECIAL : MAX_CYCLE);
   const recent = cycles.slice(-HISTORY);
 
+  // En ciclo especial se usa la mediana: un ciclo muy largo no arrastra la predicción.
   let avgCycle = settings.cycleLength;
-  if (recent.length >= 2) avgCycle = Math.round(mean(recent.map((c) => c.length)));
+  if (recent.length >= 2) avgCycle = Math.round((especial ? median : mean)(recent.map((c) => c.length)));
   else if (recent.length === 1) avgCycle = Math.round((recent[0].length + settings.cycleLength) / 2);
 
   // Solo períodos ya terminados para el promedio de duración.
@@ -108,7 +128,7 @@ export function summarize(data: AppData, ref: ISODate = todayISO()): Summary {
   const lateDays = daysToNext < 0 ? -daysToNext : 0;
 
   // Con ciclos irregulares (declarados o con mucha variación) se muestra un rango en vez de una fecha.
-  const irregular = settings.condiciones.some((x) => CONDICIONES_RANGO.includes(x)) || (cycleRange != null && cycleRange[1] - cycleRange[0] > 8);
+  const irregular = especial || settings.condiciones.some((x) => CONDICIONES_RANGO.includes(x)) || (cycleRange != null && cycleRange[1] - cycleRange[0] > 8);
   const ventana: [ISODate, ISODate] | null = irregular
     ? cycleRange
       ? [addDays(lastStart, cycleRange[0]), addDays(lastStart, cycleRange[1])]
@@ -126,12 +146,13 @@ export function summarize(data: AppData, ref: ISODate = todayISO()): Summary {
   else if (cycleDay <= ovDay + 1) phase = 'ovulatoria';
   else phase = 'lutea';
 
+  const fertil = !sinOvulacion(settings);
   return {
     ...base,
     cycleDay, nextStart, daysToNext, lateDays, ventana, inPeriod, phase,
-    ovulation: settings.pillMode ? null : ovulation,
-    fertileStart: settings.pillMode ? null : addDays(ovulation, -5),
-    fertileEnd: settings.pillMode ? null : addDays(ovulation, 1),
+    ovulation: fertil ? ovulation : null,
+    fertileStart: fertil ? addDays(ovulation, -5) : null,
+    fertileEnd: fertil ? addDays(ovulation, 1) : null,
   };
 }
 
@@ -150,12 +171,13 @@ export function calendarMarks(data: AppData, s: Summary, ref: ISODate = todayISO
     (marks[d] ??= {})[k] = true;
   };
 
+  const minFlow = data.settings.etapa === 'especial' ? 2 : 1;
   for (const l of Object.values(data.logs)) {
-    if (l.flow > 0) mark(l.date, 'period');
+    if (l.flow >= minFlow) mark(l.date, 'period');
     if (l.intimidad) mark(l.date, 'intimidad');
   }
 
-  const showFertile = !data.settings.pillMode;
+  const showFertile = !sinOvulacion(data.settings);
   const markFertile = (nextStart: ISODate) => {
     if (!showFertile) return;
     const ov = addDays(nextStart, -14);

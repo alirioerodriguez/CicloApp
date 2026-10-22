@@ -8,6 +8,7 @@ export const CONDICIONES: { id: Condicion; label: string }[] = [
   { id: 'tdpm', label: 'TDPM' },
   { id: 'perimenopausia', label: 'Perimenopausia' },
   { id: 'tiroides', label: 'Tiroides' },
+  { id: 'sangrados_largos', label: 'Sangrados largos' },
 ];
 
 // Con estas, la fecha del próximo período se muestra como un rango.

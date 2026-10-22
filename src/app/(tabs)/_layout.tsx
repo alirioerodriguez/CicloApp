@@ -1,7 +1,7 @@
 import { Redirect, Tabs } from 'expo-router';
 import { Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLayout } from '../../lib/layout';
+import { ANCHO_BARRA, useLayout } from '../../lib/layout';
 import { useStore } from '../../lib/store';
 import { fonts, useColors } from '../../lib/theme';
 
@@ -37,7 +37,7 @@ export default function TabsLayout() {
               tabBarLabelStyle: { fontSize: 15, fontFamily: fonts.semibold },
               tabBarActiveBackgroundColor: c.rosaSuave,
               tabBarItemStyle: { borderRadius: 14, marginHorizontal: 12, marginVertical: 2, paddingHorizontal: 6, maxHeight: 52 },
-              tabBarStyle: { backgroundColor: c.card, borderRightColor: c.line, width: 232, paddingTop: 28 },
+              tabBarStyle: { backgroundColor: c.card, borderRightColor: c.line, width: ANCHO_BARRA, paddingTop: 28 },
             }
           : {
               tabBarLabelPosition: 'below-icon',

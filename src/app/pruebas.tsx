@@ -81,7 +81,7 @@ export default function Pruebas() {
     });
 
   const informe = () => {
-    const lines = [`Resultados de pruebas · Ciclo v1.0 · ${Platform.OS} · ${today()}`, '', 'MISIONES'];
+    const lines = [`Resultados de pruebas · Savia v1.0 · ${Platform.OS} · ${today()}`, '', 'MISIONES'];
     for (const m of MISIONES) {
       const r = res.misiones[m.id];
       lines.push(r ? `- ${m.titulo}: ${r.ok ? 'lo logró' : 'no pudo'} · ${r.segundos}s · facilidad ${r.facilidad || '—'}/7${r.comentario ? ` · "${r.comentario}"` : ''}` : `- ${m.titulo}: sin hacer`);
@@ -99,15 +99,15 @@ export default function Pruebas() {
     const texto = informe();
     try {
       if (CORREO_RESULTADOS) {
-        await Linking.openURL(`mailto:${CORREO_RESULTADOS}?subject=${encodeURIComponent('Pruebas de Ciclo')}&body=${encodeURIComponent(texto)}`);
+        await Linking.openURL(`mailto:${CORREO_RESULTADOS}?subject=${encodeURIComponent('Pruebas de Savia')}&body=${encodeURIComponent(texto)}`);
       } else if (Platform.OS === 'web') {
-        if (navigator.share) await navigator.share({ title: 'Pruebas de Ciclo', text: texto });
+        if (navigator.share) await navigator.share({ title: 'Pruebas de Savia', text: texto });
         else {
           await navigator.clipboard.writeText(texto);
           notify('Copiado', 'Los resultados quedaron copiados. Pégalos donde quieras enviarlos.');
         }
       } else {
-        await Share.share({ message: texto, title: 'Pruebas de Ciclo' });
+        await Share.share({ message: texto, title: 'Pruebas de Savia' });
       }
     } catch {
       // La usuaria canceló.
@@ -141,7 +141,7 @@ export default function Pruebas() {
   return (
     <Screen angosta title="Ayúdanos a mejorar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Card tint={c.lavandaSuave}>
-        <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>🧪 Laboratorio de Ciclo</Text>
+        <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>🧪 Laboratorio de Savia</Text>
         <Body>Haz pruebas cortas para descubrir qué es fácil y qué no. Cada misión empieza en "Hoy": búscala como lo harías normalmente y avísanos si lo lograste.</Body>
         <Muted>Tus resultados se guardan en tu teléfono. Solo salen si tú los compartes, y nunca incluyen datos de tu ciclo.</Muted>
       </Card>
@@ -194,7 +194,7 @@ export default function Pruebas() {
 
       <Card>
         <Label>💡 Ideas y problemas</Label>
-        <TextInput value={idea} onChangeText={setIdea} multiline placeholder="¿Qué te gustaría que tuviera Ciclo? ¿Algo no funcionó?" placeholderTextColor={c.muted} style={input} />
+        <TextInput value={idea} onChangeText={setIdea} multiline placeholder="¿Qué te gustaría que tuviera Savia? ¿Algo no funcionó?" placeholderTextColor={c.muted} style={input} />
         <Button
           small
           label="Agregar"

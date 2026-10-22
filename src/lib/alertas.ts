@@ -1,7 +1,7 @@
 // Señales para comentar en la consulta, detectadas a partir de los registros.
 // Umbrales de FIGO/ACOG; los marcados (CP) son criterio práctico y conviene que los revise una ginecóloga.
 // Fuentes: [1] [2] [5] [11] [13] [14] [16] [29]–[34] [38]–[40].
-import type { Period, Summary } from './cycle';
+import { sinAtrasos, type Period, type Summary } from './cycle';
 import { addDays, diffDays, today as todayISO } from './dates';
 import type { AppData, DayLog, ISODate } from './types';
 
@@ -64,7 +64,7 @@ export function detectAlertas(data: AppData, s: Summary, ref: ISODate = todayISO
       add('irregular', 'consulta', 'Tus ciclos están variando bastante. A veces pasa, pero es buena idea comentarlo con tu ginecóloga.');
     if (s.lastStart && diffDays(ref, s.lastStart) >= SIN_PERIODO_DIAS)
       add('sin-periodo', 'consulta', 'Llevas unos 3 meses sin período. Es un buen momento para consultar con tu ginecóloga.');
-    else if (s.lateDays >= RETRASO_DIAS && !data.settings.ocultarRetrasos)
+    else if (s.lateDays >= RETRASO_DIAS && !sinAtrasos(data.settings))
       add('retraso', 'info', 'Tu período viene con retraso. Puede pasar por estrés o cambios; si hay posibilidad de embarazo, una prueba casera puede aclararlo.');
   }
 

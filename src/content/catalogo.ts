@@ -6,6 +6,7 @@ export const FLOW_LABELS = ['Nada', 'Manchado', 'Leve', 'Medio', 'Abundante'];
 
 export const SYMPTOMS = [
   { id: 'colicos', emoji: '🌀', label: 'Cólicos' },
+  { id: 'dolor_pelvico', emoji: '📍', label: 'Dolor pélvico' },
   { id: 'coagulos', emoji: '⚫', label: 'Coágulos grandes' },
   { id: 'manchado', emoji: '🩸', label: 'Manchado entre períodos' },
   { id: 'dolor_cabeza', emoji: '🤕', label: 'Dolor de cabeza' },

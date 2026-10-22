@@ -80,7 +80,7 @@ export default function Tutorial() {
           </View>
         )}
         <View style={{ flex: 2 }}>
-          <Button label={last ? 'Empezar a usar Ciclo' : 'Siguiente'} onPress={() => (last ? terminar() : setI(i + 1))} />
+          <Button label={last ? 'Empezar a usar Savia' : 'Siguiente'} onPress={() => (last ? terminar() : setI(i + 1))} />
         </View>
       </View>
     </View>

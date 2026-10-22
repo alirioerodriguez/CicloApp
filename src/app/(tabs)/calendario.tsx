@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { Legend, MonthGrid } from '../../components/MonthGrid';
 import { Body, Button, Card, Columnas, Label, Muted, Row, Screen } from '../../components/ui';
 import { AVISO_ANTICONCEPTIVO, confianza } from '../../content/textos';
-import { calendarMarks } from '../../lib/cycle';
+import { calendarMarks, sinAtrasos, sinOvulacion } from '../../lib/cycle';
 import { longDate, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { useColors } from '../../lib/theme';
@@ -29,7 +29,7 @@ export default function Calendario() {
           maxDate={editing ? t : undefined}
           onPress={(d) => (editing ? togglePeriodDay(d) : router.push(`/dia/${d}`))}
         />
-        <Legend showFertile={!data.settings.pillMode} />
+        <Legend showFertile={!sinOvulacion(data.settings)} />
       </Card>
 
       <Button label={editing ? '✓ Listo' : '🩸 Marcar días de período'} kind={editing ? 'primary' : 'soft'} onPress={() => setEditing((e) => !e)} />
@@ -48,7 +48,7 @@ export default function Calendario() {
               hint={
                 s.ventana
                   ? `Ventana probable: ${shortDate(s.ventana[0])} – ${shortDate(s.ventana[1])}`
-                  : s.lateDays > 0 && !data.settings.ocultarRetrasos
+                  : s.lateDays > 0 && !sinAtrasos(data.settings)
                     ? `Atrasado ${s.lateDays} días`
                     : longDate(s.nextStart)
               }
@@ -61,7 +61,7 @@ export default function Calendario() {
         ) : (
           <Body>Marca tu último período para ver las predicciones.</Body>
         )}
-        {!data.settings.pillMode && (
+        {!sinOvulacion(data.settings) && (
           <Muted>{AVISO_ANTICONCEPTIVO}</Muted>
         )}
       </Card>

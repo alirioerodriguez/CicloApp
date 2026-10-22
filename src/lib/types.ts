@@ -17,6 +17,10 @@ export interface DayLog {
   ovario: 'izq' | 'der' | 'ambos' | null; // dolor de ovario
   senos: string[]; // 'seno_izq' | 'seno_der' | 'bulto'
   intimidad: boolean;
+  // Modo "busco un embarazo".
+  moco: Moco | null;
+  temp: number | null; // temperatura basal, °C
+  lh: 'neg' | 'pos' | null; // test de ovulación
 }
 
 // 21-7: días sin pastilla · 21-7p: placebo · pop: solo progestágeno.
@@ -28,12 +32,25 @@ export interface ReminderTime {
   minute: number;
 }
 
-export type Condicion = 'irregular' | 'sop' | 'endometriosis' | 'tdpm' | 'perimenopausia' | 'tiroides';
+export type Condicion = 'irregular' | 'sop' | 'endometriosis' | 'tdpm' | 'perimenopausia' | 'tiroides' | 'sangrados_largos';
+
+// Los 6 modos de vida de Savia. Se cambian sin perder el historial.
+export type Etapa = 'ciclo' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno';
+
+export type Anticonceptivo = 'ninguno' | 'pastilla' | 'diu_hormonal' | 'diu_cobre' | 'implante' | 'anillo';
+
+// Señales que registra quien busca un embarazo.
+export type SenalTtc = 'moco' | 'temp' | 'lh' | 'relacion';
+export type Moco = 'seco' | 'pegajoso' | 'cremoso' | 'elastico';
 
 export interface Settings {
   onboarded: boolean;
   tutorialVisto: boolean;
   name: string;
+  edad: number | null;
+  etapa: Etapa;
+  anticonceptivo: Anticonceptivo;
+  ttcRegistro: SenalTtc[]; // qué señales quiere registrar en modo "busco un embarazo"
   cycleLength: number; // valor inicial; luego se aprende de los datos
   periodLength: number;
   pillMode: boolean;

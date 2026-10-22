@@ -14,6 +14,10 @@ export const DEFAULT_SETTINGS: Settings = {
   onboarded: false,
   tutorialVisto: false,
   name: '',
+  edad: null,
+  etapa: 'ciclo',
+  anticonceptivo: 'ninguno',
+  ttcRegistro: ['moco', 'lh', 'relacion'],
   cycleLength: 28,
   periodLength: 5,
   pillMode: false,
@@ -52,12 +56,13 @@ export const emptyData = (): AppData => ({
 });
 
 export function emptyLog(date: ISODate): DayLog {
-  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false };
+  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null };
 }
 
 function isEmptyLog(l: DayLog) {
   return (
-    !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad
+    !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad &&
+    !l.moco && l.temp == null && !l.lh
   );
 }
 
@@ -81,6 +86,8 @@ export function normalize(raw: unknown): AppData {
     ...s,
     // Versiones anteriores llamaban '28' al esquema 21 + 7 placebo.
     pillType: (s.pillType as string) === '28' ? '21-7p' : s.pillType ?? DEFAULT_SETTINGS.pillType,
+    // Antes de los modos, la pastilla se guardaba solo como pillMode.
+    anticonceptivo: s.anticonceptivo ?? (s.pillMode ? 'pastilla' : 'ninguno'),
     reminders: {
       pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
       water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },

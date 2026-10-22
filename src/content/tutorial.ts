@@ -14,7 +14,7 @@ export const TUTORIAL: Slide[] = [
   {
     emoji: '🌸',
     logo: true,
-    titulo: 'Te damos la bienvenida a Ciclo',
+    titulo: 'Te damos la bienvenida a Savia',
     texto: 'Registra tu período, entiende tu cuerpo y cuídate a tu ritmo. Te mostramos todo en un minuto.',
     puntos: ['Predicciones que aprenden de ti', 'Ideas y ejercicios según tu fase', supabaseConfigured ? 'Privada: solo tu cuenta ve tus datos' : 'Privada: todo queda en tu teléfono'],
   },
@@ -100,7 +100,7 @@ export const TUTORIAL: Slide[] = [
   {
     emoji: '🧪',
     titulo: 'Ayúdanos a mejorar',
-    texto: 'Ciclo crece con lo que nos cuentas.',
+    texto: 'Savia crece con lo que nos cuentas.',
     puntos: [
       'En Perfil → Ayúdanos a mejorar hay pruebas cortas: misiones de 1 minuto y un cuestionario.',
       'Tú decides si compartes los resultados.',

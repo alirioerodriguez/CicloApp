@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { MonthGrid } from '../../components/MonthGrid';
 import { TonePicker } from '../../components/TonePicker';
+import { EtapaPicker } from '../../components/EtapaPicker';
 import { CONDICIONES } from '../../content/condiciones';
+import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../../content/etapas';
 import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
 import { NO_DISPOSITIVO } from '../../content/info';
 import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
@@ -43,6 +45,7 @@ export default function Perfil() {
   const s = data.settings;
   const r = s.reminders;
   const [pickPack, setPickPack] = useState(false);
+  const [cambio, setCambio] = useState(false);
   const pill = pillStatus(s);
 
   const setReminders = (patch: Partial<Settings['reminders']>) => updateSettings({ reminders: { ...r, ...patch } });
@@ -64,6 +67,71 @@ export default function Perfil() {
       <Card>
         <Label>Tú</Label>
         <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder="Tu nombre" placeholderTextColor={c.muted} style={input} />
+        <Row label="Tu edad" hint="Para darte ideas acordes a ti">
+          <Stepper value={s.edad ?? 29} onChange={(edad) => updateSettings({ edad })} min={10} max={80} />
+        </Row>
+      </Card>
+
+      <Card>
+        <Label>Tu etapa</Label>
+        <Muted>Savia se arma según la etapa que estás viviendo. Cámbiala cuando quieras: tu historial no se pierde.</Muted>
+        <EtapaPicker
+          value={s.etapa}
+          onChange={(etapa) => {
+            if (etapa === s.etapa) return;
+            const conCond = s.condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x));
+            if (etapa === 'especial' && !conCond) updateSettings({ etapa, condiciones: [...s.condiciones, 'sop'] });
+            // Buscando un embarazo no se usa anticonceptivo.
+            else if (etapa === 'ttc') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
+            else updateSettings({ etapa });
+            setCambio(true);
+          }}
+        />
+        {cambio && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ {CAMBIO_ETAPA}</Body>}
+
+        {s.etapa === 'especial' && (
+          <>
+            <Divider />
+            <Body style={{ fontWeight: '600' }}>¿Qué hace especial a tu ciclo?</Body>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {CONDICIONES_ESPECIAL.map((k) => (
+                <Chip
+                  key={k.id}
+                  label={k.label}
+                  color={c.lavanda}
+                  selected={s.condiciones.includes(k.id)}
+                  onPress={() => updateSettings({ condiciones: s.condiciones.includes(k.id) ? s.condiciones.filter((x) => x !== k.id) : [...s.condiciones, k.id] })}
+                />
+              ))}
+            </View>
+            <Body style={{ fontWeight: '600' }}>Anticonceptivo</Body>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {ANTICONCEPTIVOS.map((k) => (
+                <Chip key={k.id} label={k.label} color={c.lavanda} selected={s.anticonceptivo === k.id} onPress={() => updateSettings({ anticonceptivo: k.id, pillMode: k.id === 'pastilla' })} />
+              ))}
+            </View>
+            <Muted>{SIN_OVULACION.includes(s.anticonceptivo) ? NOTA_HORMONAL : NOTA_ESPECIAL}</Muted>
+          </>
+        )}
+
+        {s.etapa === 'ttc' && (
+          <>
+            <Divider />
+            <Body style={{ fontWeight: '600' }}>¿Qué quieres registrar?</Body>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {SENALES_TTC.map((k) => (
+                <Chip
+                  key={k.id}
+                  label={k.label}
+                  color={c.salvia}
+                  selected={s.ttcRegistro.includes(k.id)}
+                  onPress={() => updateSettings({ ttcRegistro: s.ttcRegistro.includes(k.id) ? s.ttcRegistro.filter((x) => x !== k.id) : [...s.ttcRegistro, k.id] })}
+                />
+              ))}
+            </View>
+            <Muted>{TEXTO_TTC}</Muted>
+          </>
+        )}
       </Card>
 
       <Card>
@@ -76,7 +144,7 @@ export default function Perfil() {
         <LinkRow emoji="🧘‍♀️" label="Ejercicios y alivio" hint="Movimiento por fase y respiración" to="/ejercicios" />
         <LinkRow emoji="🌙" label="Diario de sueños" hint={`${data.dreams.length} ${data.dreams.length === 1 ? 'sueño' : 'sueños'}`} to="/suenos" />
         <LinkRow emoji="🧪" label="Ayúdanos a mejorar" hint="Pruebas cortas para mejorar la app" to="/pruebas" />
-        <LinkRow emoji="📖" label="Ver el tutorial" hint="Todo lo que puedes hacer en Ciclo" to="/tutorial" />
+        <LinkRow emoji="📖" label="Ver el tutorial" hint="Todo lo que puedes hacer en Savia" to="/tutorial" />
         <LinkRow emoji="ℹ️" label="Cuándo consultar · fuentes" hint="Señales de alerta y qué alivia" to="/info" />
       </Card>
 
@@ -113,7 +181,12 @@ export default function Perfil() {
       </Card>
 
       <Card>
-        <Toggle label="💊 Tomo pastilla anticonceptiva" hint="Oculta los días fértiles y activa el seguimiento del blíster" value={s.pillMode} onChange={(pillMode) => updateSettings({ pillMode })} />
+        <Toggle
+          label="💊 Tomo pastilla anticonceptiva"
+          hint="Oculta los días fértiles y activa el seguimiento del blíster"
+          value={s.pillMode}
+          onChange={(pillMode) => updateSettings({ pillMode, anticonceptivo: pillMode ? 'pastilla' : s.anticonceptivo === 'pastilla' ? 'ninguno' : s.anticonceptivo })}
+        />
         {s.pillMode && (
           <>
             <PillPicker name={s.pillName} type={s.pillType} onName={(pillName) => updateSettings({ pillName })} onType={(pillType) => updateSettings({ pillType })} />

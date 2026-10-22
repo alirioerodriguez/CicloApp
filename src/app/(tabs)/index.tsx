@@ -2,13 +2,14 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
+import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
 import { Body, Button, Card, Columnas, Label, Muted, Screen } from '../../components/ui';
 import { useLayout } from '../../lib/layout';
 import { CUIDATE } from '../../content/cuidate';
 import { LOGROS, PASTILLA_AYER, VACIOS, saludo } from '../../content/textos';
 import { detectAlertas } from '../../lib/alertas';
-import { pillStatus, unlockedLogros } from '../../lib/cycle';
+import { pillStatus, sinAtrasos, unlockedLogros } from '../../lib/cycle';
 import { addDays, diffDays, inDays, longDate, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { fonts, serif, useColors } from '../../lib/theme';
@@ -34,7 +35,7 @@ function Status() {
     big = String(s.cycleDay);
     unit = 'día de período';
     line = 'Cuídate mucho estos días 💗';
-  } else if (s.lateDays > 0 && (data.settings.ocultarRetrasos || (s.ventana && s.ventana[1] >= t))) {
+  } else if (s.lateDays > 0 && (sinAtrasos(data.settings) || (s.ventana && s.ventana[1] >= t))) {
     // Sin hablar de "retraso": ciclos irregulares o la usuaria pidió no ver esos avisos.
     big = String(s.cycleDay);
     unit = 'día del ciclo';
@@ -161,6 +162,7 @@ export default function Hoy() {
       )}
 
       <Status />
+      <ModoCard />
           </>
         }
         derecha={

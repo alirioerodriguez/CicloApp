@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 import { HoyEmbarazo } from '../../components/HoyEmbarazo';
 import { HoyPosparto } from '../../components/HoyPosparto';
+import { Logo } from '../../components/Logo';
 import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
 import { Body, Button, Card, Columnas, Label, Muted, Screen } from '../../components/ui';
@@ -119,7 +120,7 @@ function HoyCiclo() {
   }, [data, s]);
 
   return (
-    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Text style={{ fontSize: 34 }}>🌸</Text>}>
+    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
       <Body style={{ marginTop: -6 }}>{hello.texto}</Body>
 
       <Columnas

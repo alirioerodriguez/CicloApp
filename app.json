@@ -7,7 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "ciclo",
     "userInterfaceStyle": "automatic",
-    "backgroundColor": "#FBF7F4",
+    "backgroundColor": "#FBF5F2",
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.alirio.ciclo",
@@ -18,16 +18,21 @@
     "android": {
       "package": "com.alirio.ciclo",
       "adaptiveIcon": {
-        "backgroundColor": "#F7DCE7",
+        "backgroundColor": "#FBF5F2",
         "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png",
-      "output": "single"
+      "output": "single",
+      "name": "Savia",
+      "shortName": "Savia",
+      "themeColor": "#7E2F52",
+      "backgroundColor": "#FBF5F2",
+      "lang": "es",
+      "description": "Savia · la vida que eres y la vida que das. Tu ciclo, tu embarazo, tu posparto y tu menopausia."
     },
     "plugins": [
       "expo-router",
@@ -35,7 +40,7 @@
       [
         "expo-notifications",
         {
-          "color": "#E7799F"
+          "color": "#7E2F52"
         }
       ],
       [
@@ -44,7 +49,16 @@
           "faceIDPermission": "Para proteger tus datos con Face ID."
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#7E2F52"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false

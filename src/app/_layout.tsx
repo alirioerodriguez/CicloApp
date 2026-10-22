@@ -59,7 +59,7 @@ function Gate() {
   if (lockEnabled && locked) {
     return (
       <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center', gap: 18, padding: 30 }}>
-        <Logo size={72} />
+        <Logo size={72} animated />
         <Text style={{ fontFamily: serif, fontSize: 26, color: c.text }}>Tu espacio está protegido</Text>
         <Button label="Desbloquear" onPress={unlock} />
       </View>

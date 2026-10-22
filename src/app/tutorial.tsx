@@ -43,7 +43,7 @@ export default function Tutorial() {
       <View style={{ flex: 1, justifyContent: 'center', gap: 16, maxWidth: 560, width: '100%', alignSelf: 'center' }}>
         <View style={{ alignItems: 'center' }}>
           {slide.logo ? (
-            <Logo size={110} />
+            <Logo size={96} animated />
           ) : ej ? (
             <View style={{ backgroundColor: c.card, borderRadius: radius.lg }}>
               <Figura a={ej.a} b={ej.b} bendF={ej.bendF} bendB={ej.bendB} segundosPorRep={ej.segundosPorRep} frontal={ej.frontal} size={170} />

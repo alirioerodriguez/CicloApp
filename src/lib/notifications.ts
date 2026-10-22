@@ -79,7 +79,7 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
   const r = settings.reminders;
   const t = today();
   // Modo discreto: en la pantalla bloqueada no se lee "pastilla" ni "período".
-  const msg = (title: string, body: string): [string, string] => (settings.discreet ? ['Recordatorio 🌸', 'Tienes un recordatorio en tu app.'] : [title, body]);
+  const msg = (title: string, body: string): [string, string] => (settings.discreet ? ['🌸 Savia', 'Tienes un recordatorio en tu app.'] : [title, body]);
 
   // Pastilla: a la hora elegida y, si no se marcó, un aviso una hora después. Salta los días sin pastilla.
   if (settings.pillMode && r.pill.on) {

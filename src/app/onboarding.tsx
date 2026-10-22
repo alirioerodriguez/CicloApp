@@ -147,7 +147,7 @@ export default function Onboarding() {
       {paso === 'bienvenida' && (
         <>
           <View style={{ alignItems: 'center', marginTop: 24 }}>
-            <Logo size={110} />
+            <Logo size={96} animated />
           </View>
           <Text style={{ fontFamily: serif, fontSize: 32, lineHeight: 38, color: c.text, textAlign: 'center' }}>Hola, te damos la bienvenida a Savia</Text>
           <Body style={{ textAlign: 'center' }}>La vida que eres y la vida que das. Te acompañamos en tu ciclo, tu embarazo y tu menopausia.</Body>

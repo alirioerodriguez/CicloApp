@@ -1,4 +1,4 @@
-// Sistema visual del diseño "Ciclo": 12 tonos (suave + profundo) en modo Noche o Día.
+// Sistema visual de Savia: 12 tonos (suave + profundo) en modo Noche o Día.
 // Fraunces para títulos y números, Plus Jakarta Sans para textos y botones.
 import { createContext, useContext } from 'react';
 import { useColorScheme } from 'react-native';

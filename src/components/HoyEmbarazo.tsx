@@ -10,6 +10,7 @@ import { useEmbarazo } from '../lib/embarazo';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Check } from './Check';
+import { Logo } from './Logo';
 import { Body, Card, Columnas, Label, Muted, Screen, tap } from './ui';
 
 const HERRAMIENTAS: { emoji: string; titulo: string; sub: string; to: Href }[] = [
@@ -76,7 +77,7 @@ export function HoyEmbarazo() {
   );
 
   return (
-    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Text style={{ fontSize: 34 }}>🤰</Text>}>
+    <Screen subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
       <Body style={{ marginTop: -6 }}>¿Cómo amaneces tú y tu bebé?</Body>
 
       <Columnas

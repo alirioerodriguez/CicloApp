@@ -1,0 +1,87 @@
+{
+  "color": {
+    "petal": {
+      "ciclo": "#C24E7A",
+      "embarazo": "#F0B877",
+      "posparto": "#8FBF9F",
+      "menopausia": "#A99CF2"
+    },
+    "petalOnDark": {
+      "ciclo": "#F0A3C4",
+      "embarazo": "#F6C58F",
+      "posparto": "#A8D4B4",
+      "menopausia": "#BDB3F5"
+    },
+    "ciruela": "#7E2F52",
+    "tinta": "#2A1E28",
+    "gris": "#675663",
+    "crema": "#FBF5F2",
+    "rubor": "#F7D9E3",
+    "arena": "#F4ECE8"
+  },
+  "font": {
+    "display": {
+      "family": "Fraunces",
+      "weight": 500,
+      "use": "wordmark, titulares"
+    },
+    "body": {
+      "family": "Plus Jakarta Sans",
+      "weights": [
+        400,
+        500,
+        600,
+        700
+      ]
+    }
+  },
+  "logo": {
+    "viewBox": "0 0 100 100",
+    "petals": {
+      "top": "M50 50C38 40 38 18 50 8C62 18 62 40 50 50Z",
+      "right": "M50 50C60 38 82 38 92 50C82 62 60 62 50 50Z",
+      "bottom": "M50 50C62 60 62 82 50 92C38 82 38 60 50 50Z",
+      "left": "M50 50C40 62 18 62 8 50C18 38 40 38 50 50Z"
+    },
+    "centerHole": {
+      "cx": 50,
+      "cy": 50,
+      "r": 8
+    },
+    "clearSpace": "24% del alto del símbolo (ancho de un pétalo)",
+    "minSize": {
+      "symbolPx": 16,
+      "lockupPx": 96,
+      "symbolMm": 6,
+      "lockupMm": 25
+    }
+  },
+  "motion": {
+    "bloom": {
+      "duration": 700,
+      "stagger": 150,
+      "order": [
+        "top",
+        "right",
+        "bottom",
+        "left"
+      ],
+      "easing": "cubic-bezier(.3,1.4,.5,1)",
+      "from": "scale(0) rotate(-25deg), opacity 0",
+      "overshoot": "scale(1.08) a los 70%"
+    },
+    "center": {
+      "delay": 900,
+      "duration": 500,
+      "easing": "cubic-bezier(.3,1.6,.5,1)"
+    },
+    "idleSway": {
+      "duration": 8000,
+      "delay": 1600,
+      "angle": "±4deg",
+      "easing": "ease-in-out",
+      "loop": true
+    },
+    "reducedMotion": "sin animación, estado final"
+  }
+}

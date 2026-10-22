@@ -80,7 +80,7 @@ export function Login() {
       >
         <View style={{ maxWidth: 420, width: '100%', alignSelf: 'center', gap: 14 }}>
           <View style={{ alignItems: 'center', gap: 8, marginBottom: 8 }}>
-            <Logo size={96} />
+            <Logo size={96} animated />
             <Text style={{ fontFamily: serif, fontSize: 38, color: c.text }}>savia</Text>
             <Text style={{ fontFamily: fonts.regular, fontSize: 15.5, lineHeight: 22, color: c.muted, textAlign: 'center' }}>
               Registra tu período, entiende tu cuerpo y cuídate a tu ritmo.

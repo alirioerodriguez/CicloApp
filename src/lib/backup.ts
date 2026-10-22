@@ -120,7 +120,6 @@ export function reportHtml(data: AppData, s: Summary): string {
   const alertas = detectAlertas(data, s);
   const lastCycles = s.cycles.slice(-12).reverse();
   const symptoms = topCounts(logs, 'symptoms', 8);
-  const moods = topCounts(logs, 'moods', 4);
   const painDays = logs.filter((l) => l.pain > 0);
   const avgPain = painDays.length ? (painDays.reduce((a, l) => a + l.pain, 0) / painDays.length).toFixed(1) : '—';
   const adh = pillAdherence(data, 30);
@@ -129,10 +128,6 @@ export function reportHtml(data: AppData, s: Summary): string {
   const ovIzq = ov.filter((x) => x.lado !== 'der').length;
   const ovDer = ov.filter((x) => x.lado !== 'izq').length;
   const proximos = data.controles.filter((x) => x.fecha).sort((a, b) => (a.fecha < b.fecha ? -1 : 1));
-  const notes = logs
-    .filter((l) => l.note.trim())
-    .sort((a, b) => (a.date < b.date ? 1 : -1))
-    .slice(0, 12);
 
   const metodo = st.pillMode ? `Pastilla${st.pillName ? ` ${esc(st.pillName)}` : ''} · ${PILL_PACKS[st.pillType].label}` : 'Sin pastilla anticonceptiva registrada';
   const row = (a: string, b: string) => `<tr><td>${a}</td><td><b>${b}</b></td></tr>`;
@@ -144,10 +139,8 @@ export function reportHtml(data: AppData, s: Summary): string {
     const maxPain = Math.max(0, ...ls.map((l) => l.pain));
     return `<tr><td>${shortDate(start)} ${start.slice(0, 4)}</td><td>${length ? `${length} días` : 'en curso'}</td><td>${p?.length ?? '—'}</td><td>${heavy || '—'}</td><td>${clots ? 'Sí' : '—'}</td><td>${maxPain ? `${maxPain}/10` : '—'}</td></tr>`;
   };
-  const gridIds = [
-    ...topCounts(logs, 'symptoms', 5).map((x) => ({ id: x.id, label: symptomById(x.id).label, kind: 'symptoms' as const })),
-    ...moods.map((x) => ({ id: x.id, label: moodById(x.id).label, kind: 'moods' as const })),
-  ];
+  // Solo síntomas físicos: el ánimo y las notas personales no salen del teléfono.
+  const gridIds = topCounts(logs, 'symptoms', 5).map((x) => ({ id: x.id, label: symptomById(x.id).label, kind: 'symptoms' as const }));
 
   return `<!doctype html><html><head><meta charset="utf-8"><style>
     body{font-family:-apple-system,Roboto,Helvetica,Arial,sans-serif;color:#2E2A3F;padding:28px;font-size:12.5px}
@@ -185,11 +178,10 @@ export function reportHtml(data: AppData, s: Summary): string {
       ${s.lastStart ? perRow(s.lastStart, null) : ''}
       ${lastCycles.map((c) => perRow(c.start, c.length)).join('') || ''}
     </table>
-    ${gridIds.length ? `<h2>Síntomas y ánimos por día del ciclo (últimos ciclos)</h2>${cycleDayGrid(data, s, gridIds)}<div class="muted">Más intenso = más ciclos con ese síntoma ese día. Día 1 = primer día de sangrado.</div>` : ''}
+    ${gridIds.length ? `<h2>Síntomas por día del ciclo (últimos ciclos)</h2>${cycleDayGrid(data, s, gridIds)}<div class="muted">Más intenso = más ciclos con ese síntoma ese día. Día 1 = primer día de sangrado.</div>` : ''}
     <h2>Síntomas más frecuentes</h2>
     <table>${symptoms.map((x) => row(symptomById(x.id).label, `${x.count} días`)).join('') || '<tr><td>Sin registros</td></tr>'}</table>
-    ${notes.length ? `<h2>Notas de la usuaria</h2><table>${notes.map((n) => row(shortDate(n.date), esc(n.note))).join('')}</table>` : ''}
-    <p class="muted" style="margin-top:28px">No incluye intimidad ni diario de sueños. Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico. Las fechas futuras y las fases son estimaciones.</p>
+    <p class="muted" style="margin-top:28px">No incluye intimidad, notas personales, estado de ánimo ni diario de sueños. Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico. Las fechas futuras y las fases son estimaciones.</p>
   </body></html>`;
 }
 

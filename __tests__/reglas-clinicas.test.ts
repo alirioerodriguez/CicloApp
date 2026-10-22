@@ -143,12 +143,16 @@ describe('Menopausia', () => {
 });
 
 describe('Privacidad del resumen para la ginecóloga', () => {
-  test('no incluye la intimidad ni el diario de sueños', () => {
-    const d = datos(['2026-09-01', '2026-09-29'], { name: 'Ana' }, 4, [{ date: '2026-09-10', intimidad: true, symptoms: ['dolor_relaciones'] }]);
+  test('no incluye intimidad, notas personales, ánimo ni diario de sueños', () => {
+    const d = datos(['2026-09-01', '2026-09-29'], { name: 'Ana' }, 4, [
+      { date: '2026-09-10', intimidad: true, note: 'NOTA-PRIVADA', moods: ['triste'], symptoms: ['colicos'] },
+    ]);
     d.dreams = [{ id: 's1', date: '2026-09-11', texto: 'SUENO-SECRETO' } as never];
     const html = reportHtml(d, summarize(d, '2026-10-05'));
     expect(html).not.toMatch(/intimidad:|relaciones sexuales registradas/i);
+    expect(html).not.toContain('NOTA-PRIVADA');
     expect(html).not.toContain('SUENO-SECRETO');
-    expect(html).toContain('No incluye intimidad ni diario de sueños');
+    expect(html).not.toMatch(/ánimo(s)? por día|Notas de la usuaria/);
+    expect(html).toContain('Síntomas más frecuentes');
   });
 });

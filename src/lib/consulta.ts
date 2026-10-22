@@ -1,5 +1,5 @@
 // Modo consulta médica (diseño 8i): lo esencial de los últimos 3 o 6 meses para mostrar en 30 segundos.
-import { MOODS, symptomById } from '../content/catalogo';
+import { symptomById } from '../content/catalogo';
 import { NOMBRE_ETAPA } from '../content/confianza';
 import { ANTICONCEPTIVOS, etapaById } from '../content/etapas';
 import { CICATRIZ_ALERTA, EDIMBURGO, lunes, nivelEdimburgo, semanasPosparto } from '../content/posparto';
@@ -19,7 +19,6 @@ export interface Consulta {
   diasRegistrados: number;
 }
 
-const ANIMO_BAJO = ['triste', 'abrumada', 'ansiosa', 'irritable'];
 const coma = (n: number) => String(Math.round(n * 10) / 10).replace('.', ',');
 
 export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
@@ -35,14 +34,10 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   const semEmb = semanasEmbarazo(st.embarazo.fpp);
   const modo = `${st.etapa === 'posparto' ? `Posparto · semana ${semanas}` : st.etapa === 'embarazo' ? `Embarazo · semana ${semEmb}` : st.etapa === 'meno' ? etapaMeno(st.meno.etapa).nombre : etapa} · últimos ${meses} meses`;
 
-  // Lo más frecuente: síntomas y ánimo bajo, como % de los días registrados.
+  // Lo más frecuente: solo síntomas físicos, como % de los días registrados. El ánimo y las notas no se muestran.
   const cuenta = new Map<string, number>();
   for (const l of logs) {
     for (const x of l.symptoms) cuenta.set(symptomById(x).label, (cuenta.get(symptomById(x).label) ?? 0) + 1);
-    for (const m of l.moods) if (ANIMO_BAJO.includes(m)) {
-      const label = `Ánimo: ${MOODS.find((k) => k.id === m)?.label.toLowerCase() ?? m}`;
-      cuenta.set(label, (cuenta.get(label) ?? 0) + 1);
-    }
   }
   const frecuentes = [...cuenta.entries()]
     .sort((a, b) => b[1] - a[1])

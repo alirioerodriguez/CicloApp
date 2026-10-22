@@ -420,7 +420,7 @@ export default function Perfil() {
         />
         <Divider />
         <Body style={{ fontWeight: '600' }}>Resumen para tu médico</Body>
-        <Muted>Un PDF con tus ciclos, duración, síntomas frecuentes y notas, para llevar a la consulta.</Muted>
+        <Muted>Un PDF con tus ciclos, sangrado, dolor y síntomas, para llevar a la consulta. Tus notas, tu ánimo y tu intimidad no se incluyen.</Muted>
         <Button kind="soft" label="Crear resumen PDF" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
       </Card>
           </>

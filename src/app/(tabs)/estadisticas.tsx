@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../../components/Texto';
 import { ConsultaMedica } from '../../components/ConsultaMedica';
 import { ControlesEmbarazo } from '../../components/ControlesEmbarazo';
 import { ResumenMeno } from '../../components/ResumenMeno';

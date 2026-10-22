@@ -1,6 +1,7 @@
 // "Un cambio en tu embarazo" (diseño 8g): se cuenta solo lo que ella quiera y la app se adapta al instante.
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui';
 import { today } from '../lib/dates';
 import { useStore } from '../lib/store';

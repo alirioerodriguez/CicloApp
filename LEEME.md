@@ -115,6 +115,15 @@ Al entrar por primera vez, los datos que ya había en el teléfono se suben solo
 
 **Apple:** Neon Auth no ofrece inicio de sesión con Apple por ahora. Además, Apple exige una cuenta de desarrollador paga (USD 99 al año) y la app publicada en la App Store.
 
+## Países e idiomas
+
+Antes de iniciar sesión, la app pregunta el país (Venezuela, México, Colombia, Argentina, Chile, Perú o Estados Unidos) y el idioma (español o inglés; por defecto, el del dispositivo). Los dos se cambian en Perfil → Tú.
+
+- Todo el texto está escrito en español venezolano. `t()` en `src/lib/region.tsx` lo pasa a **inglés** (`src/content/i18n/en.ts`) o a **español neutro** para los demás países (`src/content/i18n/neutro.ts`). La clave es la frase exacta en español; las frases con datos usan `{0}`, `{1}`.
+- Todos los textos de pantalla pasan por `Text` de `src/components/Texto.tsx`, que traduce solo. Si agregas una frase nueva, súmala a `en.ts` (y a `neutro.ts` si tiene palabras venezolanas como caraotas o cambur); si falta, se muestra en español.
+- Las comidas de Alimentación y Cuídate salen de `src/content/alimentos.ts`: cada alimento tiene su nombre local por país (`nombres`) y algunos son solo de ciertos países (`paises`), como la sangrecita en Perú o los nopales en México.
+- Pendiente: el PDF para la médica y las notificaciones siguen en español.
+
 ## Versión web (Vercel)
 
 `vercel.json` ya está configurado: Vercel ejecuta `npx expo export -p web` y publica la carpeta `dist`. En la web no hay recordatorios ni bloqueo con huella.

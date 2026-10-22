@@ -1,7 +1,8 @@
 // Bienvenida y "Crea tu cuenta" (diseño 8a). Los pasos cambian según el modo que elija.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { EtapaPicker } from '../components/EtapaPicker';
 import { MonthGrid } from '../components/MonthGrid';
 import { Logo } from '../components/Logo';
@@ -20,6 +21,7 @@ import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
 import { Icono } from '../components/Icono';
+import { t } from '../lib/region';
 
 type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno' | 'listo';
 
@@ -168,7 +170,7 @@ export default function Onboarding() {
           <Body>Savia se arma según la etapa de vida que estás viviendo. La puedes cambiar cuando quieras.</Body>
           <Card>
             <Label>¿Cómo te llamamos?</Label>
-            <TextInput value={name} onChangeText={setName} placeholder="Tu nombre" placeholderTextColor={c.muted} style={input} autoCapitalize="words" autoComplete="given-name" />
+            <TextInput value={name} onChangeText={setName} placeholder={t('Tu nombre')} placeholderTextColor={c.muted} style={input} autoCapitalize="words" autoComplete="given-name" />
           </Card>
           <Card>
             <Row label="Tu edad" hint={edad >= 45 ? 'Desde los 45 muchas mujeres entran en la perimenopausia' : 'Para darte ideas acordes a ti'}>

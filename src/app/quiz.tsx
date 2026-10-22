@@ -2,7 +2,8 @@
 // y tu flor de hoy con los colores de tus respuestas.
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Flor } from '../components/Flor';
 import { Icono } from '../components/Icono';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui';

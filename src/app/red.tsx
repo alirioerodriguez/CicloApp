@@ -1,11 +1,13 @@
 // Tu red de apoyo (diseño 8j): compartir solo lo que ella elija con su pareja o alguien de confianza.
 import { router } from 'expo-router';
-import { Platform, Share, Text, TextInput, View } from 'react-native';
+import { Platform, Share, TextInput, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Chip, Label, Muted, Screen, Toggle, notify } from '../components/ui';
 import { INTRO_RED, OPCIONES_RED } from '../content/confianza';
 import { tarjetaRed, tarjetaTexto } from '../lib/red';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
+import { t } from '../lib/region';
 
 async function enviar(texto: string) {
   if (Platform.OS === 'web') {
@@ -33,7 +35,7 @@ export default function Red() {
         <TextInput
           value={red.nombre}
           onChangeText={(nombre) => setRed({ nombre })}
-          placeholder="Nombre de tu pareja o alguien de confianza"
+          placeholder={t('Nombre de tu pareja o alguien de confianza')}
           placeholderTextColor={c.muted}
           style={{ borderRadius: radius.md, backgroundColor: c.bg, padding: 12, fontSize: 16, color: c.text, fontFamily: fonts.regular }}
         />

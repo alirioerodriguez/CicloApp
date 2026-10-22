@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import type { DayMarks } from '../lib/cycle';
 import { MONTHS, WEEKDAYS_SHORT, toISO, today } from '../lib/dates';
 import { fonts, serif, useColors } from '../lib/theme';

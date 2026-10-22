@@ -1,5 +1,6 @@
 // Lista de los 6 modos de vida (diseño 8a). Se usa al crear la cuenta y en Perfil.
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { ETAPAS } from '../content/etapas';
 import type { Etapa } from '../lib/types';
 import { fonts, radius, useColors } from '../lib/theme';

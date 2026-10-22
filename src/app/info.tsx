@@ -1,7 +1,8 @@
 // "Cuándo consultar": señales de alerta, rangos normales, qué alivia, mitos y fuentes.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Label, Muted, Screen } from '../components/ui';
 import { FUENTES } from '../content/fuentes';
 import { ALIVIO, CRISIS, MITOS, NO_DISPOSITIVO, PASTILLA_OLVIDO, RANGOS, SPM, URGENTE, URGENTE_COMBINADA } from '../content/info';

@@ -1,6 +1,7 @@
 // "Controles" en modo embarazo (diseño 7f): consultas de la OMS, exámenes, peso y presión, y bolso del hospital.
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from './Texto';
 import { AVISO_PRESION, BOLSO, CONTROLES_OMS, EXAMENES, presionAlta, proximoControl } from '../content/embarazo';
 import { shortDate, today } from '../lib/dates';
 import { useEmbarazo } from '../lib/embarazo';

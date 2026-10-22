@@ -1,7 +1,8 @@
 // Diario de sueños: se guarda solo en el teléfono y nunca va en el PDF.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Chip, Label, Muted, Screen, confirm } from '../components/ui';
 import { pick } from '../content/cuidate';
 import { FRASES_SIGNO, SIGNOS, TIPOS_SUENO } from '../content/suenos';
@@ -9,6 +10,7 @@ import { diffDays, longDate, today } from '../lib/dates';
 import { newId, useStore } from '../lib/store';
 import { nubeConfigurada } from '../lib/nube';
 import { fonts, radius, serif, useColors } from '../lib/theme';
+import { t } from '../lib/region';
 
 export default function Suenos() {
   const c = useColors();
@@ -66,7 +68,7 @@ export default function Suenos() {
         <TextInput
           value={texto}
           onChangeText={setTexto}
-          placeholder="Escríbelo antes de que se te olvide…"
+          placeholder={t('Escríbelo antes de que se te olvide…')}
           placeholderTextColor={c.muted}
           multiline
           style={{ minHeight: 100, color: c.text, fontSize: 15, fontFamily: fonts.regular, textAlignVertical: 'top', backgroundColor: c.bg, borderRadius: radius.md, padding: 12 }}

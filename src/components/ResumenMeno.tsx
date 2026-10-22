@@ -1,6 +1,7 @@
 // "Resumen" en menopausia (diseño 7l): bochornos por día, puntaje MRS por semana y lo que más registras.
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from './Texto';
 import { MRS, NIVELES_MRS, bochornosRecientes, diasSinPeriodo, puntajeMrs } from '../content/menopausia';
 import { shortDate } from '../lib/dates';
 import { useStore } from '../lib/store';

@@ -1,7 +1,8 @@
 // Respiración guiada de 1 minuto: inhala 4 s, sostén 2 s, exhala 6 s (exhalar más largo ayuda a calmarse).
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, Platform, Text, View } from 'react-native';
+import { Animated, Easing, Platform, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Muted, Screen, tap } from '../components/ui';
 import { fonts, serif, useColors } from '../lib/theme';
 

@@ -1,6 +1,7 @@
 // Tarjeta de ejercicio con mini animación; abre el ejercicio completo.
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import type { Ejercicio } from '../content/ejercicios';
 import { fonts, radius, useColors } from '../lib/theme';
 import { Figura } from './Figura';

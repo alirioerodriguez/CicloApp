@@ -1,5 +1,6 @@
 // "Cuídate" en modo embarazo (diseño 7h): platos, nutrientes, qué evitar, ejercicio seguro y alarmas.
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from './Texto';
 import { ALARMAS_EMBARAZO, EJERCICIO_EMBARAZO, EVITAR_EMBARAZO, NUTRIENTES_EMBARAZO, PLATOS_EMBARAZO, TRIMESTRES, trimestre } from '../content/embarazo';
 import { ejercicioById } from '../content/ejercicios';
 import { useEmbarazo } from '../lib/embarazo';

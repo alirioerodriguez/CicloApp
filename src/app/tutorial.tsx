@@ -1,7 +1,8 @@
 // Tutorial: tarjetas que explican todo lo que puede hacer la app.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Figura } from '../components/Figura';
 import { Logo } from '../components/Logo';

@@ -1,6 +1,7 @@
 // Tarjetas de platos con receta desplegable (embarazo y menopausia).
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { fonts, radius, useColors } from '../lib/theme';
 import { Body, Card, Grilla, Label, Muted, tap } from './ui';
 import { Icono, IconoBurbuja } from './Icono';

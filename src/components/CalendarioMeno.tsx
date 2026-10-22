@@ -1,7 +1,8 @@
 // Calendario de bochornos (diseño 7j): cada día se colorea según cuántos bochornos tuvo.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { addDays, longDate, today, toISO } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, serif, useColors } from '../lib/theme';

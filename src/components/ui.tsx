@@ -1,9 +1,11 @@
 // Piezas visuales reutilizables.
 import * as Haptics from 'expo-haptics';
 import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLayout } from '../lib/layout';
+import { t } from '../lib/region';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Icono } from './Icono';
 
@@ -23,16 +25,18 @@ export function tap() {
 
 // Alert con botones no funciona en web; ahí se usa el confirm del navegador.
 export function confirm(title: string, message: string, ok: string): Promise<boolean> {
+  [title, message, ok] = [t(title), t(message), t(ok)];
   if (Platform.OS === 'web') return Promise.resolve(window.confirm(`${title}\n\n${message}`));
   return new Promise((resolve) =>
     Alert.alert(title, message, [
-      { text: 'Cancelar', style: 'cancel', onPress: () => resolve(false) },
+      { text: t('Cancelar'), style: 'cancel', onPress: () => resolve(false) },
       { text: ok, style: 'destructive', onPress: () => resolve(true) },
     ]),
   );
 }
 
 export function notify(title: string, message: string) {
+  [title, message] = [t(title), t(message)];
   if (Platform.OS === 'web') window.alert(`${title}\n\n${message}`);
   else Alert.alert(title, message);
 }

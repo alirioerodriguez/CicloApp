@@ -2,13 +2,15 @@
 // Nada sale del teléfono hasta que la usuaria decide compartir, y lo compartido no incluye datos de salud.
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Linking, Platform, Pressable, Share, Text, TextInput, View } from 'react-native';
+import { Linking, Platform, Pressable, Share, TextInput, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Divider, Label, Muted, Screen, confirm, notify, tap } from '../components/ui';
 import { CORREO_RESULTADOS, MISIONES, SEQ_EXTREMOS, SEQ_PREGUNTA, SUS, susScore } from '../content/pruebas';
 import { longDate, today } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Icono } from '../components/Icono';
+import { t } from '../lib/region';
 
 function Escala({ n, value, onChange, extremos }: { n: number; value: number; onChange: (v: number) => void; extremos: string[] }) {
   const c = useColors();
@@ -132,7 +134,7 @@ export default function Pruebas() {
           <Label>{SEQ_PREGUNTA}</Label>
           <Escala n={7} value={facilidad} onChange={setFacilidad} extremos={SEQ_EXTREMOS} />
           <Label>¿Algo que te confundió o que cambiarías? (opcional)</Label>
-          <TextInput value={comentario} onChangeText={setComentario} multiline placeholder="Cuéntanos con tus palabras…" placeholderTextColor={c.muted} style={input} />
+          <TextInput value={comentario} onChangeText={setComentario} multiline placeholder={t('Cuéntanos con tus palabras…')} placeholderTextColor={c.muted} style={input} />
           <Button label="Guardar" onPress={guardarMision} disabled={!facilidad} />
         </Card>
       </Screen>
@@ -195,7 +197,7 @@ export default function Pruebas() {
 
       <Card>
         <Label>Ideas y problemas</Label>
-        <TextInput value={idea} onChangeText={setIdea} multiline placeholder="¿Qué te gustaría que tuviera Savia? ¿Algo no funcionó?" placeholderTextColor={c.muted} style={input} />
+        <TextInput value={idea} onChangeText={setIdea} multiline placeholder={t('¿Qué te gustaría que tuviera Savia? ¿Algo no funcionó?')} placeholderTextColor={c.muted} style={input} />
         <Button
           small
           label="Agregar"

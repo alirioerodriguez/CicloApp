@@ -1,7 +1,8 @@
 // Un ejercicio: animación, contador de repeticiones/series y descansos.
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../../components/Texto';
 import { Figura } from '../../components/Figura';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../../components/ui';
 import { ADAPTADO, ADAPTADO_ESPECIAL, NOMBRE_ETAPA } from '../../content/confianza';

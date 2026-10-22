@@ -1,7 +1,8 @@
 // "Hoy" en modo menopausia (diseño 7i): bochornos, cómo me siento, idea del día y próximo chequeo.
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import Svg, { Circle } from 'react-native-svg';
 import {
   CHEQUEOS_MENO,

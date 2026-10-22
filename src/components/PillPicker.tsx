@@ -5,6 +5,7 @@ import { PILL_PACKS, PILL_TYPE_OPTIONS } from '../lib/cycle';
 import { radius, useColors } from '../lib/theme';
 import type { PillType } from '../lib/types';
 import { Chip, Label, Muted } from './ui';
+import { t } from '../lib/region';
 
 export function Blister({ type }: { type: PillType }) {
   const c = useColors();
@@ -56,7 +57,7 @@ export function PillPicker({ name, type, onName, onType }: { name: string; type:
           />
         ))}
       </View>
-      <TextInput value={name} onChangeText={onName} placeholder="U otra marca" placeholderTextColor={c.muted} style={input} />
+      <TextInput value={name} onChangeText={onName} placeholder={t('U otra marca')} placeholderTextColor={c.muted} style={input} />
 
       <Label>¿Cómo es tu blíster?</Label>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>

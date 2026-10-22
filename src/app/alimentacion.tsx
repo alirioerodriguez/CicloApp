@@ -1,8 +1,10 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Chip, Columnas, Label, Muted, Screen } from '../components/ui';
-import { ALIMENTOS, AVISO_PASTILLA, CATEGORIAS, CON_MODERACION, TIP_HIERRO, type Categoria } from '../content/alimentos';
+import { useRegion } from '../lib/region';
+import { alimentosPara, AVISO_PASTILLA, CATEGORIAS, CON_MODERACION, TIP_HIERRO, type Categoria } from '../content/alimentos';
 import { CUIDATE } from '../content/cuidate';
 import { useStore } from '../lib/store';
 import { useColors } from '../lib/theme';
@@ -14,7 +16,8 @@ export default function Alimentacion() {
   const [cat, setCat] = useState<Categoria | null>(null);
   const [myPhase, setMyPhase] = useState(false);
 
-  const list = ALIMENTOS.filter((a) => (!cat || a.categorias.includes(cat)) && (!myPhase || !s.phase || a.fases.includes(s.phase)));
+  const { pais } = useRegion();
+  const list = alimentosPara(pais).filter((a) => (!cat || a.categorias.includes(cat)) && (!myPhase || !s.phase || a.fases.includes(s.phase)));
   // Lo de la fase actual primero; con "Para mi fase", solo eso y lo general.
   const moderar = CON_MODERACION.filter((m) => !myPhase || !m.fases || (s.phase && m.fases.includes(s.phase))).sort(
     (a, b) => Number(!!(s.phase && b.fases?.includes(s.phase))) - Number(!!(s.phase && a.fases?.includes(s.phase))),

@@ -5,7 +5,8 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, AppState, Platform, Text, View } from 'react-native';
+import { ActivityIndicator, AppState, Platform, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Login } from '../components/Login';
 import { Logo } from '../components/Logo';
@@ -15,6 +16,8 @@ import { Button } from '../components/ui';
 import { rescheduleAll } from '../lib/notifications';
 import { StoreProvider, useStore } from '../lib/store';
 import { ThemePrefs, serif, useColors } from '../lib/theme';
+import { RegionProvider, t, useRegion } from '../lib/region';
+import { ElegirPais } from '../components/ElegirPais';
 
 function Gate() {
   const c = useColors();
@@ -33,7 +36,7 @@ function Gate() {
   }, [ready, lockEnabled]);
 
   const unlock = async () => {
-    const res = await LocalAuthentication.authenticateAsync({ promptMessage: 'Desbloquea tu app de ciclo' });
+    const res = await LocalAuthentication.authenticateAsync({ promptMessage: t('Desbloquea tu app de ciclo') });
     if (res.success) setLocked(false);
   };
   useEffect(() => {
@@ -85,6 +88,7 @@ function Gate() {
       <Stack.Screen name="cambio" />
       <Stack.Screen name="perdida" options={{ gestureEnabled: false }} />
       <Stack.Screen name="red" />
+      <Stack.Screen name="personalizar" />
       <Stack.Screen name="patadas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="contracciones" options={{ presentation: 'modal' }} />
       <Stack.Screen name="menopausia" />
@@ -130,9 +134,11 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError && !timedOut) return null;
   return (
     <SafeAreaProvider>
-      <AuthProvider>
-        <AuthGate />
-      </AuthProvider>
+      <RegionProvider>
+        <AuthProvider>
+          <AuthGate />
+        </AuthProvider>
+      </RegionProvider>
     </SafeAreaProvider>
   );
 }
@@ -140,7 +146,8 @@ export default function RootLayout() {
 // Sin sesión se muestra el inicio con correo y contraseña. Si Neon aún no está configurado, la app funciona solo en el teléfono.
 function AuthGate() {
   const { loading, session, configured } = useAuth();
-  if (loading) {
+  const region = useRegion();
+  if (loading || !region.listo) {
     return (
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator />
@@ -151,7 +158,7 @@ function AuthGate() {
     return (
       <>
         <StatusBar style="auto" />
-        <Login />
+        {region.elegido ? <Login /> : <ElegirPais />}
       </>
     );
   }

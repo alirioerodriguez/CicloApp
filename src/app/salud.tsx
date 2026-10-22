@@ -1,7 +1,8 @@
 // "Salud ginecológica": controles, autoexamen de mamas, dolor de ovarios y registro de quistes.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, TextInput, View } from 'react-native';
+import { TextInput, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { MonthGrid } from '../components/MonthGrid';
 import { Body, Button, Card, Chip, Divider, Label, Muted, Row, Screen, Stepper, confirm, notify } from '../components/ui';
 import { AUTOEXAMEN, TIPOS_CONTROL, TIPOS_QUISTE, URGENTE_QUISTE } from '../content/salud';
@@ -11,6 +12,7 @@ import { addMonths, diasHasta, ovarioHistorial, proximoAutoexamen } from '../lib
 import { newId, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Control, ISODate, Quiste } from '../lib/types';
+import { t } from '../lib/region';
 
 function DateBadge({ date }: { date: ISODate }) {
   const c = useColors();
@@ -76,7 +78,7 @@ function Controles() {
           <TextInput
             value={nota}
             onChangeText={setNota}
-            placeholder="Nota (ej.: seguimiento del quiste derecho)"
+            placeholder={t('Nota (ej.: seguimiento del quiste derecho)')}
             placeholderTextColor={c.muted}
             style={{ borderRadius: radius.md, backgroundColor: c.bg, padding: 12, fontSize: 15, color: c.text, fontFamily: fonts.regular }}
           />
@@ -216,7 +218,7 @@ function Quistes() {
           <Row label="Tamaño (ecografía de hoy)" hint="En milímetros">
             <Stepper value={form.mm} onChange={(mm) => setForm({ ...form, mm })} min={1} max={150} format={(v) => `${v} mm`} />
           </Row>
-          <TextInput value={form.nota} onChangeText={(nota) => setForm({ ...form, nota })} placeholder="Lo que te indicó tu médica" placeholderTextColor={c.muted} style={input} />
+          <TextInput value={form.nota} onChangeText={(nota) => setForm({ ...form, nota })} placeholder={t('Lo que te indicó tu médica')} placeholderTextColor={c.muted} style={input} />
           <Button label="Guardar" onPress={save} />
         </View>
       )}

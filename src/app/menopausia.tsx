@@ -1,6 +1,7 @@
 // "Tu menopausia": registro completo de síntomas (escala MRS), sangrado, tratamiento y chequeos.
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Check } from '../components/Check';
 import { Body, Button, Card, Chip, Columnas, Label, Muted, Row, Screen, Stepper, Toggle, tap } from '../components/ui';
 import {

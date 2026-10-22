@@ -1,7 +1,8 @@
 // "Hoy" en modo posparto (diseño 8d): loquios, lactancia, sueño, cicatriz y recuperación.
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import Svg, { Circle } from 'react-native-svg';
 import { MOODS } from '../content/catalogo';
 import { ejercicioById } from '../content/ejercicios';

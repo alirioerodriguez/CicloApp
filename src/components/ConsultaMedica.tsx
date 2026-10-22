@@ -1,7 +1,8 @@
 // Modo consulta médica (diseño 8i): tarjeta clara para mostrar en la consulta y exportar el historial.
 import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { Platform, Share, Text, View } from 'react-native';
+import { Platform, Share, View } from 'react-native';
+import { Text } from './Texto';
 import { exportBackup, exportCsv, shareReport } from '../lib/backup';
 import { consulta, consultaTexto } from '../lib/consulta';
 import { useStore } from '../lib/store';

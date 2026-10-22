@@ -1,7 +1,8 @@
 // Barra flotante mientras la usuaria hace una prueba de la sección "Ayúdanos a mejorar".
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { MISIONES } from '../content/pruebas';
 import { useStore } from '../lib/store';

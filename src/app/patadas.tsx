@@ -1,7 +1,8 @@
 // Contador de patadas (diseño 7g): tocar cada movimiento hasta llegar a 10.
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Muted, Screen, tap } from '../components/ui';
 import { AVISO_PATADAS, META_PATADAS, TEXTO_PATADAS } from '../content/embarazo';
 import { addDays, today } from '../lib/dates';

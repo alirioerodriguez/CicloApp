@@ -1,5 +1,6 @@
 // "Personaliza tu app": 12 tonos y modo Noche / Día / Automático.
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { useStore } from '../lib/store';
 import { fonts, TONOS, useColors, type Modo } from '../lib/theme';
 import { Chip, Label, Muted, tap } from './ui';
@@ -16,7 +17,7 @@ export function TonePicker() {
   const { tono, modo } = data.settings;
   return (
     <View style={{ gap: 10 }}>
-      <Label>Personaliza tu app</Label>
+      <Label>Tono</Label>
       <Muted>Elige el tono que más te guste.</Muted>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, justifyContent: 'space-between' }}>
         {TONOS.map((t) => {

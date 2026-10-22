@@ -1,7 +1,8 @@
 // "Hoy" en modo embarazo (diseño 7d): semana, tamaño del bebé, esta semana, pendientes y herramientas.
 import { router, useLocalSearchParams, type Href } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import Svg, { Circle } from 'react-native-svg';
 import { SEMANA_MIN, TRIMESTRES, bebe, desarrollo, pendientes, proximoControl, trimestre } from '../content/embarazo';
 import { saludo } from '../content/textos';

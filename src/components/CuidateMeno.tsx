@@ -1,6 +1,6 @@
 // "Cuídate" en menopausia (diseño 7k): pensado para tu edad.
 import { router } from 'expo-router';
-import { Text } from 'react-native';
+import { Text } from './Texto';
 import { ejercicioById } from '../content/ejercicios';
 import { ALIMENTOS_MENO, CUIDADOS_MENO, EJERCICIO_MENO, MODERACION_MENO, PLATOS_MENO, etapaMeno } from '../content/menopausia';
 import { useStore } from '../lib/store';

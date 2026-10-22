@@ -1,6 +1,7 @@
 // "Tu recuperación" en modo posparto (diseño 8e): plan por etapas.
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from './Texto';
 import { ejercicioById } from '../content/ejercicios';
 import { CUANDO_VUELVE_PERIODO, ETAPAS_POSPARTO, etapaPosparto, semanasPosparto } from '../content/posparto';
 import { useStore } from '../lib/store';

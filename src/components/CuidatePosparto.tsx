@@ -1,5 +1,6 @@
 // "Cuídate" en modo posparto (diseño 8f): Edimburgo adaptado, comer dando pecho y alarmas.
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import {
   ALARMAS_POSPARTO,
   COMER_DANDO_PECHO,

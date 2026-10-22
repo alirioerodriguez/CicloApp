@@ -1,6 +1,7 @@
 // "Tus 40 semanas" (diseño 7e): todas las semanas por trimestre, con el tamaño del bebé y los controles.
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { CONTROLES_OMS, TRIMESTRES, bebe } from '../content/embarazo';
 import { useEmbarazo } from '../lib/embarazo';
 import { fonts, serif, useColors } from '../lib/theme';

@@ -1,7 +1,8 @@
 // Formulario de registro de un día. Se usa en "Hoy" y al tocar un día del calendario.
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
+import { Text } from './Texto';
 import { FLOW_LABELS, MOODS, SYMPTOMS } from '../content/catalogo';
 import { CUIDATE } from '../content/cuidate';
 import { MOCOS } from '../content/etapas';
@@ -12,6 +13,7 @@ import { useStore } from '../lib/store';
 import { fonts, radius, useColors } from '../lib/theme';
 import type { DayLog, ISODate } from '../lib/types';
 import { Card, Chip, Label, Muted, Row, Stepper, tap } from './ui';
+import { t } from '../lib/region';
 
 const OVARIOS: { id: DayLog['ovario']; label: string }[] = [
   { id: null, label: 'Sin dolor' },
@@ -242,7 +244,7 @@ export function DayEditor({ date }: { date: ISODate }) {
             setNote(t);
             set({ note: t });
           }}
-          placeholder="Algo que quieras recordar de hoy…"
+          placeholder={t('Algo que quieras recordar de hoy…')}
           placeholderTextColor={c.muted}
           multiline
           style={{ minHeight: 80, color: c.text, fontSize: 15, fontFamily: fonts.regular, textAlignVertical: 'top', backgroundColor: c.bg, borderRadius: radius.md, padding: 12 }}

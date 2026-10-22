@@ -1,6 +1,7 @@
 // Acceso al quiz "¿Cómo estás de verdad?" desde Hoy, en todos los modos.
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { RESULTADOS } from '../content/quiz';
 import { today } from '../lib/dates';
 import { useStore } from '../lib/store';

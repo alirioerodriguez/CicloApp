@@ -1,9 +1,9 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { router, type Href } from 'expo-router';
 import { useState } from 'react';
-import { Platform, Pressable, Text, TextInput, View } from 'react-native';
+import { Platform, Pressable, TextInput, View } from 'react-native';
+import { Text } from '../../components/Texto';
 import { MonthGrid } from '../../components/MonthGrid';
-import { TonePicker } from '../../components/TonePicker';
 import { EtapaPicker } from '../../components/EtapaPicker';
 import { SEMANA_MAX, SEMANA_MIN, fppDesdeSemanas, semanasEmbarazo } from '../../content/embarazo';
 import { ETAPAS_MENO } from '../../content/menopausia';
@@ -23,6 +23,8 @@ import { signOut } from '../../lib/nube';
 import { radius, useColors } from '../../lib/theme';
 import type { Settings } from '../../lib/types';
 import { IconoBurbuja } from '../../components/Icono';
+import { t } from '../../lib/region';
+import { SelectorRegion } from '../../components/ElegirPais';
 
 const WATER_HOURS = [8, 10, 12, 14, 16, 18, 20];
 
@@ -50,7 +52,22 @@ export default function Perfil() {
   const r = s.reminders;
   const [pickPack, setPickPack] = useState(false);
   const [cambio, setCambio] = useState(false);
+  const [etapaSel, setEtapaSel] = useState(s.etapa);
   const pill = pillStatus(s);
+
+  // La etapa se cambia solo al tocar Guardar: suele durar mucho tiempo y no se debe mover por un toque.
+  const guardarEtapa = () => {
+    const etapa = etapaSel;
+    const conCond = s.condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x));
+    if (etapa === 'especial' && !conCond) updateSettings({ etapa, condiciones: [...s.condiciones, 'sop'] });
+    // Buscando un embarazo o en menopausia no se usa anticonceptivo.
+    else if (etapa === 'ttc' || etapa === 'meno') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
+    // Sin fecha probable de parto, se empieza en la semana 12 y se ajusta abajo.
+    else if (etapa === 'embarazo') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false, embarazo: s.embarazo.fpp ? s.embarazo : { fpp: fppDesdeSemanas(12) } });
+    else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
+    else updateSettings({ etapa });
+    setCambio(true);
+  };
 
   const setReminders = (patch: Partial<Settings['reminders']>) => updateSettings({ reminders: { ...r, ...patch } });
 
@@ -70,32 +87,33 @@ export default function Perfil() {
           <>
       <Card>
         <Label>Tú</Label>
-        <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder="Tu nombre" placeholderTextColor={c.muted} style={input} />
+        <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder={t('Tu nombre')} placeholderTextColor={c.muted} style={input} />
         <Row label="Tu edad" hint="Para darte ideas acordes a ti">
           <Stepper value={s.edad ?? 29} onChange={(edad) => updateSettings({ edad })} min={10} max={80} />
         </Row>
+        <Divider />
+        <SelectorRegion />
       </Card>
 
       <Card>
         <Label>Tu etapa</Label>
-        <Muted>Savia se arma según la etapa que estás viviendo. Cámbiala cuando quieras: tu historial no se pierde.</Muted>
+        <Muted>Savia se arma según la etapa que estás viviendo. Elige y toca Guardar: se queda así hasta que tú la cambies, y tu historial no se pierde.</Muted>
         <EtapaPicker
-          value={s.etapa}
+          value={etapaSel}
           onChange={(etapa) => {
-            if (etapa === s.etapa) return;
-            const conCond = s.condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x));
-            if (etapa === 'especial' && !conCond) updateSettings({ etapa, condiciones: [...s.condiciones, 'sop'] });
-            // Buscando un embarazo no se usa anticonceptivo.
-            else if (etapa === 'ttc') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
-            // Sin fecha del parto, se empieza en la semana 0 y se ajusta abajo.
-            else if (etapa === 'meno') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
-            else if (etapa === 'embarazo') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false, embarazo: s.embarazo.fpp ? s.embarazo : { fpp: fppDesdeSemanas(12) } });
-            else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
-            else updateSettings({ etapa });
-            setCambio(true);
+            setEtapaSel(etapa);
+            setCambio(false);
           }}
         />
-        {cambio && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ {CAMBIO_ETAPA}</Body>}
+        {etapaSel !== s.etapa && (
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1 }}>
+              <Button label="Guardar etapa" onPress={guardarEtapa} />
+            </View>
+            <Button kind="ghost" label="Cancelar" onPress={() => setEtapaSel(s.etapa)} />
+          </View>
+        )}
+        {cambio && etapaSel === s.etapa && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ Guardado. {CAMBIO_ETAPA}</Body>}
         {s.silencioEmbarazo && (
           <Toggle
             label="Avisos del embarazo en pausa"
@@ -197,12 +215,9 @@ export default function Perfil() {
         )}
       </Card>
 
-      <Card>
-        <TonePicker />
-      </Card>
-
       <Card style={{ gap: 4 }}>
         <Label>Más para ti</Label>
+        <LinkRow emoji="🎨" label="Personalizar la app" hint="Color, modo noche o día" to="/personalizar" />
         <LinkRow emoji="📋" label="Modo consulta médica" hint="Resumen para tu médica y exportar tus datos" to="/consulta" />
         <LinkRow emoji="🤝" label="Tu red de apoyo" hint={s.red.on ? `Compartes con ${s.red.nombre || 'alguien de confianza'}` : 'Comparte lo que elijas con tu pareja'} to="/red" />
         {(s.etapa === 'ttc' || s.etapa === 'embarazo') && <LinkRow emoji="🌙" label="Un cambio en tu embarazo" hint="Nació tu bebé, una pérdida o prefieres no decir" to="/cambio" />}
@@ -357,7 +372,7 @@ export default function Perfil() {
               if (lock) {
                 const ok = (await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync());
                 if (!ok) return notify('No disponible', 'Tu teléfono no tiene huella ni Face ID configurados.');
-                const res = await LocalAuthentication.authenticateAsync({ promptMessage: 'Confirma para activar el bloqueo' });
+                const res = await LocalAuthentication.authenticateAsync({ promptMessage: t('Confirma para activar el bloqueo') });
                 if (!res.success) return;
               }
               updateSettings({ lock });

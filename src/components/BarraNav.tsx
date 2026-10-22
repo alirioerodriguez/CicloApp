@@ -2,7 +2,8 @@
 // con los iconos y el orden del diseño.
 import type { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ANCHO_BARRA } from '../lib/layout';
 import { fonts, radius, serif, useColors } from '../lib/theme';

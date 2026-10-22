@@ -1,7 +1,8 @@
 // Pantalla "Hoy": estado del ciclo + registro del día.
 import { router } from 'expo-router';
 import { useMemo } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../../components/Texto';
 import { HoyEmbarazo } from '../../components/HoyEmbarazo';
 import { HoyMeno } from '../../components/HoyMeno';
 import { HoyPosparto } from '../../components/HoyPosparto';

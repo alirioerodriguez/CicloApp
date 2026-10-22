@@ -1,12 +1,14 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../../components/Texto';
 import { Body, Button, Card, Chip, Columnas, Grilla, Label, Muted, Screen } from '../../components/ui';
 import { CuidateEmbarazo } from '../../components/CuidateEmbarazo';
 import { CuidateMeno } from '../../components/CuidateMeno';
 import { CuidatePosparto } from '../../components/CuidatePosparto';
 import { EjercicioCard } from '../../components/EjercicioCard';
-import { ALIMENTOS } from '../../content/alimentos';
+import { alimentosPara } from '../../content/alimentos';
+import { useRegion } from '../../lib/region';
 import { POR_FASE, ejercicioById } from '../../content/ejercicios';
 import { CUIDATE, faseCorta, pick } from '../../content/cuidate';
 import { diffDays, today } from '../../lib/dates';
@@ -33,7 +35,8 @@ function CuidateCiclo() {
   const [shuffle, setShuffle] = useState(0);
   const seed = diffDays(today(), '2024-01-01') + shuffle;
   const mimo = pick(content.mimos, seed);
-  const foods = ALIMENTOS.filter((a) => a.fases.includes(shown));
+  const { pais } = useRegion();
+  const foods = alimentosPara(pais).filter((a) => a.fases.includes(shown));
 
   const tint: Record<Phase, string> = { menstrual: c.rosaSuave, folicular: c.salviaSuave, ovulatoria: c.duraznoSuave, lutea: c.lavandaSuave, pastilla: c.salviaSuave };
   const phases: Phase[] = data.settings.pillMode ? ['menstrual', 'pastilla'] : ['menstrual', 'folicular', 'ovulatoria', 'lutea'];

@@ -1,6 +1,7 @@
 // Tarjeta del modo en Hoy: ciclo especial (8b) o busco un embarazo (8c).
 import { router } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { CONDICIONES_ESPECIAL } from '../content/etapas';
 import { addDays, diffDays, shortDate, today } from '../lib/dates';
 import { useStore } from '../lib/store';

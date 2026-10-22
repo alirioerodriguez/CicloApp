@@ -1,6 +1,7 @@
 // Pérdida (diseño 8h): acompañamiento sin avisos.
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Muted, Screen } from '../components/ui';
 import { PERDIDA_CUIDADOS, PERDIDA_TEXTO, PERDIDA_TITULO } from '../content/confianza';
 import { serif, useColors } from '../lib/theme';

@@ -1,7 +1,8 @@
 // Contador de contracciones: duración, intervalo y la regla 5-1-1.
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from '../components/Texto';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui';
 import { REGLA_511, REGLA_511_YA } from '../content/embarazo';
 import { fonts, serif, useColors } from '../lib/theme';

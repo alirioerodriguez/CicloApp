@@ -1,5 +1,6 @@
 // Fila con casilla para listas de pendientes, controles, exámenes y bolso.
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, View } from 'react-native';
+import { Text } from './Texto';
 import { fonts, radius, useColors } from '../lib/theme';
 import { tap } from './ui';
 

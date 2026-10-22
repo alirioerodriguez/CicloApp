@@ -6,7 +6,7 @@ export interface EtapaInfo {
   emoji: string;
   label: string;
   sub: string;
-  // Los modos de embarazo, posparto y menopausia llegan en los próximos bloques.
+  // Los modos de embarazo y menopausia llegan en los próximos bloques.
   disponible: boolean;
 }
 
@@ -15,7 +15,7 @@ export const ETAPAS: EtapaInfo[] = [
   { id: 'especial', emoji: '🌀', label: 'Ciclo especial', sub: 'SOP, endometriosis, ciclos irregulares o anticonceptivos', disponible: true },
   { id: 'ttc', emoji: '🌱', label: 'Busco un embarazo', sub: 'Ventana fértil, moco cervical, temperatura y LH', disponible: true },
   { id: 'embarazo', emoji: '🤰', label: 'Estoy embarazada', sub: 'Semana a semana, controles y tu bebé', disponible: false },
-  { id: 'posparto', emoji: '🍼', label: 'Posparto o lactancia', sub: 'Tu recuperación, tu ánimo y la lactancia', disponible: false },
+  { id: 'posparto', emoji: '🍼', label: 'Posparto o lactancia', sub: 'Tu recuperación, tu ánimo y la lactancia', disponible: true },
   { id: 'meno', emoji: '🌗', label: 'Perimenopausia o menopausia', sub: 'Ciclos que cambian, bochornos y salud ósea', disponible: false },
 ];
 

@@ -21,6 +21,22 @@ export interface DayLog {
   moco: Moco | null;
   temp: number | null; // temperatura basal, °C
   lh: 'neg' | 'pos' | null; // test de ovulación
+  // Modo posparto.
+  loquios: Loquios | null;
+  tomas: Toma[];
+  cicatriz: string | null;
+}
+
+export type Loquios = 'rojo' | 'rosado' | 'amarillento' | 'no';
+export interface Toma {
+  lado: 'izq' | 'der' | 'biberon';
+  hora: string; // 'HH:MM'
+}
+
+export interface Posparto {
+  nacimiento: ISODate | null; // fecha del parto: de aquí salen las semanas
+  parto: 'vaginal' | 'cesarea';
+  alimentacion: 'pecho' | 'formula' | 'mixta';
 }
 
 // 21-7: días sin pastilla · 21-7p: placebo · pop: solo progestágeno.
@@ -51,6 +67,7 @@ export interface Settings {
   etapa: Etapa;
   anticonceptivo: Anticonceptivo;
   ttcRegistro: SenalTtc[]; // qué señales quiere registrar en modo "busco un embarazo"
+  posparto: Posparto;
   cycleLength: number; // valor inicial; luego se aprende de los datos
   periodLength: number;
   pillMode: boolean;
@@ -117,6 +134,8 @@ export interface AppData {
   controles: Control[];
   autoexamenes: ISODate[];
   quistes: Quiste[];
+  // Escala de Edimburgo adaptada (4 preguntas, 0–3), una por semana: clave = lunes de esa semana.
+  edimburgo: Record<ISODate, number[]>;
   pruebas: {
     misiones: Record<string, PruebaResultado>;
     sus: number[]; // 10 respuestas 1–5

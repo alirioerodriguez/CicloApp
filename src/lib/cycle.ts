@@ -26,9 +26,9 @@ export function sinOvulacion(s: Settings): boolean {
   return s.pillMode || SIN_OVULACION.includes(s.anticonceptivo);
 }
 
-// En ciclo especial no se avisa de atrasos.
+// En ciclo especial y en posparto no se avisa de atrasos.
 export function sinAtrasos(s: Settings): boolean {
-  return s.ocultarRetrasos || s.etapa === 'especial';
+  return s.ocultarRetrasos || s.etapa === 'especial' || s.etapa === 'posparto';
 }
 
 // Días con flujo, agrupados en períodos. Se tolera un día sin flujo en medio.

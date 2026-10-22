@@ -18,6 +18,7 @@ export const DEFAULT_SETTINGS: Settings = {
   etapa: 'ciclo',
   anticonceptivo: 'ninguno',
   ttcRegistro: ['moco', 'lh', 'relacion'],
+  posparto: { nacimiento: null, parto: 'vaginal', alimentacion: 'pecho' },
   cycleLength: 28,
   periodLength: 5,
   pillMode: false,
@@ -52,17 +53,18 @@ export const emptyData = (): AppData => ({
   controles: [],
   autoexamenes: [],
   quistes: [],
+  edimburgo: {},
   pruebas: { misiones: {}, sus: [], ideas: [] },
 });
 
 export function emptyLog(date: ISODate): DayLog {
-  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null };
+  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null, loquios: null, tomas: [], cicatriz: null };
 }
 
 function isEmptyLog(l: DayLog) {
   return (
     !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad &&
-    !l.moco && l.temp == null && !l.lh
+    !l.moco && l.temp == null && !l.lh && !l.loquios && !l.tomas.length && !l.cicatriz
   );
 }
 
@@ -88,6 +90,7 @@ export function normalize(raw: unknown): AppData {
     pillType: (s.pillType as string) === '28' ? '21-7p' : s.pillType ?? DEFAULT_SETTINGS.pillType,
     // Antes de los modos, la pastilla se guardaba solo como pillMode.
     anticonceptivo: s.anticonceptivo ?? (s.pillMode ? 'pastilla' : 'ninguno'),
+    posparto: { ...DEFAULT_SETTINGS.posparto, ...s.posparto },
     reminders: {
       pill: { ...DEFAULT_SETTINGS.reminders.pill, ...s.reminders?.pill },
       water: { ...DEFAULT_SETTINGS.reminders.water, ...s.reminders?.water },
@@ -113,6 +116,7 @@ export function normalize(raw: unknown): AppData {
     controles: Array.isArray(r.controles) ? r.controles : base.controles,
     autoexamenes: Array.isArray(r.autoexamenes) ? r.autoexamenes : base.autoexamenes,
     quistes: Array.isArray(r.quistes) ? r.quistes : base.quistes,
+    edimburgo: r.edimburgo && typeof r.edimburgo === 'object' ? r.edimburgo : base.edimburgo,
     pruebas: { ...base.pruebas, ...r.pruebas },
   };
 }

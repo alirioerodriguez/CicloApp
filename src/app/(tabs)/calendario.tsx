@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Legend, MonthGrid } from '../../components/MonthGrid';
+import { RecuperacionPosparto } from '../../components/RecuperacionPosparto';
 import { Body, Button, Card, Columnas, Label, Muted, Row, Screen } from '../../components/ui';
 import { AVISO_ANTICONCEPTIVO, confianza } from '../../content/textos';
 import { calendarMarks, sinAtrasos, sinOvulacion } from '../../lib/cycle';
@@ -10,6 +11,13 @@ import { useStore } from '../../lib/store';
 import { useColors } from '../../lib/theme';
 
 export default function Calendario() {
+  const { data } = useStore();
+  // En posparto esta pestaña es "Tu recuperación".
+  if (data.settings.etapa === 'posparto') return <RecuperacionPosparto />;
+  return <CalendarioCiclo />;
+}
+
+function CalendarioCiclo() {
   const c = useColors();
   const { data, summary: s, togglePeriodDay } = useStore();
   const [editing, setEditing] = useState(false);

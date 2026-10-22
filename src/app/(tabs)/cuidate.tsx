@@ -2,6 +2,7 @@ import { router } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { Body, Button, Card, Chip, Columnas, Grilla, Label, Muted, Screen } from '../../components/ui';
+import { CuidatePosparto } from '../../components/CuidatePosparto';
 import { EjercicioCard } from '../../components/EjercicioCard';
 import { ALIMENTOS } from '../../content/alimentos';
 import { POR_FASE, ejercicioById } from '../../content/ejercicios';
@@ -12,6 +13,12 @@ import { serif, useColors } from '../../lib/theme';
 import type { Phase } from '../../lib/types';
 
 export default function Cuidate() {
+  const { data } = useStore();
+  if (data.settings.etapa === 'posparto') return <CuidatePosparto />;
+  return <CuidateCiclo />;
+}
+
+function CuidateCiclo() {
   const c = useColors();
   const { summary: s, data } = useStore();
   const realPhase: Phase = s.phase ?? (data.settings.pillMode ? 'pastilla' : 'folicular');

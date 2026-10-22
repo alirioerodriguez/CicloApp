@@ -8,6 +8,7 @@ import { Logo } from '../components/Logo';
 import { PillPicker } from '../components/PillPicker';
 import { TonePicker } from '../components/TonePicker';
 import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper } from '../components/ui';
+import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../content/posparto';
 import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../content/etapas';
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
@@ -15,14 +16,15 @@ import { ensurePermission, notificationsSupported } from '../lib/notifications';
 import { supabaseConfigured } from '../lib/supabase';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
-import type { Anticonceptivo, Condicion, Etapa, ISODate, PillType, SenalTtc } from '../lib/types';
+import type { Anticonceptivo, Condicion, Etapa, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
 
-type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'listo';
+type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'posparto' | 'listo';
 
-const FLUJOS: Record<'ciclo' | 'especial' | 'ttc', Paso[]> = {
+const FLUJOS: Record<'ciclo' | 'especial' | 'ttc' | 'posparto', Paso[]> = {
   ciclo: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'pastilla', 'listo'],
   especial: ['bienvenida', 'cuenta', 'periodo', 'especial', 'listo'],
   ttc: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'ttc', 'listo'],
+  posparto: ['bienvenida', 'cuenta', 'posparto', 'listo'],
 };
 
 export default function Onboarding() {
@@ -43,8 +45,12 @@ export default function Onboarding() {
   const [pillType, setPillType] = useState<PillType>('21-7');
   const [packStart, setPackStart] = useState<ISODate | null>(null);
   const [pillHour, setPillHour] = useState(21);
+  const [ppSemanas, setPpSemanas] = useState(s0.posparto.nacimiento ? semanasPosparto(s0.posparto) : 2);
+  const [parto, setParto] = useState<Posparto['parto']>(s0.posparto.parto);
+  const [alimentacion, setAlimentacion] = useState<Posparto['alimentacion']>(s0.posparto.alimentacion);
 
-  const flujo = FLUJOS[etapa === 'especial' || etapa === 'ttc' ? etapa : 'ciclo'];
+  const flujo = FLUJOS[etapa === 'especial' || etapa === 'ttc' || etapa === 'posparto' ? etapa : 'ciclo'];
+  const posparto = etapa === 'posparto';
   const paso = flujo[Math.min(i, flujo.length - 1)];
   // Buscando un embarazo no se usa anticonceptivo.
   const antiFinal: Anticonceptivo = etapa === 'ttc' ? 'ninguno' : anti ?? 'ninguno';
@@ -66,6 +72,7 @@ export default function Onboarding() {
         anticonceptivo: antiFinal,
         condiciones: condFinal,
         ttcRegistro: ttc,
+        posparto: posparto ? { nacimiento: nacimientoHace(ppSemanas), parto, alimentacion } : s0.posparto,
         cycleLength: etapa === 'especial' ? 35 : cycleLength,
         periodLength,
         pillMode: pastilla,
@@ -75,7 +82,7 @@ export default function Onboarding() {
         reminders: {
           ...s0.reminders,
           pill: { on: pastilla && granted, hour: pillHour, minute: 0 },
-          period: { ...s0.reminders.period, on: granted && etapa !== 'especial' },
+          period: { ...s0.reminders.period, on: granted && etapa !== 'especial' && !posparto },
           pack: { ...s0.reminders.pack, on: pastilla && granted },
         },
       },
@@ -87,6 +94,14 @@ export default function Onboarding() {
   const next = () => (i < flujo.length - 1 ? setI(i + 1) : finish());
   const back = () => setI(Math.max(0, i - 1));
   const toggle = <T,>(list: T[], x: T) => (list.includes(x) ? list.filter((y) => y !== x) : [...list, x]);
+
+  const opcion = <T extends string>(lista: { id: T; label: string }[], valor: T, set: (v: T) => void) => (
+    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+      {lista.map((o) => (
+        <Chip key={o.id} label={o.label} selected={valor === o.id} onPress={() => set(o.id)} />
+      ))}
+    </View>
+  );
 
   const h1 = (t: string) => <Text style={{ fontFamily: serif, fontSize: 30, lineHeight: 36, color: c.text }}>{t}</Text>;
 
@@ -156,7 +171,7 @@ export default function Onboarding() {
               if (e === 'especial' && !condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x))) setCondiciones([...condiciones, 'sop']);
             }}
           />
-          <Muted>Embarazo, posparto y menopausia llegan muy pronto. Tu historial se queda contigo cuando cambies de modo.</Muted>
+          <Muted>Embarazo y menopausia llegan muy pronto. Tu historial se queda contigo cuando cambies de modo.</Muted>
         </>
       )}
 
@@ -234,6 +249,22 @@ export default function Onboarding() {
         </>
       )}
 
+      {paso === 'posparto' && (
+        <>
+          {h1('¿Hace cuánto nació tu bebé?')}
+          <Body>Felicidades. Aquí la protagonista también eres tú.</Body>
+          <Card>
+            <Row label="Semanas desde el parto" hint="Cuarto trimestre: semanas 0 a 12">
+              <Stepper value={ppSemanas} onChange={setPpSemanas} min={0} max={52} />
+            </Row>
+          </Card>
+          <Label>Tu parto fue</Label>
+          {opcion(PARTOS, parto, setParto)}
+          <Label>Alimentas a tu bebé con</Label>
+          {opcion(ALIMENTACIONES, alimentacion, setAlimentacion)}
+        </>
+      )}
+
       {paso === 'listo' && (
         <>
           {h1(`Todo listo${name.trim() ? `, ${name.trim()}` : ''} 🌷`)}
@@ -246,7 +277,7 @@ export default function Onboarding() {
             <Body>• Sin publicidad. Nunca vendemos ni compartimos tus datos.</Body>
             <Body>• Puedes respaldarlos o borrarlos cuando quieras desde Perfil.</Body>
           </Card>
-          <Muted>Savia te acompaña, pero no reemplaza a tu médico. {etapa === 'ttc' ? '' : AVISO_ANTICONCEPTIVO}</Muted>
+          <Muted>Savia te acompaña, pero no reemplaza a tu médico. {etapa === 'ttc' || posparto ? '' : AVISO_ANTICONCEPTIVO}</Muted>
           {notificationsSupported && <Muted>Al continuar te pediremos permiso para enviarte recordatorios. Puedes ajustarlos cuando quieras.</Muted>}
         </>
       )}

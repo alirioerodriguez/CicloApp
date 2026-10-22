@@ -2,6 +2,7 @@
 import { router } from 'expo-router';
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
+import { HoyPosparto } from '../../components/HoyPosparto';
 import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
 import { Body, Button, Card, Columnas, Label, Muted, Screen } from '../../components/ui';
@@ -93,6 +94,12 @@ function missedPillYesterday(data: ReturnType<typeof useStore>['data']): boolean
 }
 
 export default function Hoy() {
+  const { data } = useStore();
+  if (data.settings.etapa === 'posparto') return <HoyPosparto />;
+  return <HoyCiclo />;
+}
+
+function HoyCiclo() {
   const c = useColors();
   const L = useLayout();
   const { data, summary: s, updateSettings } = useStore();

@@ -5,6 +5,7 @@ import { Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { MonthGrid } from '../../components/MonthGrid';
 import { TonePicker } from '../../components/TonePicker';
 import { EtapaPicker } from '../../components/EtapaPicker';
+import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../../content/posparto';
 import { CONDICIONES } from '../../content/condiciones';
 import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../../content/etapas';
 import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
@@ -83,6 +84,8 @@ export default function Perfil() {
             if (etapa === 'especial' && !conCond) updateSettings({ etapa, condiciones: [...s.condiciones, 'sop'] });
             // Buscando un embarazo no se usa anticonceptivo.
             else if (etapa === 'ttc') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
+            // Sin fecha del parto, se empieza en la semana 0 y se ajusta abajo.
+            else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
             else updateSettings({ etapa });
             setCambio(true);
           }}
@@ -111,6 +114,32 @@ export default function Perfil() {
               ))}
             </View>
             <Muted>{SIN_OVULACION.includes(s.anticonceptivo) ? NOTA_HORMONAL : NOTA_ESPECIAL}</Muted>
+          </>
+        )}
+
+        {s.etapa === 'posparto' && (
+          <>
+            <Divider />
+            <Row label="Semanas desde el parto" hint={s.posparto.nacimiento ? `Nació el ${longDate(s.posparto.nacimiento)}` : undefined}>
+              <Stepper
+                value={semanasPosparto(s.posparto)}
+                onChange={(v) => updateSettings({ posparto: { ...s.posparto, nacimiento: nacimientoHace(v) } })}
+                min={0}
+                max={104}
+              />
+            </Row>
+            <Body style={{ fontWeight: '600' }}>Tu parto fue</Body>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {PARTOS.map((k) => (
+                <Chip key={k.id} label={k.label} selected={s.posparto.parto === k.id} onPress={() => updateSettings({ posparto: { ...s.posparto, parto: k.id } })} />
+              ))}
+            </View>
+            <Body style={{ fontWeight: '600' }}>Alimentas a tu bebé con</Body>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+              {ALIMENTACIONES.map((k) => (
+                <Chip key={k.id} label={k.label} selected={s.posparto.alimentacion === k.id} onPress={() => updateSettings({ posparto: { ...s.posparto, alimentacion: k.id } })} />
+              ))}
+            </View>
           </>
         )}
 

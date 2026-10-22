@@ -18,6 +18,7 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { data } = useStore();
   const L = useLayout();
+  const posparto = data.settings.etapa === 'posparto';
   if (!data.settings.onboarded) return <Redirect href="/onboarding" />;
   if (!data.settings.tutorialVisto) return <Redirect href="/tutorial" />;
 
@@ -52,7 +53,7 @@ export default function TabsLayout() {
             }),
       }}
     >
-      <Tabs.Screen name="calendario" options={{ title: 'Calendario', tabBarIcon: icon('📅') }} />
+      <Tabs.Screen name="calendario" options={posparto ? { title: 'Recuperación', tabBarIcon: icon('🌷') } : { title: 'Calendario', tabBarIcon: icon('📅') }} />
       <Tabs.Screen name="index" options={{ title: 'Hoy', tabBarIcon: icon('🌸') }} />
       <Tabs.Screen name="cuidate" options={{ title: 'Cuídate', tabBarIcon: icon('🌿') }} />
       <Tabs.Screen name="estadisticas" options={{ title: 'Resumen', tabBarIcon: icon('📊') }} />

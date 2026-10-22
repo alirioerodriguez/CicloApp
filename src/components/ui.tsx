@@ -5,6 +5,7 @@ import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, Text, View,
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLayout } from '../lib/layout';
 import { fonts, radius, serif, useColors } from '../lib/theme';
+import { Icono } from './Icono';
 
 // Las fuentes personalizadas no se "engordan" solas: se elige la variante según el fontWeight.
 export function font(style?: StyleProp<TextStyle>, base: keyof typeof fonts = 'regular'): TextStyle {
@@ -156,7 +157,7 @@ export function Chip({ label, emoji, selected, onPress, color }: { label: string
         opacity: pressed ? 0.7 : 1,
       })}
     >
-      {emoji ? <Text style={{ fontSize: 15 }}>{emoji}</Text> : null}
+      {emoji ? <Icono e={emoji} size={16} color={selected ? accent : c.muted} /> : null}
       <Text style={{ fontSize: 13.5, fontFamily: selected ? fonts.bold : fonts.medium, color: c.text }}>{label}</Text>
     </Pressable>
   );

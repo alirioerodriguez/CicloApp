@@ -57,7 +57,7 @@ export default function Red() {
           <Card tint={c.rosaSuave}>
             <Text style={{ fontFamily: fonts.bold, fontSize: 11.5, letterSpacing: 1.5, color: c.muted }}>ASÍ LO VERÁ</Text>
             <Text style={{ fontFamily: serif, fontSize: 20, lineHeight: 27, color: c.text }}>{tarjeta.mensaje}</Text>
-            {tarjeta.consejo && <Body>💡 {tarjeta.consejo}</Body>}
+            {tarjeta.consejo && <Body>{tarjeta.consejo}</Body>}
           </Card>
           <Button label={`Enviar la tarjeta de hoy${red.nombre.trim() ? ` a ${red.nombre.trim()}` : ''}`} onPress={() => enviar(tarjetaTexto(tarjeta)).catch(() => {})} />
           <Muted>Savia no envía nada por su cuenta: tú eliges cuándo y por dónde mandarla (WhatsApp, mensaje, correo).</Muted>

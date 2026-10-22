@@ -22,6 +22,7 @@ import { useStore } from '../../lib/store';
 import { signOut } from '../../lib/supabase';
 import { radius, useColors } from '../../lib/theme';
 import type { Settings } from '../../lib/types';
+import { IconoBurbuja } from '../../components/Icono';
 
 const WATER_HOURS = [8, 10, 12, 14, 16, 18, 20];
 
@@ -30,7 +31,7 @@ function LinkRow({ emoji, label, hint, to }: { emoji: string; label: string; hin
   return (
     <Pressable accessibilityRole="button" onPress={() => router.push(to)} style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 8, opacity: pressed ? 0.6 : 1 })}>
       <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: c.rosaSuave, alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ fontSize: 18 }}>{emoji}</Text>
+        <IconoBurbuja e={emoji} size={22} fondo="transparent" color={c.rosa} />
       </View>
       <View style={{ flex: 1 }}>
         <Body style={{ fontWeight: '600' }}>{label}</Body>
@@ -97,7 +98,7 @@ export default function Perfil() {
         {cambio && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ {CAMBIO_ETAPA}</Body>}
         {s.silencioEmbarazo && (
           <Toggle
-            label="🔕 Avisos del embarazo en pausa"
+            label="Avisos del embarazo en pausa"
             hint="Sin sugerencias de prueba ni avisos de atraso. Apágalo cuando quieras volver a verlos."
             value={s.silencioEmbarazo}
             onChange={(silencioEmbarazo) => updateSettings({ silencioEmbarazo })}
@@ -247,7 +248,7 @@ export default function Perfil() {
 
       <Card>
         <Toggle
-          label="💊 Tomo pastilla anticonceptiva"
+          label="Tomo pastilla anticonceptiva"
           hint="Oculta los días fértiles y activa el seguimiento del blíster"
           value={s.pillMode}
           onChange={(pillMode) => updateSettings({ pillMode, anticonceptivo: pillMode ? 'pastilla' : s.anticonceptivo === 'pastilla' ? 'ninguno' : s.anticonceptivo })}
@@ -274,7 +275,7 @@ export default function Perfil() {
         derecha={
           <>
       <Card>
-        <Label>🔔 Recordatorios</Label>
+        <Label>Recordatorios</Label>
         {!notificationsSupported ? (
           <Muted>Los recordatorios funcionan en la app instalada en el teléfono (Android o iPhone).</Muted>
         ) : (
@@ -305,7 +306,7 @@ export default function Perfil() {
               </Row>
             )}
             <Divider />
-            <Toggle label="✍️ Registrar mi día" hint="Un empujoncito suave cada noche" value={r.registro.on} onChange={(on) => (on ? withPermission(() => setReminders({ registro: { ...r.registro, on } })) : setReminders({ registro: { ...r.registro, on } }))} />
+            <Toggle label="Registrar mi día" hint="Un empujoncito suave cada noche" value={r.registro.on} onChange={(on) => (on ? withPermission(() => setReminders({ registro: { ...r.registro, on } })) : setReminders({ registro: { ...r.registro, on } }))} />
             {r.registro.on && (
               <Row label="Hora">
                 <Stepper
@@ -318,17 +319,17 @@ export default function Perfil() {
                 />
               </Row>
             )}
-            <Toggle label="🎀 Autoexamen de mamas" hint="Una vez al mes, unos días después del período" value={r.autoexamen.on} onChange={(on) => (on ? withPermission(() => setReminders({ autoexamen: { ...r.autoexamen, on } })) : setReminders({ autoexamen: { ...r.autoexamen, on } }))} />
-            <Toggle label="🩺 Controles médicos" hint="Ecografía, PAP y control anual" value={r.controles.on} onChange={(on) => (on ? withPermission(() => setReminders({ controles: { ...r.controles, on } })) : setReminders({ controles: { ...r.controles, on } }))} />
+            <Toggle label="Autoexamen de mamas" hint="Una vez al mes, unos días después del período" value={r.autoexamen.on} onChange={(on) => (on ? withPermission(() => setReminders({ autoexamen: { ...r.autoexamen, on } })) : setReminders({ autoexamen: { ...r.autoexamen, on } }))} />
+            <Toggle label="Controles médicos" hint="Ecografía, PAP y control anual" value={r.controles.on} onChange={(on) => (on ? withPermission(() => setReminders({ controles: { ...r.controles, on } })) : setReminders({ controles: { ...r.controles, on } }))} />
             {r.controles.on && (
               <Row label="Avisarme antes">
                 <Stepper value={r.controles.daysBefore} onChange={(v) => setReminders({ controles: { ...r.controles, daysBefore: v } })} min={1} max={14} format={(v) => `${v} d`} />
               </Row>
             )}
             <Divider />
-            <Toggle label="🤫 Notificaciones discretas" hint='En la pantalla bloqueada dice solo "Recordatorio 🌸", sin mencionar pastilla ni período' value={s.discreet} onChange={(discreet) => updateSettings({ discreet })} />
+            <Toggle label="Notificaciones discretas" hint='En la pantalla bloqueada dice solo "Savia", sin mencionar pastilla ni período' value={s.discreet} onChange={(discreet) => updateSettings({ discreet })} />
             <Divider />
-            <Toggle label="💧 Tomar agua" value={r.water.on} onChange={(on) => (on ? withPermission(() => setReminders({ water: { ...r.water, on } })) : setReminders({ water: { ...r.water, on } }))} />
+            <Toggle label="Tomar agua" value={r.water.on} onChange={(on) => (on ? withPermission(() => setReminders({ water: { ...r.water, on } })) : setReminders({ water: { ...r.water, on } }))} />
             {r.water.on && (
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                 {WATER_HOURS.map((h) => (
@@ -349,7 +350,7 @@ export default function Perfil() {
       {Platform.OS !== 'web' && (
         <Card>
           <Toggle
-            label="🔒 Proteger con huella / Face ID"
+            label="Proteger con huella / Face ID"
             hint="Pide desbloquear al abrir la app"
             value={s.lock}
             onChange={async (lock) => {
@@ -367,7 +368,7 @@ export default function Perfil() {
 
       {session && (
         <Card>
-          <Label>👤 Tu cuenta</Label>
+          <Label>Tu cuenta</Label>
           <Body>{session.user.email}</Body>
           <Muted>
             {{ local: 'Solo en este teléfono', sincronizando: 'Guardando en tu cuenta…', 'al-dia': '✓ Respaldado en tu cuenta', 'sin-conexion': 'Sin conexión: se respalda cuando vuelva internet' }[sync]}
@@ -384,7 +385,7 @@ export default function Perfil() {
       )}
 
       <Card tint={backupAge == null || backupAge > 30 ? c.duraznoSuave : undefined}>
-        <Label>💾 Tus datos</Label>
+        <Label>Tus datos</Label>
         <Muted>
           Tus datos se respaldan solos en tu cuenta. Además puedes guardar una copia en un archivo.{' '}
           {s.lastBackup ? `Último respaldo: ${longDate(s.lastBackup)}.` : 'Aún no has hecho ningún respaldo.'}
@@ -410,7 +411,7 @@ export default function Perfil() {
               const n = Object.keys(backup.logs).length;
               if (await confirm('¿Restaurar este respaldo?', `Tiene ${n} días registrados. Reemplazará lo que hay ahora en la app.`, 'Restaurar')) {
                 replaceAll({ ...backup, settings: { ...backup.settings, onboarded: true } });
-                notify('Listo 🌷', 'Tus datos se restauraron.');
+                notify('Listo', 'Tus datos se restauraron.');
               }
             } catch (e) {
               notify('Ese archivo no sirve', e instanceof Error ? e.message : String(e));
@@ -418,7 +419,7 @@ export default function Perfil() {
           }}
         />
         <Divider />
-        <Body style={{ fontWeight: '600' }}>📄 Resumen para tu médico</Body>
+        <Body style={{ fontWeight: '600' }}>Resumen para tu médico</Body>
         <Muted>Un PDF con tus ciclos, duración, síntomas frecuentes y notas, para llevar a la consulta.</Muted>
         <Button kind="soft" label="Crear resumen PDF" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
       </Card>
@@ -436,9 +437,9 @@ export default function Perfil() {
           }
         }}
       />
-      <Button kind="ghost" small label="🩺 Cuándo consultar · fuentes" onPress={() => router.push('/info')} />
+      <Button kind="ghost" small label="Cuándo consultar · fuentes" onPress={() => router.push('/info')} />
       <Muted style={{ textAlign: 'center' }}>{NO_DISPOSITIVO}</Muted>
-      <Muted style={{ textAlign: 'center' }}>Hecha con cariño 🌸 · v1.0</Muted>
+      <Muted style={{ textAlign: 'center' }}>Hecha con cariño · v1.0</Muted>
     </Screen>
   );
 }

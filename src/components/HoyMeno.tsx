@@ -20,6 +20,8 @@ import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Logo } from './Logo';
 import { Platos } from './Platos';
 import { Body, Button, Card, Columnas, Label, Muted, Screen, tap } from './ui';
+import { Icono } from './Icono';
+import { QuizEntrada } from './QuizEntrada';
 
 export function HoyMeno() {
   const c = useColors();
@@ -97,9 +99,11 @@ export function HoyMeno() {
 
             {sangradoHoy && st.meno.etapa === 'post' && (
               <Card tint={c.duraznoSuave}>
-                <Body style={{ fontWeight: '700' }}>⚠️ {mensajeSangrado('post')}</Body>
+                <Body style={{ fontWeight: '700' }}>{mensajeSangrado('post')}</Body>
               </Card>
             )}
+
+            <QuizEntrada />
 
             <Card>
               <Label>Hoy me siento</Label>
@@ -122,7 +126,7 @@ export function HoyMeno() {
                           }}
                           style={{ flex: 1, height: 40, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? c.rosaSuave : c.bg, borderWidth: on ? 1.5 : 0, borderColor: c.rosa }}
                         >
-                          <Text style={{ fontSize: 20 }}>{cara}</Text>
+                          <Icono e={cara} size={22} color={on ? c.rosa : c.muted} />
                         </Pressable>
                       );
                     })}
@@ -137,7 +141,7 @@ export function HoyMeno() {
           <>
             {notamos && (
               <Card style={{ flexDirection: 'row', gap: 12 }}>
-                <Text style={{ fontSize: 22 }}>🔎</Text>
+                <Icono e="🔎" size={22} />
                 <View style={{ flex: 1 }}>
                   <Label>Notamos que…</Label>
                   <Body>{notamos}</Body>
@@ -152,7 +156,7 @@ export function HoyMeno() {
 
             <Pressable accessibilityRole="button" onPress={() => router.push('/menopausia')}>
               <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Text style={{ fontSize: 26 }}>🩺</Text>
+                <Icono e="🩺" size={24} />
                 <View style={{ flex: 1 }}>
                   <Label>{pendiente ? `Pendiente: ${pendiente.titulo}` : 'Tus controles están al día'}</Label>
                   <Muted>{pendiente ? 'Pídela en tu próxima consulta' : 'Revisa de nuevo en tu control anual'}</Muted>

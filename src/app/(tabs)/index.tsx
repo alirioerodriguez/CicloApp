@@ -17,6 +17,7 @@ import { pillStatus, sinAtrasos, unlockedLogros } from '../../lib/cycle';
 import { addDays, diffDays, inDays, longDate, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { fonts, serif, useColors } from '../../lib/theme';
+import { QuizEntrada } from '../../components/QuizEntrada';
 
 function Status() {
   const c = useColors();
@@ -27,7 +28,7 @@ function Status() {
     return (
       <Card tint={c.rosaSuave}>
         <Body>Aún no hay períodos registrados. Cuando te venga, toca el botón y la app empieza a predecir.</Body>
-        <Button label="🩸 Me vino hoy" onPress={startPeriodToday} />
+        <Button label="Me vino hoy" onPress={startPeriodToday} />
       </Card>
     );
   }
@@ -38,7 +39,7 @@ function Status() {
   if (s.inPeriod) {
     big = String(s.cycleDay);
     unit = 'día de período';
-    line = 'Cuídate mucho estos días 💗';
+    line = 'Cuídate mucho estos días';
   } else if (s.lateDays > 0 && (sinAtrasos(data.settings) || (s.ventana && s.ventana[1] >= t))) {
     // Sin hablar de "retraso": ciclos irregulares o la usuaria pidió no ver esos avisos.
     big = String(s.cycleDay);
@@ -67,12 +68,12 @@ function Status() {
       <Body style={{ textAlign: 'center', marginTop: 6 }}>{line}</Body>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
         <Tag text={`Día ${s.cycleDay} del ciclo`} />
-        {phase && <Tag text={`${phase.emoji} ${phase.nombre}`} />}
+        {phase && <Tag text={phase.nombre} />}
         {s.fertileStart && !s.inPeriod && <Tag text={`Fértil (estimado): ${shortDate(s.fertileStart)}–${shortDate(s.fertileEnd!)}`} />}
-        {pill && <Tag text={pill.active ? `💊 ${pill.dayInPack}/${pill.packLength}` : `🌙 Descanso · día ${pill.dayInPack}`} />}
+        {pill && <Tag text={pill.active ? `${pill.dayInPack}/${pill.packLength}` : `Descanso · día ${pill.dayInPack}`} />}
         {pill && <Tag text={`Blíster nuevo ${inDays(diffDays(pill.nextPackStart, t))}`} />}
       </View>
-      {!s.inPeriod && <Button small kind="soft" label="🩸 Me vino hoy" onPress={startPeriodToday} />}
+      {!s.inPeriod && <Button small kind="soft" label="Me vino hoy" onPress={startPeriodToday} />}
     </Card>
   );
 }
@@ -133,7 +134,7 @@ function HoyCiclo() {
         <Card key={l.id} tint={c.duraznoSuave}>
           <Label>{l.titulo}</Label>
           <Body>{l.texto}</Body>
-          <Button small kind="soft" label="¡Gracias! 💛" onPress={() => updateSettings({ logrosVistos: [...data.settings.logrosVistos, l.id] })} />
+          <Button small kind="soft" label="¡Gracias!" onPress={() => updateSettings({ logrosVistos: [...data.settings.logrosVistos, l.id] })} />
         </Card>
       ))}
 
@@ -153,21 +154,21 @@ function HoyCiclo() {
 
       {consultas > 0 && (
         <Card>
-          <Body>🩺 Tienes {consultas === 1 ? 'un tema' : `${consultas} temas`} para comentar en tu próxima consulta.</Body>
+          <Body>Tienes {consultas === 1 ? 'un tema' : `${consultas} temas`} para comentar en tu próxima consulta.</Body>
           <Button small kind="ghost" label="Ver en Resumen →" onPress={() => router.push('/estadisticas')} />
         </Card>
       )}
 
       {(data.logs[today()]?.pain ?? 0) >= 7 && (
         <Card tint={c.rosaSuave}>
-          <Label>🆘 Hoy te duele bastante</Label>
+          <Label>Hoy te duele bastante</Label>
           <Body>Respira un minuto, ponte calor en el vientre y prueba un movimiento suave. Si el dolor no te deja hacer tu día, coméntalo con tu ginecóloga.</Body>
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1 }}>
-              <Button small label="🫁 Respirar" onPress={() => router.push('/respirar')} />
+              <Button small label="Respirar" onPress={() => router.push('/respirar')} />
             </View>
             <View style={{ flex: 1 }}>
-              <Button small kind="soft" label="🤍 Alivio" onPress={() => router.push('/ejercicios')} />
+              <Button small kind="soft" label="Alivio" onPress={() => router.push('/ejercicios')} />
             </View>
           </View>
         </Card>
@@ -175,6 +176,7 @@ function HoyCiclo() {
 
       <Status />
       <ModoCard />
+      <QuizEntrada />
           </>
         }
         derecha={

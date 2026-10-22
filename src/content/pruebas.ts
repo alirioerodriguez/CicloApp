@@ -2,7 +2,7 @@
 // Cada misión empieza en "Hoy" y la usuaria busca cómo hacerla: así se ve qué tan fácil es la app.
 // Métricas estándar de UX: SEQ (facilidad de 1 a 7 por tarea) y SUS (cuestionario de 10 preguntas).
 
-// ✍️ Si quieres recibir los resultados por correo, pon aquí tu dirección. Si queda vacío,
+// Si quieres recibir los resultados por correo, pon aquí tu dirección. Si queda vacío,
 // la usuaria los comparte por donde quiera (WhatsApp, correo, Drive…).
 export const CORREO_RESULTADOS = 'alirioerodriguez@gmail.com';
 

@@ -5,6 +5,7 @@ import { CONTROLES_OMS, TRIMESTRES, bebe } from '../content/embarazo';
 import { useEmbarazo } from '../lib/embarazo';
 import { fonts, serif, useColors } from '../lib/theme';
 import { Card, Grilla, Screen } from './ui';
+import { Icono } from './Icono';
 
 export function SemanasEmbarazo() {
   const c = useColors();
@@ -45,7 +46,7 @@ export function SemanasEmbarazo() {
                   })}
                 >
                   <Text style={{ width: 28, fontFamily: serif, fontSize: 18, color: hoy ? c.text : c.muted }}>{w}</Text>
-                  <Text style={{ fontSize: 22 }}>{b.emoji}</Text>
+                  <Icono e={b.emoji} size={20} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontFamily: fonts.semibold, fontSize: 14.5, color: c.text }}>{b.fruta.replace(/^una? /, '').replace(/^./, (x) => x.toUpperCase())}</Text>
                     <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: c.muted }}>
@@ -55,7 +56,7 @@ export function SemanasEmbarazo() {
                   {hoy ? (
                     <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.rosa }}>Hoy</Text>
                   ) : controles.has(w) ? (
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.lavanda }}>🩺 control</Text>
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.lavanda }}>control</Text>
                   ) : null}
                 </Pressable>
               );

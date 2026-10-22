@@ -30,7 +30,7 @@ export function EjercicioCard({ ej }: { ej: Ejercicio }) {
       </View>
       <View style={{ flex: 1, gap: 3 }}>
         <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: c.text }}>
-          {ej.emoji} {ej.nombre}
+          {ej.nombre}
         </Text>
         <Text style={{ fontFamily: fonts.medium, fontSize: 13, color: c.rosa }}>{ej.dosis}</Text>
         <Text style={{ fontFamily: fonts.regular, fontSize: 12, color: c.muted }}>Intensidad: {nivel}</Text>

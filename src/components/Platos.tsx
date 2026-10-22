@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { fonts, radius, useColors } from '../lib/theme';
 import { Body, Card, Grilla, Label, Muted, tap } from './ui';
+import { Icono, IconoBurbuja } from './Icono';
 
 export interface Plato {
   emoji: string;
@@ -33,7 +34,7 @@ export function Platos({ platos }: { platos: Plato[] }) {
           >
             <Card style={{ flex: 1, gap: 6 }}>
               <View style={{ height: 70, borderRadius: radius.md, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}>
-                <Text style={{ fontSize: 34 }}>{p.emoji}</Text>
+                <Icono e={p.emoji} size={30} />
               </View>
               <Label>{p.nombre}</Label>
               <Muted>
@@ -71,7 +72,7 @@ export function ListaEmoji({ titulo, items, tint }: { titulo: string; items: { e
       <Label>{titulo}</Label>
       {items.map((r, i) => (
         <View key={r.titulo} style={{ flexDirection: 'row', gap: 12, paddingVertical: 6, borderTopWidth: i ? 1 : 0, borderTopColor: c.line }}>
-          <Text style={{ fontSize: 22 }}>{r.emoji}</Text>
+          <IconoBurbuja e={r.emoji} size={34} />
           <View style={{ flex: 1 }}>
             <Body style={{ fontWeight: '700' }}>{r.titulo}</Body>
             <Muted>{r.texto}</Muted>

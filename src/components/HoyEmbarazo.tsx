@@ -12,6 +12,8 @@ import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Check } from './Check';
 import { Logo } from './Logo';
 import { Body, Card, Columnas, Label, Muted, Screen, tap } from './ui';
+import { Icono } from './Icono';
+import { QuizEntrada } from './QuizEntrada';
 
 const HERRAMIENTAS: { emoji: string; titulo: string; sub: string; to: Href }[] = [
   { emoji: '👣', titulo: 'Patadas', sub: 'Cuenta sus movimientos', to: '/patadas' },
@@ -47,12 +49,12 @@ export function HoyEmbarazo() {
     return (
       <Screen angosta subtitle={longDate(today())} title={`${hello.titulo}${name ? `, ${name}` : ''}`}>
         <Card tint={c.lavandaSuave}>
-          <Label>🔕 Avisos del embarazo en pausa</Label>
+          <Label>Avisos del embarazo en pausa</Label>
           <Body>Cuando quieras volver a verlos, actívalos en Perfil. Mientras tanto, aquí puedes registrar tu día.</Body>
         </Card>
         <Pressable accessibilityRole="button" onPress={() => router.push(`/dia/${today()}`)}>
           <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-            <Text style={{ fontSize: 24 }}>📝</Text>
+            <Icono e="📝" size={22} />
             <Label style={{ flex: 1 }}>Registra tu día</Label>
             <Text style={{ color: c.muted, fontSize: 20 }}>›</Text>
           </Card>
@@ -97,7 +99,7 @@ export function HoyEmbarazo() {
                   <Circle cx={100} cy={100} r={R} fill="none" stroke={c.card} strokeWidth={10} />
                   <Circle cx={100} cy={100} r={R} fill="none" stroke={c.rosa} strokeWidth={10} strokeLinecap="round" strokeDasharray={`${((C * vista) / 40).toFixed(1)} ${C.toFixed(1)}`} transform="rotate(-90 100 100)" />
                 </Svg>
-                <Text style={{ fontSize: 64 }}>{b.emoji}</Text>
+                <Icono e={b.emoji} size={56} />
                 <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: c.muted, textAlign: 'center', maxWidth: 130 }}>Del tamaño de {b.fruta.replace(/^una? /, '')}</Text>
               </View>
               <View style={{ flexDirection: 'row', gap: 8, alignSelf: 'stretch' }}>
@@ -124,17 +126,19 @@ export function HoyEmbarazo() {
               )}
             </Card>
 
+            <QuizEntrada />
+
             <Card>
               <Label>Esta semana</Label>
               <View style={{ flexDirection: 'row', gap: 12 }}>
-                <Text style={{ fontSize: 22 }}>👶</Text>
+                <Icono e="👶" size={22} />
                 <View style={{ flex: 1 }}>
                   <Body style={{ fontWeight: '700' }}>Tu bebé</Body>
                   <Body>{dev.bebe}</Body>
                 </View>
               </View>
               <View style={{ flexDirection: 'row', gap: 12 }}>
-                <Text style={{ fontSize: 22 }}>🤍</Text>
+                <Icono e="🤍" size={22} />
                 <View style={{ flex: 1 }}>
                   <Body style={{ fontWeight: '700' }}>Tú</Body>
                   <Body>{dev.tu}</Body>
@@ -147,7 +151,7 @@ export function HoyEmbarazo() {
           <>
             <Pressable accessibilityRole="button" onPress={() => router.push('/estadisticas')}>
               <Card tint={c.lavandaSuave} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Text style={{ fontSize: 26 }}>🩺</Text>
+                <Icono e="🩺" size={24} />
                 <View style={{ flex: 1 }}>
                   <Label>Próximo control: semana {ctl.semana}</Label>
                   <Muted>
@@ -175,7 +179,7 @@ export function HoyEmbarazo() {
                   style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: c.line, opacity: pressed ? 0.7 : 1 })}
                 >
                   <View style={{ width: 38, height: 38, borderRadius: 12, backgroundColor: c.rosaSuave, alignItems: 'center', justifyContent: 'center' }}>
-                    <Text style={{ fontSize: 18 }}>{h.emoji}</Text>
+                    <Icono e={h.emoji} size={18} color={c.text} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Body style={{ fontWeight: '600' }}>{h.titulo}</Body>

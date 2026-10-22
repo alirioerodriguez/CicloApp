@@ -5,6 +5,7 @@ import { MONTHS, WEEKDAYS_SHORT, toISO, today } from '../lib/dates';
 import { fonts, serif, useColors } from '../lib/theme';
 import type { ISODate } from '../lib/types';
 import { tap } from './ui';
+import { Icono } from './Icono';
 
 interface Props {
   marks?: Record<ISODate, DayMarks>;
@@ -120,7 +121,7 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
               >
                 <Text style={{ fontSize: 15, color: fg, fontFamily: isToday ? fonts.bold : fonts.medium }}>{Number(d.slice(8))}</Text>
                 {logged?.(d) && !mk.period ? <View style={{ position: 'absolute', bottom: 5, width: 4, height: 4, borderRadius: 2, backgroundColor: c.rosa }} /> : null}
-                {mk.intimidad ? <Text style={{ position: 'absolute', top: -2, right: -2, fontSize: 11 }}>🔥</Text> : null}
+                {mk.intimidad ? <View style={{ position: 'absolute', top: 1, right: 1 }}><Icono e="🔥" size={11} color={c.durazno} /></View> : null}
               </Pressable>
             </View>
           );
@@ -146,7 +147,7 @@ export function Legend({ showFertile }: { showFertile: boolean }) {
       {showFertile && item('Ovulación (est.)', { backgroundColor: c.durazno })}
       {item('Hoy', { borderWidth: 2, borderColor: c.text })}
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        <Text style={{ fontSize: 12 }}>🔥</Text>
+        <Icono e="🔥" size={13} color={c.durazno} />
         <Text style={{ fontSize: 12.5, color: c.muted, fontFamily: fonts.regular }}>Intimidad</Text>
       </View>
     </View>

@@ -13,6 +13,7 @@ import { diffDays, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { serif, useColors } from '../../lib/theme';
 import type { Phase } from '../../lib/types';
+import { Icono, IconoBurbuja } from '../../components/Icono';
 
 export default function Cuidate() {
   const { data } = useStore();
@@ -40,7 +41,7 @@ function CuidateCiclo() {
   return (
     <Screen title="Cuídate hoy">
       <Card tint={tint[shown]} style={{ paddingVertical: 22 }}>
-        <Text style={{ fontSize: 40 }}>{content.emoji}</Text>
+        <Icono e={content.emoji} size={36} />
         <Text style={{ fontFamily: serif, fontSize: 26, color: c.text }}>{content.nombre}</Text>
         <Body>{content.resumen}</Body>
         <Muted>{content.comun}</Muted>
@@ -49,14 +50,14 @@ function CuidateCiclo() {
 
       <Grilla>
         <Card>
-          <Label>✨ Recomendación del día</Label>
+          <Label>Recomendación del día</Label>
           <Body>{pick(content.recomendaciones, seed)}</Body>
         </Card>
 
         <Card>
-          <Label>💗 Un mimo para hoy</Label>
+          <Label>Un mimo para hoy</Label>
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-            <Text style={{ fontSize: 34 }}>{mimo.emoji}</Text>
+            <IconoBurbuja e={mimo.emoji} size={44} />
             <Body style={{ flex: 1 }}>{mimo.texto}</Body>
           </View>
         </Card>
@@ -66,12 +67,12 @@ function CuidateCiclo() {
         </Card>
       </Grilla>
 
-      <Button label="🔄 Otra idea" kind="soft" onPress={() => setShuffle((x) => x + 1)} />
+      <Button label="Otra idea" kind="soft" onPress={() => setShuffle((x) => x + 1)} />
 
       <Columnas
         izquierda={
           <>
-            <Label style={{ marginTop: 4 }}>🧘‍♀️ Movimiento para hoy</Label>
+            <Label style={{ marginTop: 4 }}>Movimiento para hoy</Label>
             <Muted>{POR_FASE[shown].intro}</Muted>
             {POR_FASE[shown].ids.slice(0, 2).map((id) => (
               <EjercicioCard key={id} ej={ejercicioById(id)!} />
@@ -81,10 +82,10 @@ function CuidateCiclo() {
         }
         derecha={
       <Card>
-        <Label>🍽️ Comidas que te pueden ayudar ahora</Label>
+        <Label>Comidas que te pueden ayudar ahora</Label>
         {foods.slice(0, 4).map((f) => (
           <View key={f.nombre} style={{ flexDirection: 'row', gap: 10 }}>
-            <Text style={{ fontSize: 22 }}>{f.emoji}</Text>
+            <IconoBurbuja e={f.emoji} size={34} />
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '700' }}>{f.nombre}</Body>
               <Muted>{f.porque}</Muted>
@@ -103,7 +104,7 @@ function CuidateCiclo() {
         ))}
       </View>
 
-      <Button kind="soft" label="🩺 Cuándo consultar y qué alivia de verdad" onPress={() => router.push('/info')} />
+      <Button kind="soft" label="Cuándo consultar y qué alivia de verdad" onPress={() => router.push('/info')} />
 
       <Muted style={{ textAlign: 'center', marginTop: 10 }}>Ideas de bienestar general, no reemplazan consejo médico.</Muted>
     </Screen>

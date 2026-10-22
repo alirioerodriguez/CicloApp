@@ -12,6 +12,7 @@ import { painByCycleDay, pillAdherence, symptomWindows, topCounts, unlockedLogro
 import { diffDays, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { fonts, serif, useColors } from '../../lib/theme';
+import { Icono } from '../../components/Icono';
 
 function Tile({ value, label, tint }: { value: string; label: string; tint: string }) {
   const c = useColors();
@@ -52,9 +53,9 @@ function Resumen() {
   if (logs.length < 3) {
     return (
       <Screen title="Resumen">
-        <Button kind="soft" label="🩺 Modo consulta médica" onPress={() => router.push('/consulta')} />
+        <Button kind="soft" label="Modo consulta médica" onPress={() => router.push('/consulta')} />
         <Card tint={c.lavandaSuave} style={{ alignItems: 'center', paddingVertical: 30 }}>
-          <Text style={{ fontSize: 44 }}>🌱</Text>
+          <Icono e="🌱" size={40} />
           <Label style={{ textAlign: 'center' }}>{VACIOS.estadisticas.titulo}</Label>
           <Body style={{ textAlign: 'center' }}>{VACIOS.estadisticas.texto}</Body>
         </Card>
@@ -65,7 +66,7 @@ function Resumen() {
 
   return (
     <Screen title="Resumen">
-      <Button kind="soft" label="🩺 Modo consulta médica" onPress={() => router.push('/consulta')} />
+      <Button kind="soft" label="Modo consulta médica" onPress={() => router.push('/consulta')} />
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         <Tile value={`${s.avgCycle} d`} label="Ciclo promedio" tint={c.rosaSuave} />
         <Tile value={`${s.avgPeriod} d`} label="Período promedio" tint={c.lavandaSuave} />
@@ -81,7 +82,7 @@ function Resumen() {
         <Card>
           <Body>
             {s.regular
-              ? `Tus ciclos son bastante regulares: entre ${s.cycleRange![0]} y ${s.cycleRange![1]} días. 🌷`
+              ? `Tus ciclos son bastante regulares: entre ${s.cycleRange![0]} y ${s.cycleRange![1]} días.`
               : `Tus ciclos varían entre ${s.cycleRange![0]} y ${s.cycleRange![1]} días. Es común, pero si varía mucho seguido puedes comentarlo con tu ginecóloga.`}
           </Body>
         </Card>
@@ -119,10 +120,10 @@ function Resumen() {
 
       {windows.length > 0 && (
         <Card tint={c.lavandaSuave}>
-          <Label>🔎 Tus patrones</Label>
+          <Label>Tus patrones</Label>
           {windows.map((w) => (
             <Body key={w.id}>
-              {symptomById(w.id).emoji} {symptomById(w.id).label}: {w.from === w.to ? `suele aparecer el día ${w.from}` : `suele aparecer entre el día ${w.from} y el ${w.to}`} del ciclo.
+              {symptomById(w.id).label}: {w.from === w.to ? `suele aparecer el día ${w.from}` : `suele aparecer entre el día ${w.from} y el ${w.to}`} del ciclo.
             </Body>
           ))}
         </Card>
@@ -132,7 +133,7 @@ function Resumen() {
         <Card>
           <Label>Ánimos más frecuentes</Label>
           {moods.map((m) => (
-            <Bar key={m.id} label={`${moodById(m.id).emoji} ${moodById(m.id).label}`} value={m.count} max={moods[0].count} right={`${m.count} días`} color={c.lavanda} />
+            <Bar key={m.id} label={moodById(m.id).label} value={m.count} max={moods[0].count} right={`${m.count} días`} color={c.lavanda} />
           ))}
         </Card>
       )}
@@ -141,14 +142,14 @@ function Resumen() {
         <Card>
           <Label>Síntomas más frecuentes</Label>
           {symptoms.map((x) => (
-            <Bar key={x.id} label={`${symptomById(x.id).emoji} ${symptomById(x.id).label}`} value={x.count} max={symptoms[0].count} right={`${x.count} días`} color={c.rosa} />
+            <Bar key={x.id} label={symptomById(x.id).label} value={x.count} max={symptoms[0].count} right={`${x.count} días`} color={c.rosa} />
           ))}
         </Card>
       )}
 
       {adherence && adherence.expected > 0 && (
         <Card tint={c.salviaSuave}>
-          <Label>💊 Pastilla, últimos 30 días</Label>
+          <Label>Pastilla, últimos 30 días</Label>
           <Bar label="Tomas registradas" value={adherence.taken} max={adherence.expected} right={`${adherence.taken} de ${adherence.expected}`} color={c.salvia} />
         </Card>
       )}
@@ -166,10 +167,10 @@ function Alertas() {
   if (!alertas.length) return null;
   return (
     <Card tint={c.duraznoSuave}>
-      <Label>🩺 Para tu próxima consulta</Label>
+      <Label>Para tu próxima consulta</Label>
       {alertas.map((a) => (
         <Body key={a.id}>
-          {a.nivel === 'consulta' ? '• ' : 'ℹ️ '}
+          {a.nivel === 'consulta' ? '• ' : ''}
           {a.texto}
         </Body>
       ))}
@@ -184,10 +185,10 @@ function Logros() {
   const ok = new Set(unlockedLogros(data, summary));
   return (
     <Card>
-      <Label>🏅 Logros</Label>
+      <Label>Logros</Label>
       {LOGROS.filter((l) => l.id !== 'pastilla30' || data.settings.pillMode).map((l) => (
         <View key={l.id} style={{ opacity: ok.has(l.id) ? 1 : 0.45, gap: 2 }}>
-          <Body style={{ fontWeight: '700' }}>{ok.has(l.id) ? l.titulo : `🔒 ${l.titulo}`}</Body>
+          <Body style={{ fontWeight: '700' }}>{ok.has(l.id) ? l.titulo : `${l.titulo}`}</Body>
           <Muted>{l.texto}</Muted>
         </View>
       ))}

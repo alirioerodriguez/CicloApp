@@ -30,23 +30,23 @@ export default function Info() {
   return (
     <Screen angosta title="Cuándo consultar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/cuidate'))} />}>
       <Card tint={c.rosaSuave}>
-        <Label>🚨 Busca atención hoy</Label>
+        <Label>Busca atención hoy</Label>
         <List items={combinada ? [...URGENTE, URGENTE_COMBINADA] : URGENTE} />
       </Card>
 
       <Card>
-        <Label>🩺 Vale la pena comentarlo en tu consulta</Label>
+        <Label>Vale la pena comentarlo en tu consulta</Label>
         <List items={RANGOS} />
       </Card>
 
       <Card tint={c.lavandaSuave}>
-        <Label>💜 SPM y TDPM</Label>
+        <Label>SPM y TDPM</Label>
         <Body>{SPM}</Body>
         <Body style={{ fontWeight: '700' }}>{CRISIS}</Body>
       </Card>
 
       <Card tint={c.salviaSuave}>
-        <Label>♨️ Qué alivia los cólicos (sin medicamentos)</Label>
+        <Label>Qué alivia los cólicos (sin medicamentos)</Label>
         {ALIVIO.map((a) => (
           <View key={a.medida} style={{ gap: 1 }}>
             <Body style={{ fontWeight: '700' }}>{a.medida}</Body>
@@ -56,13 +56,13 @@ export default function Info() {
       </Card>
 
       <Card>
-        <Label>🙅‍♀️ Mitos que no hace falta seguir</Label>
+        <Label>Mitos que no hace falta seguir</Label>
         <List items={MITOS} />
       </Card>
 
       {pill && (
         <Card tint={c.duraznoSuave}>
-          <Label>💊 Sobre tu pastilla</Label>
+          <Label>Sobre tu pastilla</Label>
           <Body>{RESTA_EFECTO}</Body>
           <Body>{PASTILLA_OLVIDO}</Body>
         </Card>

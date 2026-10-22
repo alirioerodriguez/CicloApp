@@ -8,6 +8,7 @@ import { CORREO_RESULTADOS, MISIONES, SEQ_EXTREMOS, SEQ_PREGUNTA, SUS, susScore 
 import { longDate, today } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
+import { Icono } from '../components/Icono';
 
 function Escala({ n, value, onChange, extremos }: { n: number; value: number; onChange: (v: number) => void; extremos: string[] }) {
   const c = useColors();
@@ -141,14 +142,14 @@ export default function Pruebas() {
   return (
     <Screen angosta title="Ayúdanos a mejorar" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Card tint={c.lavandaSuave}>
-        <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>🧪 Laboratorio de Savia</Text>
+        <Text style={{ fontFamily: serif, fontSize: 22, color: c.text }}>Laboratorio de Savia</Text>
         <Body>Haz pruebas cortas para descubrir qué es fácil y qué no. Cada misión empieza en "Hoy": búscala como lo harías normalmente y avísanos si lo lograste.</Body>
         <Muted>Tus resultados se guardan en tu teléfono. Solo salen si tú los compartes, y nunca incluyen datos de tu ciclo.</Muted>
       </Card>
 
       <Card>
         <Label>
-          🎯 Misiones · {hechas} de {MISIONES.length}
+          Misiones · {hechas} de {MISIONES.length}
         </Label>
         {MISIONES.map((m, i) => {
           const r = res.misiones[m.id];
@@ -156,7 +157,7 @@ export default function Pruebas() {
             <View key={m.id} style={{ gap: 6 }}>
               {i > 0 && <Divider />}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-                <Text style={{ fontSize: 20 }}>{r ? (r.ok ? '✅' : '🟠') : '⬜'}</Text>
+                <Icono e={r ? (r.ok ? '✅' : '🟠') : '⬜'} size={22} color={r ? (r.ok ? c.salvia : c.durazno) : c.muted} />
                 <View style={{ flex: 1 }}>
                   <Body style={{ fontWeight: '700' }}>{m.titulo}</Body>
                   <Muted>{m.tarea}</Muted>
@@ -174,7 +175,7 @@ export default function Pruebas() {
       </Card>
 
       <Card>
-        <Label>📝 Cuestionario de 10 preguntas</Label>
+        <Label>Cuestionario de 10 preguntas</Label>
         <Muted>Del 1 (muy en desacuerdo) al 5 (muy de acuerdo). Es un cuestionario estándar de facilidad de uso (SUS).</Muted>
         {SUS.map((q, i) => (
           <View key={q} style={{ gap: 6 }}>
@@ -193,7 +194,7 @@ export default function Pruebas() {
       </Card>
 
       <Card>
-        <Label>💡 Ideas y problemas</Label>
+        <Label>Ideas y problemas</Label>
         <TextInput value={idea} onChangeText={setIdea} multiline placeholder="¿Qué te gustaría que tuviera Savia? ¿Algo no funcionó?" placeholderTextColor={c.muted} style={input} />
         <Button
           small
@@ -211,7 +212,7 @@ export default function Pruebas() {
         ))}
       </Card>
 
-      <Button label="📤 Compartir mis resultados" onPress={compartir} disabled={!hechas && !res.sus.length && !res.ideas.length} />
+      <Button label="Compartir mis resultados" onPress={compartir} disabled={!hechas && !res.sus.length && !res.ideas.length} />
       <Button
         kind="danger"
         small

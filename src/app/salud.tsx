@@ -61,7 +61,7 @@ function Controles() {
   return (
     <Card>
       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-        <Label style={{ flex: 1 }}>📅 Tus controles</Label>
+        <Label style={{ flex: 1 }}>Tus controles</Label>
         <Button small kind="soft" label={adding ? 'Cancelar' : '+ Agregar'} onPress={() => setAdding((v) => !v)} />
       </View>
       {adding && (
@@ -116,7 +116,7 @@ function Autoexamen() {
   const hoyHecho = last === today();
   return (
     <Card tint={c.lavandaSuave}>
-      <Label>🎀 Autoexamen de mamas</Label>
+      <Label>Autoexamen de mamas</Label>
       <Muted>{AUTOEXAMEN.resumen}</Muted>
       {AUTOEXAMEN.pasos.map((p, i) => (
         <View key={p} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start' }}>
@@ -247,7 +247,7 @@ function Quistes() {
         );
       })}
       {!data.quistes.length && !form && <Muted>Si te detectaron un quiste, anota sus medidas para ver cómo cambia entre ecografías.</Muted>}
-      <Muted style={{ color: c.text }}>⚠️ {URGENTE_QUISTE}</Muted>
+      <Muted style={{ color: c.text }}>{URGENTE_QUISTE}</Muted>
     </Card>
   );
 }
@@ -261,7 +261,7 @@ export default function Salud() {
       <Autoexamen />
       <Ovarios />
       <Quistes />
-      <Button kind="soft" label="📄 Llevar esto a mi consulta (PDF)" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
+      <Button kind="soft" label="Llevar esto a mi consulta (PDF)" onPress={() => shareReport(data, summary).catch((e) => notify('No se pudo crear', String(e)))} />
     </Screen>
   );
 }

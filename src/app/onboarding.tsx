@@ -19,6 +19,7 @@ import { supabaseConfigured } from '../lib/supabase';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
+import { Icono } from '../components/Icono';
 
 type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno' | 'listo';
 
@@ -265,7 +266,7 @@ export default function Onboarding() {
           {h1('¿De cuántas semanas estás?')}
           <Muted>Si no sabes, cuenta desde el primer día de tu último período.</Muted>
           <Card style={{ alignItems: 'center', gap: 12 }}>
-            <Text style={{ fontSize: 56 }}>{bebe(semanasEmb).emoji}</Text>
+            <Icono e={bebe(semanasEmb).emoji} size={52} />
             <Stepper value={semanasEmb} onChange={setSemanasEmb} min={SEMANA_MIN} max={SEMANA_MAX} format={(v) => `${v} semanas`} />
             <Body style={{ textAlign: 'center' }}>Tu bebé es del tamaño de {bebe(semanasEmb).fruta}</Body>
             <Muted>
@@ -320,12 +321,12 @@ export default function Onboarding() {
 
       {paso === 'listo' && (
         <>
-          {h1(`Todo listo${name.trim() ? `, ${name.trim()}` : ''} 🌷`)}
+          {h1(`Todo listo${name.trim() ? `, ${name.trim()}` : ''}`)}
           <Card>
             <TonePicker />
           </Card>
           <Card tint={c.rosaSuave}>
-            <Label>Tu privacidad, primero 🔒</Label>
+            <Label>Tu privacidad, primero</Label>
             <Body>{supabaseConfigured ? '• Tus datos se guardan en tu teléfono y se respaldan en tu cuenta: solo tú puedes verlos.' : '• Tus datos se guardan solo en este teléfono.'}</Body>
             <Body>• Sin publicidad. Nunca vendemos ni compartimos tus datos.</Body>
             <Body>• Puedes respaldarlos o borrarlos cuando quieras desde Perfil.</Body>

@@ -29,7 +29,7 @@ export function MisionBanner() {
     >
       <View style={{ maxWidth: 560, width: '100%', backgroundColor: c.text, borderRadius: radius.md, padding: 12, gap: 8, shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 12, elevation: 6 }}>
         <Text style={{ color: c.bg, fontFamily: fonts.bold, fontSize: 13 }}>
-          🧪 Prueba en curso · {Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}
+          Prueba en curso · {Math.floor(secs / 60)}:{String(secs % 60).padStart(2, '0')}
         </Text>
         <Text style={{ color: c.bg, fontFamily: fonts.regular, fontSize: 13.5 }}>{m?.tarea}</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>

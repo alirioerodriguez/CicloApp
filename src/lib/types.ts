@@ -167,6 +167,8 @@ export interface AppData {
   // Escala MRS (11 síntomas, 0 a 4) una vez por semana, y chequeos marcados como al día.
   mrs: Record<ISODate, number[]>;
   chequeosMeno: string[];
+  // Quiz "¿Cómo estás de verdad?": un resultado por día.
+  quiz: Record<ISODate, { nivel: 'calma' | 'ajuste' | 'cuidado' | 'nose'; respuestas: Record<string, number | 'x'> }>;
   pruebas: {
     misiones: Record<string, PruebaResultado>;
     sus: number[]; // 10 respuestas 1–5

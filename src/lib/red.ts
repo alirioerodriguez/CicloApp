@@ -64,5 +64,5 @@ export function tarjetaRed(data: AppData, s: Summary): TarjetaRed {
 }
 
 export function tarjetaTexto(t: TarjetaRed): string {
-  return [`🌸 Savia · ${longDate(today())}`, t.mensaje, t.consejo ? `💡 ${t.consejo}` : ''].filter(Boolean).join('\n');
+  return [`Savia · ${longDate(today())}`, t.mensaje, t.consejo ? `${t.consejo}` : ''].filter(Boolean).join('\n');
 }

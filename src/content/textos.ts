@@ -9,46 +9,46 @@ export const AVISO_ANTICONCEPTIVO_CORTO = 'Es una estimación: esta app no sirve
 
 export const NOTIF = {
   pastilla: [
-    'Hora de tu pastilla 💊 Un gesto pequeño, todos los días.',
-    'Tu pastilla te espera 💊 ¿Ya la tomaste?',
-    'Recordatorio cariñoso: tu pastilla de hoy 💊',
-    'Es la hora de siempre: pastilla y listo ✨',
-    'No te olvides de tu pastilla 💊 Márcala cuando la tomes.',
+    'Hora de tu pastilla. Un gesto pequeño, todos los días.',
+    'Tu pastilla te espera. ¿Ya la tomaste?',
+    'Recordatorio cariñoso: tu pastilla de hoy',
+    'Es la hora de siempre: pastilla y listo',
+    'No te olvides de tu pastilla. Márcala cuando la tomes.',
   ],
-  pastillaAtrasada: 'Pasó tu hora de la pastilla 💊 Si aún no la tomaste, revisa el prospecto.',
-  descansoSinPastilla: 'Mañana empiezan tus días de descanso. Anota cuándo retomas 🗓️',
-  descansoPlacebo: 'Mañana empiezan las pastillas sin hormona. Sigue tomándolas como siempre 💊',
-  blisterNuevo: 'Mañana empieza tu blíster nuevo. ¿Ya lo tienes a mano? 💊',
-  blisterTrasDescanso: 'Se termina tu descanso: mañana arrancas blíster nuevo ✨',
+  pastillaAtrasada: 'Pasó tu hora de la pastilla. Si aún no la tomaste, revisa el prospecto.',
+  descansoSinPastilla: 'Mañana empiezan tus días de descanso. Anota cuándo retomas',
+  descansoPlacebo: 'Mañana empiezan las pastillas sin hormona. Sigue tomándolas como siempre',
+  blisterNuevo: 'Mañana empieza tu blíster nuevo. ¿Ya lo tienes a mano?',
+  blisterTrasDescanso: 'Se termina tu descanso: mañana arrancas blíster nuevo',
   periodo: [
-    'Tu período podría llegar en {dias} días. Ten a mano lo que necesites 🌸',
-    'Se acerca tu período. Buen momento para guardar algo en la cartera 👜',
-    'Faltan unos {dias} días. Tu bolsa de agua tibia ya te espera ♨️',
-    'Se viene tu período. Es una estimación: tu cuerpo tiene la última palabra 🌙',
+    'Tu período podría llegar en {dias} días. Ten a mano lo que necesites',
+    'Se acerca tu período. Buen momento para guardar algo en la cartera',
+    'Faltan unos {dias} días. Tu bolsa de agua tibia ya te espera',
+    'Se viene tu período. Es una estimación: tu cuerpo tiene la última palabra',
   ],
-  periodoManana: 'Tu período podría llegar mañana. Hoy date un ratito para ti 💗',
+  periodoManana: 'Tu período podría llegar mañana. Hoy date un ratito para ti',
   agua: [
-    'Un vasito de agua, ¿te parece? 💧',
-    'Pausa de hidratación: tu cuerpo te lo agradece 💧',
-    'Hora de rellenar tu botella 🥤',
-    '¿Cuánta agua llevas hoy? Un traguito más no cae mal 💦',
-    'Agua y un respiro de un minuto. Te lo mereces 🌿',
+    'Un vasito de agua, ¿te parece?',
+    'Pausa de hidratación: tu cuerpo te lo agradece',
+    'Hora de rellenar tu botella',
+    '¿Cuánta agua llevas hoy? Un traguito más no cae mal',
+    'Agua y un respiro de un minuto. Te lo mereces',
   ],
-  registro: '¿Cómo estuvo tu día? Regístralo en un minuto ✨',
-  autoexamen: 'Hoy es un buen día para tu autoexamen de mamas 🎀 Toma 2 minutos.',
-  control: 'En {dias} días tienes: {control} 🩺',
+  registro: '¿Cómo estuvo tu día? Regístralo en un minuto',
+  autoexamen: 'Hoy es un buen día para tu autoexamen de mamas. Toma 2 minutos.',
+  control: 'En {dias} días tienes: {control}',
   respaldo: [
-    'Guarda una copia extra de tus datos en un archivo 🔒',
-    'Hace tiempo que no guardas una copia. ¿La hacemos? 📦',
-    'Tus registros son valiosos. Guarda un respaldo hoy 💾',
-    'Si cambias de teléfono, el respaldo te salva. Toma un minuto 📲',
-    'Tu historial está seguro aquí. Guarda una copia por si acaso 🔐',
+    'Guarda una copia extra de tus datos en un archivo',
+    'Hace tiempo que no guardas una copia. ¿La hacemos?',
+    'Tus registros son valiosos. Guarda un respaldo hoy',
+    'Si cambias de teléfono, el respaldo te salva. Toma un minuto',
+    'Tu historial está seguro aquí. Guarda una copia por si acaso',
   ],
 };
 
 // Aviso dentro de la app si ayer no se marcó la pastilla.
 export const PASTILLA_AYER = [
-  'No marcaste la pastilla de ayer. Revisa el prospecto para saber qué hacer 💛',
+  'No marcaste la pastilla de ayer. Revisa el prospecto para saber qué hacer',
   'Si ayer se te pasó la pastilla, revisa el prospecto o pregunta en la farmacia.',
 ];
 
@@ -58,24 +58,24 @@ type Estado = 'periodo' | 'sinPeriodo' | 'retraso' | 'general';
 export const SALUDOS: Record<Momento, { titulo: string } & Record<Estado, string>> = {
   manana: {
     titulo: 'Buenos días',
-    periodo: 'Hoy, calma y cariño contigo 🌸',
-    sinPeriodo: '¿Cómo amaneciste hoy? ☀️',
+    periodo: 'Hoy, calma y cariño contigo',
+    sinPeriodo: '¿Cómo amaneciste hoy?',
     retraso: 'Tu período se está haciendo esperar; anótalo y ve con calma.',
-    general: 'Un minuto para registrar cómo te sientes ✨',
+    general: 'Un minuto para registrar cómo te sientes',
   },
   tarde: {
     titulo: 'Buenas tardes',
-    periodo: '¿Cómo va el cuerpo? Una pausa no cae mal 🫖',
-    sinPeriodo: '¿Qué tal va tu día? 🌤️',
+    periodo: '¿Cómo va el cuerpo? Una pausa no cae mal',
+    sinPeriodo: '¿Qué tal va tu día?',
     retraso: 'Un retraso puede pasar; si te preocupa, puedes consultarlo.',
-    general: '¿Ya tomaste agua hoy? 💧',
+    general: '¿Ya tomaste agua hoy?',
   },
   noche: {
     titulo: 'Buenas noches',
-    periodo: 'Manta, descanso y mañana será otro día 🌙',
-    sinPeriodo: '¿Cómo estuvo tu día? 🌙',
+    periodo: 'Manta, descanso y mañana será otro día',
+    sinPeriodo: '¿Cómo estuvo tu día?',
     retraso: 'Descansa; mañana puedes revisar cómo sigue tu ciclo.',
-    general: 'Antes de dormir, ¿registras tu día? ✨',
+    general: 'Antes de dormir, ¿registras tu día?',
   },
 };
 
@@ -90,7 +90,7 @@ export const VACIOS = {
     texto: 'Cuando registres algunos días, aquí verás tus patrones. Empieza hoy, sin presión.',
   },
   primerDia: {
-    titulo: 'Bienvenida 🌸',
+    titulo: 'Bienvenida',
     texto: `Aquí llevas tu ciclo a tu manera. ${supabaseConfigured ? 'Tus datos son privados y quedan respaldados en tu cuenta.' : 'Todo queda solo en tu teléfono.'} ¿Empezamos con cómo te sientes hoy?`,
   },
 };
@@ -98,12 +98,12 @@ export const VACIOS = {
 export type LogroId = 'racha7' | 'ciclo1' | 'pastilla30' | 'meses3' | 'respaldo1' | 'suenos3';
 
 export const LOGROS: { id: LogroId; titulo: string; texto: string }[] = [
-  { id: 'racha7', titulo: 'Una semana contigo 🌱', texto: 'Siete días seguidos registrando. Conocerte también es cuidarte.' },
-  { id: 'ciclo1', titulo: '¡Primer ciclo completo! 🎉', texto: 'Ya tienes tu primer ciclo registrado. Desde ahora las predicciones se irán ajustando a ti.' },
-  { id: 'pastilla30', titulo: '30 de 30 💊', texto: 'Un mes entero sin olvidar tu pastilla. ¡Qué constancia!' },
-  { id: 'meses3', titulo: 'Tres meses de ti 🌸', texto: 'Tus estadísticas tienen cada vez más sentido.' },
-  { id: 'respaldo1', titulo: 'Copia guardada 🔒', texto: 'Hiciste tu primer respaldo. Tus datos están a salvo.' },
-  { id: 'suenos3', titulo: 'Soñadora 🌙', texto: 'Anotaste 3 sueños en tu diario.' },
+  { id: 'racha7', titulo: 'Una semana contigo', texto: 'Siete días seguidos registrando. Conocerte también es cuidarte.' },
+  { id: 'ciclo1', titulo: '¡Primer ciclo completo!', texto: 'Ya tienes tu primer ciclo registrado. Desde ahora las predicciones se irán ajustando a ti.' },
+  { id: 'pastilla30', titulo: '30 de 30', texto: 'Un mes entero sin olvidar tu pastilla. ¡Qué constancia!' },
+  { id: 'meses3', titulo: 'Tres meses de ti', texto: 'Tus estadísticas tienen cada vez más sentido.' },
+  { id: 'respaldo1', titulo: 'Copia guardada', texto: 'Hiciste tu primer respaldo. Tus datos están a salvo.' },
+  { id: 'suenos3', titulo: 'Soñadora', texto: 'Anotaste 3 sueños en tu diario.' },
 ];
 
 // Qué tan confiable es la predicción según los ciclos registrados (criterio práctico, B5.19).

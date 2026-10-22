@@ -65,7 +65,7 @@ export default function Respirar() {
         </View>
       </View>
       {activo ? <Muted style={{ textAlign: 'center' }}>Respiración {ciclo} de {CICLOS}</Muted> : null}
-      {!activo && <Button label={fin ? 'Otra vez' : '▶ Empezar (1 minuto)'} onPress={empezar} />}
+      {!activo && <Button label={fin ? 'Otra vez' : 'Empezar (1 minuto)'} onPress={empezar} />}
       {activo && <Button kind="soft" label="Detener" onPress={() => setActivo(false)} />}
       <Muted style={{ textAlign: 'center' }}>Si sientes mareo, vuelve a respirar normal.</Muted>
     </Screen>

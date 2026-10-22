@@ -96,7 +96,7 @@ export default function Menopausia() {
                   <Chip key={x.id} label={x.label} selected={log.menoExtra.includes(x.id)} onPress={() => setLog(t, { menoExtra: toggle(log.menoExtra, x.id) })} />
                 ))}
               </View>
-              <Toggle label="🩸 Hoy tuve un sangrado" value={log.flow > 0} onChange={(on) => setLog(t, { flow: on ? 2 : 0 })} />
+              <Toggle label="Hoy tuve un sangrado" value={log.flow > 0} onChange={(on) => setLog(t, { flow: on ? 2 : 0 })} />
               {log.flow > 0 && <Body style={{ color: m.etapa === 'post' ? c.durazno : c.text, fontWeight: m.etapa === 'post' ? '700' : '400' }}>{mensajeSangrado(m.etapa)}</Body>}
             </Card>
 

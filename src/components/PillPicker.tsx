@@ -68,7 +68,7 @@ export function PillPicker({ name, type, onName, onType }: { name: string; type:
       <Muted style={{ textAlign: 'center' }}>
         {pack.soloProgestageno ? '● con hormona (solo progestágeno)' : '● con hormona'} · ○ placebo{pack.breakTakes ? '' : ' / sin pastilla'}
       </Muted>
-      <Muted>🩸 {pack.sangrado}</Muted>
+      <Muted>{pack.sangrado}</Muted>
       <Muted style={{ fontWeight: '700' }}>Confírmalo en tu blíster: la misma marca puede venir distinta según el país.</Muted>
     </View>
   );

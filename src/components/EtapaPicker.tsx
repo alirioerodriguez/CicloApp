@@ -4,6 +4,7 @@ import { ETAPAS } from '../content/etapas';
 import type { Etapa } from '../lib/types';
 import { fonts, radius, useColors } from '../lib/theme';
 import { tap } from './ui';
+import { IconoBurbuja } from './Icono';
 
 export function EtapaPicker({ value, onChange }: { value: Etapa; onChange: (e: Etapa) => void }) {
   const c = useColors();
@@ -34,7 +35,7 @@ export function EtapaPicker({ value, onChange }: { value: Etapa; onChange: (e: E
               opacity: e.disponible ? (pressed ? 0.8 : 1) : 0.5,
             })}
           >
-            <Text style={{ fontSize: 26 }}>{e.emoji}</Text>
+            <IconoBurbuja e={e.emoji} size={40} />
             <View style={{ flex: 1, gap: 2 }}>
               <Text style={{ fontFamily: fonts.bold, fontSize: 16, color: c.text }}>{e.label}</Text>
               <Text style={{ fontFamily: fonts.regular, fontSize: 13, lineHeight: 18, color: c.muted }}>{e.sub}</Text>

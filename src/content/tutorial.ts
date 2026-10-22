@@ -25,7 +25,7 @@ export const TUTORIAL: Slide[] = [
     puntos: [
       'El anillo te dice cuántos días faltan para tu período o en qué día del ciclo estás.',
       '"Me vino hoy" marca el inicio de tu período con un toque.',
-      'Registra flujo, dolor, ánimo, síntomas, ovarios y senos, intimidad 🔥, agua y notas. Todo es opcional.',
+      'Registra flujo, dolor, ánimo, síntomas, ovarios y senos, intimidad, agua y notas. Todo es opcional.',
     ],
   },
   {
@@ -78,7 +78,7 @@ export const TUTORIAL: Slide[] = [
     puntos: [
       'Pastilla (con aviso si pasó la hora), blíster nuevo y descanso.',
       'Período próximo, registro diario, autoexamen, controles y agua.',
-      'Modo discreto: en la pantalla bloqueada solo dice "Recordatorio 🌸".',
+      'Modo discreto: en la pantalla bloqueada solo dice "Savia".',
     ],
   },
   {

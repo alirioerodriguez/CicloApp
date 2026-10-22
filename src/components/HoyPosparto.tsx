@@ -22,6 +22,8 @@ import type { Toma } from '../lib/types';
 import { EjercicioCard } from './EjercicioCard';
 import { Logo } from './Logo';
 import { Body, Card, Chip, Columnas, Label, Muted, Row, Screen, Stepper, tap } from './ui';
+import { Icono } from './Icono';
+import { QuizEntrada } from './QuizEntrada';
 
 const ANIMO_BAJO = ['triste', 'abrumada', 'ansiosa', 'irritable'];
 
@@ -86,6 +88,8 @@ export function HoyPosparto() {
               </View>
             </Card>
 
+            <QuizEntrada />
+
             <Card>
               <View style={{ flexDirection: 'row', alignItems: 'baseline' }}>
                 <Label style={{ flex: 1 }}>Sangrado (loquios)</Label>
@@ -96,7 +100,7 @@ export function HoyPosparto() {
                   <Chip key={o.id} label={o.label} selected={log.loquios === o.id} onPress={() => set({ loquios: log.loquios === o.id ? null : o.id })} />
                 ))}
               </View>
-              {log.loquios === 'rojo' && semanas >= 2 && <Body style={{ color: c.durazno, fontWeight: '600' }}>⚠️ {ALERTA_LOQUIOS}</Body>}
+              {log.loquios === 'rojo' && semanas >= 2 && <Body style={{ color: c.durazno, fontWeight: '600' }}>{ALERTA_LOQUIOS}</Body>}
             </Card>
 
             <Card>
@@ -174,7 +178,7 @@ export function HoyPosparto() {
 
             <Pressable accessibilityRole="button" onPress={() => router.push('/cuidate')}>
               <Card tint={c.lavandaSuave} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                <Text style={{ fontSize: 26 }}>💗</Text>
+                <Icono e="💗" size={24} />
                 <View style={{ flex: 1 }}>
                   <Label>¿Cómo está tu corazón?</Label>
                   <Muted>4 preguntas basadas en la escala de Edimburgo</Muted>
@@ -185,7 +189,7 @@ export function HoyPosparto() {
 
             {notamos && (
               <Card style={{ flexDirection: 'row', gap: 12 }}>
-                <Text style={{ fontSize: 22 }}>🔎</Text>
+                <Icono e="🔎" size={22} />
                 <View style={{ flex: 1 }}>
                   <Label>Notamos que…</Label>
                   <Body>{notamos}</Body>
@@ -197,7 +201,7 @@ export function HoyPosparto() {
             {semanas <= 6 && (
               <Pressable accessibilityRole="button" onPress={() => router.push('/respirar')}>
                 <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-                  <Text style={{ fontSize: 26 }}>🫁</Text>
+                  <Icono e="🫁" size={24} />
                   <View style={{ flex: 1 }}>
                     <Label>Respira conmigo</Label>
                     <Muted>Respiración diafragmática · 1 minuto</Muted>

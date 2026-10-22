@@ -12,8 +12,8 @@ export function useLayout() {
   const tamano: Tamano = width >= BREAK_ESCRITORIO ? 'escritorio' : width >= BREAK_TABLET ? 'tablet' : 'telefono';
   const maxWidth = tamano === 'escritorio' ? 1080 : tamano === 'tablet' ? 760 : 640;
   const padding = tamano === 'escritorio' ? 36 : tamano === 'tablet' ? 28 : 18;
-  // En escritorio las pestañas van en una barra lateral, que le quita ancho al contenido.
-  const barraLateral = tamano === 'escritorio';
+  // Desde la tablet las pestañas van en una barra lateral (como HonorApp), que le quita ancho al contenido.
+  const barraLateral = tamano !== 'telefono';
   const contenido = Math.min(maxWidth, width - (barraLateral ? ANCHO_BARRA : 0)) - padding * 2;
   return {
     width,

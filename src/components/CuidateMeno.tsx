@@ -29,7 +29,7 @@ export function CuidateMeno() {
         izquierda={
           <>
             <ListaEmoji titulo="Para sentirte mejor" items={CUIDADOS_MENO} />
-            <Button kind="soft" label="🩺 Cuándo consultar" onPress={() => router.push('/info')} />
+            <Button kind="soft" label="Cuándo consultar" onPress={() => router.push('/info')} />
           </>
         }
         derecha={

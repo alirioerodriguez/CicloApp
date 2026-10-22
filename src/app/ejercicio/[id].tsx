@@ -100,7 +100,7 @@ export default function EjercicioScreen() {
   const fmt = (s: number) => (larga ? `${Math.ceil(s / 60)} min` : `${Math.max(0, s)} s`);
   const contador =
     estado === 'fin'
-      ? '¡Lo lograste! 🎉'
+      ? '¡Lo lograste!'
       : estado === 'descanso'
         ? `Descansa · ${descanso} s`
         : porTiempo
@@ -134,22 +134,22 @@ export default function EjercicioScreen() {
         {estado === 'listo' && <Muted>Mira el movimiento y toca empezar cuando estés lista.</Muted>}
       </Card>
 
-      {estado === 'listo' && <Button label="▶ Empezar" onPress={() => setEstado('activo')} />}
+      {estado === 'listo' && <Button label="Empezar" onPress={() => setEstado('activo')} />}
       {estado === 'activo' && (
         <View style={{ flexDirection: 'row', gap: 10 }}>
           <View style={{ flex: 1 }}>
-            <Button kind="soft" label="⏸ Pausa" onPress={() => setEstado('pausa')} />
+            <Button kind="soft" label="Pausa" onPress={() => setEstado('pausa')} />
           </View>
           <View style={{ flex: 1 }}>
             <Button kind="ghost" label="Terminé la serie" onPress={terminarSerie} />
           </View>
         </View>
       )}
-      {estado === 'pausa' && <Button label="▶ Seguir" onPress={() => setEstado('activo')} />}
+      {estado === 'pausa' && <Button label="Seguir" onPress={() => setEstado('activo')} />}
       {estado === 'descanso' && <Button kind="soft" label="Saltar descanso" onPress={() => setDescanso(0)} />}
       {estado === 'fin' && (
         <View style={{ gap: 10 }}>
-          <Button label="Listo 💗" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />
+          <Button label="Listo" onPress={() => (router.canGoBack() ? router.back() : router.replace('/ejercicios'))} />
           <Button kind="ghost" label="Repetir" onPress={reiniciar} />
         </View>
       )}
@@ -161,7 +161,7 @@ export default function EjercicioScreen() {
             {i + 1}. {p}
           </Body>
         ))}
-        {ej.ojo ? <Muted>👀 {ej.ojo}</Muted> : null}
+        {ej.ojo ? <Muted>{ej.ojo}</Muted> : null}
       </Card>
       {adaptado && (
         <Card tint={c.lavandaSuave}>

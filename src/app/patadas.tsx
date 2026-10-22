@@ -63,7 +63,7 @@ export default function Patadas() {
           })}
         >
           <Text style={{ fontFamily: serif, fontSize: 80, lineHeight: 88, color: c.onAccent }}>{n}</Text>
-          <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: c.onAccent }}>{listo ? '¡Listo! 💗' : `de ${META_PATADAS} movimientos`}</Text>
+          <Text style={{ fontFamily: fonts.bold, fontSize: 15, color: c.onAccent }}>{listo ? '¡Listo!' : `de ${META_PATADAS} movimientos`}</Text>
         </Pressable>
       </View>
       <View style={{ flexDirection: 'row', gap: 10 }}>

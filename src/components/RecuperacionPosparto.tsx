@@ -41,7 +41,7 @@ export function RecuperacionPosparto() {
       </Card>
 
       <Label style={{ marginTop: 4 }}>Para tu etapa</Label>
-      {semanas <= 6 && <Button kind="soft" label="🫁 Respira conmigo" onPress={() => router.push('/respirar')} />}
+      {semanas <= 6 && <Button kind="soft" label="Respira conmigo" onPress={() => router.push('/respirar')} />}
       <Grilla max={2}>
         {actual.ids.map((id) => {
           const ej = ejercicioById(id);

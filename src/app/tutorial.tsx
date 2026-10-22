@@ -10,6 +10,7 @@ import { ejercicioById } from '../content/ejercicios';
 import { TUTORIAL } from '../content/tutorial';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
+import { Icono } from '../components/Icono';
 
 export default function Tutorial() {
   const c = useColors();
@@ -50,7 +51,7 @@ export default function Tutorial() {
             </View>
           ) : (
             <View style={{ width: 110, height: 110, borderRadius: 55, backgroundColor: c.rosaSuave, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 52 }}>{slide.emoji}</Text>
+              <Icono e={slide.emoji} size={52} />
             </View>
           )}
         </View>

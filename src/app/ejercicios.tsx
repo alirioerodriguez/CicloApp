@@ -21,9 +21,9 @@ export default function Ejercicios() {
   return (
     <Screen title="Ejercicios y alivio" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/cuidate'))} />}>
       <Card tint={c.rosaSuave}>
-        <Label>🆘 Alivio inmediato</Label>
+        <Label>Alivio inmediato</Label>
         <Body>¿Cólicos o ansiedad fuerte? Respira un minuto y prueba estos movimientos suaves. El calor local en el vientre también ayuda.</Body>
-        <Button label="🫁 Respirar 1 minuto" onPress={() => router.push('/respirar')} />
+        <Button label="Respirar 1 minuto" onPress={() => router.push('/respirar')} />
         <Grilla>
           {SOS_IDS.map((id) => (
             <EjercicioCard key={id} ej={ejercicioById(id)!} />

@@ -105,7 +105,7 @@ export function ResumenMeno() {
               ))}
             </Card>
             <Button kind="soft" label="Controles médicos y tratamiento" onPress={() => router.push('/menopausia')} />
-            <Button label="📋 Resumen para tu médica" onPress={() => router.push('/consulta')} />
+            <Button label="Resumen para tu médica" onPress={() => router.push('/consulta')} />
           </>
         }
       />

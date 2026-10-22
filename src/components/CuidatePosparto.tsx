@@ -13,6 +13,7 @@ import {
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Body, Card, Columnas, Label, Muted, Screen, tap } from './ui';
+import { Icono, IconoBurbuja } from './Icono';
 
 export function CuidatePosparto() {
   const c = useColors();
@@ -89,7 +90,7 @@ export function CuidatePosparto() {
               <Label>{data.settings.posparto.alimentacion === 'formula' ? 'Comer en tu recuperación' : 'Comer dando pecho'}</Label>
               {comer.map((r, i) => (
                 <View key={r.titulo} style={{ flexDirection: 'row', gap: 12, paddingVertical: 6, borderTopWidth: i ? 1 : 0, borderTopColor: c.line }}>
-                  <Text style={{ fontSize: 22 }}>{r.emoji}</Text>
+                  <IconoBurbuja e={r.emoji} size={34} />
                   <View style={{ flex: 1 }}>
                     <Body style={{ fontWeight: '700' }}>{r.titulo}</Body>
                     <Muted>{r.texto}</Muted>
@@ -102,7 +103,7 @@ export function CuidatePosparto() {
               <Label>Busca ayuda ya si notas</Label>
               {ALARMAS_POSPARTO.map((a) => (
                 <View key={a} style={{ flexDirection: 'row', gap: 10 }}>
-                  <Text>⚠️</Text>
+                  <Icono e="⚠️" size={18} color={c.text} />
                   <Body style={{ flex: 1 }}>{a}</Body>
                 </View>
               ))}

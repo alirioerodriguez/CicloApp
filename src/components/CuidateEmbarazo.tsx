@@ -7,6 +7,7 @@ import { fonts, serif, useColors } from '../lib/theme';
 import { EjercicioCard } from './EjercicioCard';
 import { ListaEmoji, Platos } from './Platos';
 import { Body, Card, Columnas, Label, Muted, Screen } from './ui';
+import { Icono } from './Icono';
 
 export function CuidateEmbarazo() {
   const c = useColors();
@@ -42,7 +43,7 @@ export function CuidateEmbarazo() {
               <Label>Busca ayuda ya si notas</Label>
               {ALARMAS_EMBARAZO.map((a) => (
                 <View key={a} style={{ flexDirection: 'row', gap: 10 }}>
-                  <Text>⚠️</Text>
+                  <Icono e="⚠️" size={18} color={c.text} />
                   <Body style={{ flex: 1 }}>{a}</Body>
                 </View>
               ))}

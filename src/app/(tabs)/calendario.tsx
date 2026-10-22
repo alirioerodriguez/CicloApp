@@ -44,7 +44,7 @@ function CalendarioCiclo() {
         <Legend showFertile={!sinOvulacion(data.settings)} />
       </Card>
 
-      <Button label={editing ? '✓ Listo' : '🩸 Marcar días de período'} kind={editing ? 'primary' : 'soft'} onPress={() => setEditing((e) => !e)} />
+      <Button label={editing ? '✓ Listo' : 'Marcar días de período'} kind={editing ? 'primary' : 'soft'} onPress={() => setEditing((e) => !e)} />
       <Muted style={{ textAlign: 'center' }}>
         {editing ? 'Toca cada día que tuviste sangrado para marcarlo o desmarcarlo.' : 'Toca un día para ver o editar lo que registraste.'}
       </Muted>

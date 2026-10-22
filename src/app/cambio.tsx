@@ -5,6 +5,7 @@ import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui'
 import { today } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { useColors } from '../lib/theme';
+import { IconoBurbuja } from '../components/Icono';
 
 export default function Cambio() {
   const c = useColors();
@@ -56,7 +57,7 @@ export default function Cambio() {
         >
           {({ pressed }) => (
             <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 14, opacity: pressed ? 0.8 : 1 }}>
-              <Text style={{ fontSize: 28 }}>{o.emoji}</Text>
+              <IconoBurbuja e={o.emoji} size={42} />
               <View style={{ flex: 1 }}>
                 <Label>{o.label}</Label>
                 <Muted>{o.sub}</Muted>

@@ -57,7 +57,7 @@ export function DayEditor({ date }: { date: ISODate }) {
       {showPill && (
         <Card tint={log.pillTaken ? c.salviaSuave : c.card}>
           <Row
-            label={log.pillTaken ? '💊 Pastilla tomada' : '💊 ¿Tomaste la pastilla?'}
+            label={log.pillTaken ? 'Pastilla tomada' : '¿Tomaste la pastilla?'}
             hint={log.pillTaken ? `A las ${log.pillTime ?? '—'}` : pill ? `Toca la ${pill.dayInPack} de ${pill.packLength}${pill.active ? '' : ' (placebo)'}` : data.settings.pillName || undefined}
           >
             <Pressable
@@ -92,14 +92,14 @@ export function DayEditor({ date }: { date: ISODate }) {
                 style={{ alignItems: 'center', gap: 4, flex: 1, paddingVertical: 8, borderRadius: radius.md, backgroundColor: on ? c.rosaSuave : 'transparent' }}
               >
                 <View style={{ height: 30, justifyContent: 'center' }}>
-                  <Text style={{ fontSize: i === 0 ? 18 : 11 + i * 4, opacity: i === 0 ? 0.5 : 1 }}>{i === 0 ? '○' : '🩸'}</Text>
+                  <Text style={{ fontSize: i === 0 ? 18 : 11 + i * 4, opacity: i === 0 ? 0.5 : 1 }}>{i === 0 ? '○' : ''}</Text>
                 </View>
                 <Text style={{ fontSize: 11.5, color: on ? c.text : c.muted, fontFamily: on ? fonts.bold : fonts.medium }}>{l}</Text>
               </Pressable>
             );
           })}
         </View>
-        {log.flow >= 4 && <Muted style={{ color: c.text }}>⚠️ {URGENTE[0]}</Muted>}
+        {log.flow >= 4 && <Muted style={{ color: c.text }}>{URGENTE[0]}</Muted>}
       </Card>
 
       <Card>
@@ -137,7 +137,7 @@ export function DayEditor({ date }: { date: ISODate }) {
 
       {ttc.length > 0 && (ttc.includes('moco') || ttc.includes('temp') || ttc.includes('lh')) && (
         <Card tint={c.salviaSuave}>
-          <Label>🌱 Señales de fertilidad</Label>
+          <Label>Señales de fertilidad</Label>
           {ttc.includes('moco') && (
             <>
               <Muted>Moco cervical</Muted>
@@ -211,16 +211,16 @@ export function DayEditor({ date }: { date: ISODate }) {
       </Card>
 
       <Card tint={log.intimidad ? c.rosaSuave : undefined}>
-        <Row label="🔥 Intimidad" hint="Se marca con un fueguito en tu calendario. Nunca va en el PDF.">
+        <Row label="Intimidad" hint="Se marca con un fueguito en tu calendario. Nunca va en el PDF.">
           <Chip label={log.intimidad ? 'Marcado' : 'Marcar'} selected={log.intimidad} onPress={() => set({ intimidad: !log.intimidad })} />
         </Row>
       </Card>
 
       <Card>
-        <Row label="💧 Agua" hint="Vasos">
+        <Row label="Agua" hint="Vasos">
           <Stepper value={log.water} onChange={(v) => set({ water: v })} max={20} />
         </Row>
-        <Row label="🌙 Sueño" hint={log.sleep == null ? 'Opcional' : 'Horas'}>
+        <Row label="Sueño" hint={log.sleep == null ? 'Opcional' : 'Horas'}>
           {log.sleep == null ? (
             <Chip label="Anotar" onPress={() => set({ sleep: 7 })} />
           ) : (

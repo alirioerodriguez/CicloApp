@@ -6,6 +6,7 @@ import { ALIMENTOS, AVISO_PASTILLA, CATEGORIAS, CON_MODERACION, TIP_HIERRO, type
 import { CUIDATE } from '../content/cuidate';
 import { useStore } from '../lib/store';
 import { useColors } from '../lib/theme';
+import { IconoBurbuja } from '../components/Icono';
 
 export default function Alimentacion() {
   const c = useColors();
@@ -41,7 +42,7 @@ export default function Alimentacion() {
         {list.length === 0 && <Muted>Nada con esos filtros.</Muted>}
         {list.map((f, i) => (
           <View key={f.nombre} style={{ flexDirection: 'row', gap: 12, paddingVertical: 6, borderTopWidth: i ? 1 : 0, borderTopColor: c.line }}>
-            <Text style={{ fontSize: 26 }}>{f.emoji}</Text>
+            <IconoBurbuja e={f.emoji} size={34} />
             <View style={{ flex: 1, gap: 2 }}>
               <Body style={{ fontWeight: '700' }}>{f.nombre}</Body>
               <Muted>{f.porque}</Muted>
@@ -53,7 +54,7 @@ export default function Alimentacion() {
         derecha={
           <>
       <Card tint={c.salviaSuave}>
-        <Label>🩸 Truco para el hierro</Label>
+        <Label>Truco para el hierro</Label>
         <Body>{TIP_HIERRO}</Body>
       </Card>
 
@@ -62,7 +63,7 @@ export default function Alimentacion() {
         {moderar.map((m) => (
           <View key={m.texto} style={{ gap: 2 }}>
             <Body>
-              {m.emoji} {m.texto}
+              {m.texto}
             </Body>
             {m.fases ? <Muted>{m.fases.map((f) => CUIDATE[f].nombre).join(', ')}{s.phase && m.fases.includes(s.phase) ? ' · tu fase actual' : ''}</Muted> : null}
           </View>
@@ -71,7 +72,7 @@ export default function Alimentacion() {
 
       {data.settings.pillMode && (
         <Card tint={c.lavandaSuave}>
-          <Label>💊 Si tomas pastilla</Label>
+          <Label>Si tomas pastilla</Label>
           <Body>{AVISO_PASTILLA}</Body>
         </Card>
       )}

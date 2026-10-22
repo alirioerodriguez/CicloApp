@@ -61,6 +61,7 @@ export const emptyData = (): AppData => ({
   embarazo: { hechos: [], patadas: {}, medidas: {} },
   mrs: {},
   chequeosMeno: [],
+  quiz: {},
   pruebas: { misiones: {}, sus: [], ideas: [] },
 });
 
@@ -131,6 +132,7 @@ export function normalize(raw: unknown): AppData {
     embarazo: { ...base.embarazo, ...r.embarazo },
     mrs: r.mrs && typeof r.mrs === 'object' ? r.mrs : base.mrs,
     chequeosMeno: Array.isArray(r.chequeosMeno) ? r.chequeosMeno : base.chequeosMeno,
+    quiz: r.quiz && typeof r.quiz === 'object' ? r.quiz : base.quiz,
     pruebas: { ...base.pruebas, ...r.pruebas },
   };
 }

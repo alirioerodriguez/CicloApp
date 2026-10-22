@@ -98,11 +98,11 @@ Copia uno en `src/content/ejercicios.ts`, cambia el texto y las dos poses (A y B
 ### Para recibir los resultados de las pruebas por correo
 Escribe tu correo en `CORREO_RESULTADOS` dentro de `src/content/pruebas.ts`. Si queda vacío, cada usuaria los comparte por donde quiera. Los resultados nunca incluyen datos del ciclo.
 
-## Cuentas y nube (Neon) — listo, se enciende con una variable
+## Cuentas y nube (Neon) — encendido
 
-La app tiene inicio de sesión con **Google** (en la web) y con **correo y contraseña**, y respaldo automático en **Neon** (Postgres con *Managed Better Auth*, plan gratis). Mientras no haya URL configurada, funciona como siempre: todo en el teléfono, sin cuenta.
+La app tiene inicio de sesión con **Google** (en la web) y con **correo y contraseña**, y respaldo automático en **Neon** (Postgres con *Managed Better Auth*, plan gratis). Ya está conectada al proyecto **savia** de Neon: su URL pública va por defecto en `src/lib/nube.ts` y se puede cambiar con `EXPO_PUBLIC_NEON_URL`.
 
-Para encenderlo:
+Así se armó (por si hay que repetirlo en otro proyecto):
 
 1. En [console.neon.tech](https://console.neon.tech) crea un proyecto (plan Free).
 2. En el proyecto, activa **Auth** (Managed Better Auth). Google ya viene con credenciales de prueba de Neon; para producción, crea las tuyas en Google Cloud y pégalas en Auth → OAuth.

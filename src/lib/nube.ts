@@ -5,7 +5,8 @@ import 'react-native-url-polyfill/auto';
 import { createClient, defaultDeriveNeonUrls, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import { Platform } from 'react-native';
 
-const url = process.env.EXPO_PUBLIC_NEON_URL ?? '';
+// Por defecto, el proyecto "savia" en Neon (plan Free). Es pública: sin usuario ni contraseña.
+const url = process.env.EXPO_PUBLIC_NEON_URL ?? 'https://ep-old-bar-b5e0wyej.c-7.us-east-2.aws.neon.tech/neondb';
 
 export const nubeConfigurada = !!url;
 

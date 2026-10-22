@@ -17,6 +17,6 @@ create policy "propia fila" on public.ciclo_data
   using (auth.user_id() = user_id)
   with check (auth.user_id() = user_id);
 
--- Las visitas sin sesión no ven nada.
-revoke all on public.ciclo_data from anon;
+-- Las visitas sin sesión no ven nada: solo el rol authenticated tiene permisos (sin "Grant public schema access" no existe el rol anon).
+grant usage on schema public to authenticated;
 grant select, insert, update, delete on public.ciclo_data to authenticated;

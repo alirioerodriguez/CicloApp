@@ -122,7 +122,8 @@ Antes de iniciar sesión, la app pregunta el país (Venezuela, México, Colombia
 - Todo el texto está escrito en español venezolano. `t()` en `src/lib/region.tsx` lo pasa a **inglés** (`src/content/i18n/en.ts`) o a **español neutro** para los demás países (`src/content/i18n/neutro.ts`). La clave es la frase exacta en español; las frases con datos usan `{0}`, `{1}`.
 - Todos los textos de pantalla pasan por `Text` de `src/components/Texto.tsx`, que traduce solo. Si agregas una frase nueva, súmala a `en.ts` (y a `neutro.ts` si tiene palabras venezolanas como caraotas o cambur); si falta, se muestra en español.
 - Las comidas de Alimentación y Cuídate salen de `src/content/alimentos.ts`: cada alimento tiene su nombre local por país (`nombres`) y algunos son solo de ciertos países (`paises`), como la sangrecita en Perú o los nopales en México.
-- Pendiente: el PDF para la médica y las notificaciones siguen en español.
+- El PDF para la médica, el CSV y las notificaciones también se traducen (`t as tr` en `lib/backup.ts` y `lib/notifications.ts`). En las notificaciones con `{dias}`, la frase se traduce antes de poner el número (`fill` en `content/textos.ts`).
+- `npm test` incluye `__tests__/ingles.test.ts`, que arma el PDF y una notificación con el teléfono en inglés.
 
 ## Versión web (Vercel)
 

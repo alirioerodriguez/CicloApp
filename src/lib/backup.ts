@@ -9,6 +9,7 @@ import { detectAlertas } from './alertas';
 import { ovarioHistorial } from './salud';
 import { PILL_PACKS, pillAdherence, topCounts, type Summary } from './cycle';
 import { addDays, diffDays, longDate, shortDate, today } from './dates';
+import { region, t as tr } from './region';
 import { normalize } from './store';
 import type { AppData, DayLog, ISODate } from './types';
 
@@ -32,12 +33,15 @@ async function exportFile(name: string, text: string, mimeType: string, UTI: str
 }
 
 export async function exportBackup(data: AppData): Promise<void> {
-  await exportFile(`savia-respaldo-${today()}.json`, JSON.stringify(data, null, 2), 'application/json', 'public.json', 'Guarda tu respaldo (Drive, WhatsApp, correo…)');
+  await exportFile(`savia-respaldo-${today()}.json`, JSON.stringify(data, null, 2), 'application/json', 'public.json', tr('Guarda tu respaldo (Drive, WhatsApp, correo…)'));
 }
 
 // Historial día por día en CSV, para abrirlo en Excel o Google Sheets.
 export async function exportCsv(data: AppData): Promise<void> {
-  const cols = ['fecha', 'flujo', 'dolor', 'animo', 'sintomas', 'agua', 'sueno', 'pastilla', 'moco', 'temperatura', 'lh', 'loquios', 'tomas', 'cicatriz', 'nota'];
+  const cols =
+    region().idioma === 'en'
+      ? ['date', 'flow', 'pain', 'mood', 'symptoms', 'water', 'sleep', 'pill', 'mucus', 'temperature', 'lh', 'lochia', 'feedings', 'scar', 'note']
+      : ['fecha', 'flujo', 'dolor', 'animo', 'sintomas', 'agua', 'sueno', 'pastilla', 'moco', 'temperatura', 'lh', 'loquios', 'tomas', 'cicatriz', 'nota'];
   const cell = (v: string | number | null | undefined) => {
     const t = v == null ? '' : String(v);
     return /[",\n;]/.test(t) ? `"${t.replace(/"/g, '""')}"` : t;
@@ -49,11 +53,11 @@ export async function exportCsv(data: AppData): Promise<void> {
         l.date,
         l.flow,
         l.pain,
-        l.moods.map((m) => moodById(m).label).join(' | '),
-        l.symptoms.map((x) => symptomById(x).label).join(' | '),
+        l.moods.map((m) => tr(moodById(m).label)).join(' | '),
+        l.symptoms.map((x) => tr(symptomById(x).label)).join(' | '),
         l.water,
         l.sleep,
-        l.pillTaken ? 'sí' : '',
+        l.pillTaken ? tr('sí') : '',
         l.moco,
         l.temp,
         l.lh,
@@ -67,7 +71,7 @@ export async function exportCsv(data: AppData): Promise<void> {
     );
   // El BOM hace que Excel lea bien los acentos.
   const csv = '﻿' + [cols.join(','), ...rows].join('\n');
-  await exportFile(`savia-historial-${today()}.csv`, csv, 'text/csv', 'public.comma-separated-values-text', 'Guarda tu historial');
+  await exportFile(`savia-historial-${today()}.csv`, csv, 'text/csv', 'public.comma-separated-values-text', tr('Guarda tu historial'));
 }
 
 // Devuelve null si se canceló; lanza error si el archivo no sirve.
@@ -81,7 +85,7 @@ export async function pickBackup(): Promise<AppData | null> {
   const text = Platform.OS === 'web' && asset.file ? await asset.file.text() : await new File(asset.uri).text();
   const parsed = JSON.parse(text);
   if (!parsed || typeof parsed !== 'object' || !('logs' in parsed) || !('settings' in parsed)) {
-    throw new Error('Este archivo no parece un respaldo de la app.');
+    throw new Error(tr('Este archivo no parece un respaldo de la app.'));
   }
   return normalize(parsed);
 }
@@ -129,20 +133,22 @@ export function reportHtml(data: AppData, s: Summary): string {
   const ovDer = ov.filter((x) => x.lado !== 'izq').length;
   const proximos = data.controles.filter((x) => x.fecha).sort((a, b) => (a.fecha < b.fecha ? -1 : 1));
 
-  const metodo = st.pillMode ? `Pastilla${st.pillName ? ` ${esc(st.pillName)}` : ''} · ${PILL_PACKS[st.pillType].label}` : 'Sin pastilla anticonceptiva registrada';
-  const row = (a: string, b: string) => `<tr><td>${a}</td><td><b>${b}</b></td></tr>`;
+  // Todo el texto pasa por tr(): sale en inglés o en español neutro según el país y el idioma elegidos.
+  const metodo = st.pillMode ? `${tr('Pastilla')}${st.pillName ? ` ${esc(st.pillName)}` : ''} · ${tr(PILL_PACKS[st.pillType].label)}` : tr('Sin pastilla anticonceptiva registrada');
+  const row = (a: string, b: string) => `<tr><td>${tr(a)}</td><td><b>${b}</b></td></tr>`;
   const perRow = (start: ISODate, length: number | null) => {
     const p = s.periods.find((x) => x.start === start);
     const ls = p ? between(data, p.start, p.end) : [];
     const heavy = ls.filter((l) => l.flow >= 4).length;
     const clots = ls.some((l) => l.symptoms.includes('coagulos'));
     const maxPain = Math.max(0, ...ls.map((l) => l.pain));
-    return `<tr><td>${shortDate(start)} ${start.slice(0, 4)}</td><td>${length ? `${length} días` : 'en curso'}</td><td>${p?.length ?? '—'}</td><td>${heavy || '—'}</td><td>${clots ? 'Sí' : '—'}</td><td>${maxPain ? `${maxPain}/10` : '—'}</td></tr>`;
+    return `<tr><td>${shortDate(start)} ${start.slice(0, 4)}</td><td>${length ? tr(`${length} días`) : tr('en curso')}</td><td>${p?.length ?? '—'}</td><td>${heavy || '—'}</td><td>${clots ? tr('Sí') : '—'}</td><td>${maxPain ? `${maxPain}/10` : '—'}</td></tr>`;
   };
   // Solo síntomas físicos: el ánimo y las notas personales no salen del teléfono.
-  const gridIds = topCounts(logs, 'symptoms', 5).map((x) => ({ id: x.id, label: symptomById(x.id).label, kind: 'symptoms' as const }));
+  const gridIds = topCounts(logs, 'symptoms', 5).map((x) => ({ id: x.id, label: tr(symptomById(x.id).label), kind: 'symptoms' as const }));
+  const lado = (q: 'der' | 'izq') => tr(q === 'der' ? 'derecho' : 'izquierdo');
 
-  return `<!doctype html><html><head><meta charset="utf-8"><style>
+  return `<!doctype html><html lang="${region().idioma}"><head><meta charset="utf-8"><style>
     body{font-family:-apple-system,Roboto,Helvetica,Arial,sans-serif;color:#2E2A3F;padding:28px;font-size:12.5px}
     h1{font-family:Georgia,serif;font-weight:400;font-size:26px;margin:0 0 4px}
     h2{font-size:13px;margin:20px 0 8px;color:#E7799F;text-transform:uppercase;letter-spacing:1px}
@@ -151,37 +157,37 @@ export function reportHtml(data: AppData, s: Summary): string {
     .grid td.g,.grid th.g{width:10px;padding:0;border:1px solid #fff;height:12px;font-size:8px;color:#999;text-align:center}
     .grid td.lbl{white-space:nowrap;padding-right:6px;font-size:11px}
   </style></head><body>
-    <h1>Resumen de ciclo</h1>
-    <div class="muted">${esc(st.name || '')} · generado el ${longDate(today())}</div>
-    <h2>Datos clave</h2>
+    <h1>${tr('Resumen de ciclo')}</h1>
+    <div class="muted">${esc(st.name || '')} · ${tr(`generado el ${longDate(today())}`)}</div>
+    <h2>${tr('Datos clave')}</h2>
     <table>
       ${row('Fecha de la última menstruación', s.lastStart ? longDate(s.lastStart) : '—')}
-      ${row('Duración promedio del ciclo', `${s.avgCycle} días (${s.cycles.length} ciclos registrados)`)}
-      ${s.cycleRange ? row('Más corto / más largo (últimos ciclos)', `${s.cycleRange[0]} / ${s.cycleRange[1]} días · diferencia ${s.cycleRange[1] - s.cycleRange[0]}`) : ''}
-      ${row('Duración promedio del período', `${s.avgPeriod} días`)}
+      ${row('Duración promedio del ciclo', tr(`${s.avgCycle} días (${s.cycles.length} ciclos registrados)`))}
+      ${s.cycleRange ? row('Más corto / más largo (últimos ciclos)', tr(`${s.cycleRange[0]} / ${s.cycleRange[1]} días · diferencia ${s.cycleRange[1] - s.cycleRange[0]}`)) : ''}
+      ${row('Duración promedio del período', tr(`${s.avgPeriod} días`))}
       ${row('Dolor promedio los días con dolor', `${avgPain} / 10`)}
       ${row('Método anticonceptivo', metodo)}
-      ${adh ? row('Tomas registradas (30 días)', `${adh.taken} de ${adh.expected}${adh.expected - adh.taken ? ` · ${adh.expected - adh.taken} sin marcar` : ''}`) : ''}
+      ${adh ? row('Tomas registradas (30 días)', `${tr(`${adh.taken} de ${adh.expected}`)}${adh.expected - adh.taken ? ` ${tr(`· ${adh.expected - adh.taken} sin marcar`)}` : ''}`) : ''}
       ${row('Sangrado entre períodos (días)', String(count('manchado')))}
       ${row('Dolor en relaciones (días)', String(count('dolor_relaciones')))}
       ${row('Migraña (días)', String(count('migrana')))}
       ${row('Coágulos grandes (días)', String(count('coagulos')))}
-      ${ovIzq + ovDer ? row('Dolor de ovario (últimos 2 ciclos)', `izquierdo ${ovIzq} días · derecho ${ovDer} días`) : ''}
-      ${data.quistes.map((q) => row(`Quiste ovario ${q.ovario === 'der' ? 'derecho' : 'izquierdo'} (${esc(q.tipo)})`, q.medidas.map((m) => `${m.mm} mm (${shortDate(m.fecha)})`).join(' → '))).join('')}
+      ${ovIzq + ovDer ? row('Dolor de ovario (últimos 2 ciclos)', tr(`izquierdo ${ovIzq} días · derecho ${ovDer} días`)) : ''}
+      ${data.quistes.map((q) => row(tr(`Quiste ovario ${lado(q.ovario)} (${esc(tr(q.tipo))})`), q.medidas.map((m) => `${m.mm} mm (${shortDate(m.fecha)})`).join(' → '))).join('')}
       ${data.autoexamenes.length ? row('Último autoexamen de mamas', shortDate([...data.autoexamenes].sort().pop()!)) : ''}
       ${count('bulto') ? row('Notó un bulto o cambio en mamas (días)', String(count('bulto'))) : ''}
-      ${proximos.length ? row('Próximos controles', proximos.map((x) => `${esc(x.titulo)} (${shortDate(x.fecha)})`).join(' · ')) : ''}
+      ${proximos.length ? row('Próximos controles', proximos.map((x) => `${esc(tr(x.titulo))} (${shortDate(x.fecha)})`).join(' · ')) : ''}
     </table>
-    ${alertas.length ? `<h2>Temas para la consulta</h2>${alertas.map((a) => `<div class="alert">${esc(a.texto)}</div>`).join('')}` : ''}
-    <h2>Ciclos</h2>
-    <table><tr><th>Inicio</th><th>Ciclo</th><th>Días de sangrado</th><th>Días abundantes</th><th>Coágulos</th><th>Dolor máx.</th></tr>
+    ${alertas.length ? `<h2>${tr('Temas para la consulta')}</h2>${alertas.map((a) => `<div class="alert">${esc(tr(a.texto))}</div>`).join('')}` : ''}
+    <h2>${tr('Ciclos')}</h2>
+    <table><tr>${['Inicio', 'Ciclo', 'Días de sangrado', 'Días abundantes', 'Coágulos', 'Dolor máx.'].map((h) => `<th>${tr(h)}</th>`).join('')}</tr>
       ${s.lastStart ? perRow(s.lastStart, null) : ''}
       ${lastCycles.map((c) => perRow(c.start, c.length)).join('') || ''}
     </table>
-    ${gridIds.length ? `<h2>Síntomas por día del ciclo (últimos ciclos)</h2>${cycleDayGrid(data, s, gridIds)}<div class="muted">Más intenso = más ciclos con ese síntoma ese día. Día 1 = primer día de sangrado.</div>` : ''}
-    <h2>Síntomas más frecuentes</h2>
-    <table>${symptoms.map((x) => row(symptomById(x.id).label, `${x.count} días`)).join('') || '<tr><td>Sin registros</td></tr>'}</table>
-    <p class="muted" style="margin-top:28px">No incluye intimidad, notas personales, estado de ánimo ni diario de sueños. Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico. Las fechas futuras y las fases son estimaciones.</p>
+    ${gridIds.length ? `<h2>${tr('Síntomas por día del ciclo (últimos ciclos)')}</h2>${cycleDayGrid(data, s, gridIds)}<div class="muted">${tr('Más intenso = más ciclos con ese síntoma ese día. Día 1 = primer día de sangrado.')}</div>` : ''}
+    <h2>${tr('Síntomas más frecuentes')}</h2>
+    <table>${symptoms.map((x) => row(symptomById(x.id).label, tr(`${x.count} días`))).join('') || `<tr><td>${tr('Sin registros')}</td></tr>`}</table>
+    <p class="muted" style="margin-top:28px">${tr('No incluye intimidad, notas personales, estado de ánimo ni diario de sueños.')} ${tr('Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico.')} ${tr('Las fechas futuras y las fases son estimaciones.')}</p>
   </body></html>`;
 }
 
@@ -192,5 +198,5 @@ export async function shareReport(data: AppData, s: Summary): Promise<void> {
     return;
   }
   const { uri } = await Print.printToFileAsync({ html });
-  await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: 'Resumen para tu médico' });
+  await Sharing.shareAsync(uri, { mimeType: 'application/pdf', UTI: 'com.adobe.pdf', dialogTitle: tr('Resumen para tu médico') });
 }

@@ -10,6 +10,7 @@ import { fppDesdeSemanas, semanasEmbarazo, trimestre } from '../src/content/emba
 import { diasSinPeriodo, puntajeMrs } from '../src/content/menopausia';
 import { MENSAJE_EDIMBURGO, nivelEdimburgo } from '../src/content/posparto';
 
+jest.mock('expo-localization', () => ({ getLocales: () => [{ languageCode: 'es', regionCode: 'VE' }] }));
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('../src/lib/nube', () => ({ nubeConfigurada: false, neon: null }));
 

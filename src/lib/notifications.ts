@@ -6,6 +6,7 @@ import { pillStatus, type Summary } from './cycle';
 import { NOTIF, fill } from '../content/textos';
 import { proximoAutoexamen } from './salud';
 import { addDays, diffDays, fromISO, today } from './dates';
+import { t as tr } from './region';
 import type { AppData, ISODate } from './types';
 
 const CHANNEL = 'recordatorios';
@@ -26,7 +27,7 @@ export async function ensurePermission(): Promise<boolean> {
   if (!notificationsSupported) return false;
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync(CHANNEL, {
-      name: 'Recordatorios',
+      name: tr('Recordatorios'),
       importance: Notifications.AndroidImportance.HIGH,
       lightColor: '#E7799F',
     });
@@ -45,17 +46,18 @@ function at(date: ISODate, hour: number, minute = 0): Date {
   return d;
 }
 
+// Título y texto se traducen al idioma y país elegidos (lib/region).
 async function once(title: string, body: string, date: Date) {
   if (date.getTime() <= Date.now()) return;
   await Notifications.scheduleNotificationAsync({
-    content: { title, body },
+    content: { title: tr(title), body: tr(body) },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId: CHANNEL },
   });
 }
 
 async function daily(title: string, body: string, hour: number, minute: number) {
   await Notifications.scheduleNotificationAsync({
-    content: { title, body },
+    content: { title: tr(title), body: tr(body) },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DAILY, hour, minute, channelId: CHANNEL },
   });
 }
@@ -129,7 +131,7 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
   // Controles médicos: aviso unos días antes.
   if (r.controles.on) {
     for (const ctl of data.controles.filter((x) => x.fecha)) {
-      await once(...msg('Control', fill(NOTIF.control, r.controles.daysBefore).replace('{control}', ctl.titulo)), at(addDays(ctl.fecha, -r.controles.daysBefore), r.controles.hour));
+      await once(...msg('Control', fill(NOTIF.control, r.controles.daysBefore).replace('{control}', tr(ctl.titulo))), at(addDays(ctl.fecha, -r.controles.daysBefore), r.controles.hour));
     }
   }
 

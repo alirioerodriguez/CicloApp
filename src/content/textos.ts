@@ -2,6 +2,7 @@
 // {dias} se reemplaza por el número de días.
 // Fuentes de la parte de predicción: [16] [29] [35]–[38].
 import { nubeConfigurada } from '../lib/nube';
+import { t } from '../lib/region';
 
 export const AVISO_ANTICONCEPTIVO =
   'Las fechas fértiles son solo una estimación. Esta app no sirve como método anticonceptivo ni para evitar un embarazo.';
@@ -114,6 +115,7 @@ export function confianza(ciclos: number): string {
   return 'Estimación estable';
 }
 
+// Se traduce antes de poner el número: el diccionario guarda la frase con {dias}.
 export function fill(text: string, dias: number) {
-  return text.replace('{dias}', String(dias));
+  return t(text).replace('{dias}', String(dias));
 }

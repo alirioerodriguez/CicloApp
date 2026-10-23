@@ -13,7 +13,7 @@ import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen,
 import { NO_DISPOSITIVO } from '../../content/info';
 import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
 import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
-import { ensurePermission, notificationsSupported } from '../../lib/notifications';
+import { ensurePermission, notificationsSupported, pedirAlarmasExactas } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
 import { useStore } from '../../lib/store';
 import { signOut } from '../../lib/nube';
@@ -273,19 +273,20 @@ export default function Perfil() {
           <>
             {s.pillMode && (
               <>
-                <Toggle label="Pastilla" hint="A la misma hora cada día, y otro aviso si pasa una hora sin marcarla. Salta los días de descanso." value={r.pill.on} onChange={(on) => (on ? withPermission(() => setReminders({ pill: { ...r.pill, on } })) : setReminders({ pill: { ...r.pill, on } }))} />
-                {r.pill.on && (
-                  <Row label="Hora">
-                    <Stepper
-                      value={r.pill.hour * 60 + r.pill.minute}
-                      onChange={(v) => setReminders({ pill: { ...r.pill, hour: Math.floor(v / 60), minute: v % 60 } })}
-                      min={0}
-                      max={23 * 60 + 45}
-                      step={15}
-                      format={(v) => timeLabel(Math.floor(v / 60), v % 60)}
-                    />
-                  </Row>
-                )}
+                <Toggle
+                  label="Pastilla"
+                  hint="A la hora de tu blíster, con el botón «Ya la tomé». Si no la marcas, otro aviso una hora después. Salta los días de descanso."
+                  value={r.pill.on}
+                  onChange={(on) =>
+                    on
+                      ? withPermission(() => {
+                          setReminders({ pill: { ...r.pill, on } });
+                          pedirAlarmasExactas();
+                        })
+                      : setReminders({ pill: { ...r.pill, on } })
+                  }
+                />
+                {r.pill.on && data.blister && <Muted>{t(`A las ${data.blister.hora}. La hora se cambia en tu blíster (Editar blíster).`)}</Muted>}
                 <Toggle label="Blíster nuevo y descanso" hint="Aviso el día antes" value={r.pack.on} onChange={(on) => (on ? withPermission(() => setReminders({ pack: { ...r.pack, on } })) : setReminders({ pack: { ...r.pack, on } }))} />
                 <Divider />
               </>

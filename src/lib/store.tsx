@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, Platform } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
-import { clasificarToma, migrarBlister } from './blister';
+import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './blister';
 import { summarize, type Summary } from './cycle';
 import { deleteRemote, pullRemote, pushRemote } from './nube';
 import { addDays, today } from './dates';
@@ -217,6 +217,8 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
       if (cancel) return;
       setData(chosen ?? emptyData());
       setReady(true);
+      // Para el botón "Ya la tomé" de la notificación, que escribe sin la app abierta.
+      AsyncStorage.setItem(CLAVE_ACTIVA, key).catch(() => {});
     })();
     return () => {
       cancel = true;
@@ -256,8 +258,23 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
     const flush = () => {
       AsyncStorage.setItem(key, JSON.stringify(latest.current)).catch(() => {});
     };
+    // Al volver, se suman las pastillas marcadas desde la notificación ("Ya la tomé") mientras la app no estaba.
+    const recoger = async () => {
+      try {
+        const raw = await AsyncStorage.getItem(key);
+        const guardadas = raw ? normalizarTomas((JSON.parse(raw) as Partial<AppData>).tomasPastilla) : {};
+        setData((d) => {
+          const nuevas = Object.keys(guardadas).filter((f) => !d.tomasPastilla[f]);
+          if (!nuevas.length) return d;
+          return { ...d, tomasPastilla: { ...Object.fromEntries(nuevas.map((f) => [f, guardadas[f]])), ...d.tomasPastilla } };
+        });
+      } catch {
+        // Si no se puede leer, se queda lo que hay en memoria.
+      }
+    };
     const sub = AppState.addEventListener('change', (s) => {
       if (s !== 'active') flush();
+      else recoger();
     });
     if (Platform.OS === 'web') window.addEventListener('pagehide', flush);
     return () => {
@@ -313,7 +330,8 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const marcarToma = useCallback((fecha: ISODate, hora: string | null, estado?: EstadoToma) => {
     setData((d) => {
       if (!d.blister) return d;
-      const final: EstadoToma = estado ?? (hora ? clasificarToma(d.blister, hora) : 'tomada');
+      // La hora es de hoy: si se marca un día anterior (p. ej., desde la notificación de ayer) cuenta como tarde.
+      const final: EstadoToma = estado ?? (hora ? clasificarToma(d.blister, hora, fecha, today()) : 'tomada');
       return { ...d, tomasPastilla: { ...d.tomasPastilla, [fecha]: { fecha, estado: final, hora: final === 'olvidada' ? null : hora } } };
     });
   }, []);

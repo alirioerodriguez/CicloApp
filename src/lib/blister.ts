@@ -7,6 +7,10 @@ import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, PillLog, Pill
 
 export type Alveolo = 'activa' | 'placebo' | 'descanso';
 
+// El store guarda aquí en qué clave de AsyncStorage están los datos de la usuaria activa (cambia con la cuenta).
+// Lo lee el botón "Ya la tomé" de la notificación, que corre sin la app abierta.
+export const CLAVE_ACTIVA = 'savia:claveDatos';
+
 interface Esquema {
   activas: number;
   inactivas: number;
@@ -76,9 +80,11 @@ const minutos = (hora: string) => {
   return h * 60 + (m || 0);
 };
 
-// Tomada a tiempo o tarde, según cuánto pasó desde la hora programada.
-export function clasificarToma(c: BlisterConfig, hora: string): Exclude<EstadoToma, 'olvidada'> {
-  return minutos(hora) - minutos(c.hora) > HORAS_TARDE[c.tipoPastilla] * 60 ? 'tarde' : 'tomada';
+// Tomada a tiempo o tarde, según cuánto pasó desde la hora programada. Si se toma otro día
+// (por ejemplo, la de ayer marcada hoy desde la notificación), se cuentan también esos días.
+export function clasificarToma(c: BlisterConfig, hora: string, fecha?: ISODate, fechaReal?: ISODate): Exclude<EstadoToma, 'olvidada'> {
+  const dias = fecha && fechaReal ? diffDays(fechaReal, fecha) : 0;
+  return dias * 24 * 60 + minutos(hora) - minutos(c.hora) > HORAS_TARDE[c.tipoPastilla] * 60 ? 'tarde' : 'tomada';
 }
 
 export type EstadoDia = EstadoToma | 'pendiente' | 'futura' | 'descanso';

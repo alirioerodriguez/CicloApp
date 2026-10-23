@@ -18,10 +18,13 @@ import { StoreProvider, useStore } from '../lib/store';
 import { ThemePrefs, serif, useColors } from '../lib/theme';
 import { RegionProvider, t, useRegion } from '../lib/region';
 import { ElegirPais } from '../components/ElegirPais';
+import * as Notifications from 'expo-notifications';
+import { nowTime } from '../lib/dates';
+import { ACCION_TOMADA, fechaDeRespuesta, idSegundoAviso } from '../lib/tareaPastilla';
 
 function Gate() {
   const c = useColors();
-  const { ready, data, summary } = useStore();
+  const { ready, data, summary, marcarToma } = useStore();
   const [locked, setLocked] = useState(true);
   const lockEnabled = data.settings.lock && Platform.OS !== 'web';
 
@@ -42,6 +45,24 @@ function Gate() {
   useEffect(() => {
     if (ready && lockEnabled && locked) unlock();
   }, [ready, lockEnabled, locked]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Botón "Ya la tomé" con la app abierta (o en iPhone, que la abre): marca la toma si aún no estaba.
+  // Con la app cerrada en Android lo resuelve la tarea de lib/tareaPastilla.
+  const tomas = useRef(data.tomasPastilla);
+  tomas.current = data.tomasPastilla;
+  useEffect(() => {
+    if (!ready || Platform.OS === 'web') return;
+    const atender = (r: Notifications.NotificationResponse | null) => {
+      if (!r || r.actionIdentifier !== ACCION_TOMADA) return;
+      const fecha = fechaDeRespuesta(r);
+      if (fecha && !tomas.current[fecha]) marcarToma(fecha, nowTime());
+      if (fecha) Notifications.cancelScheduledNotificationAsync(idSegundoAviso(fecha)).catch(() => {});
+      Notifications.dismissNotificationAsync(r.notification.request.identifier).catch(() => {});
+    };
+    Notifications.getLastNotificationResponseAsync().then(atender).catch(() => {});
+    const sub = Notifications.addNotificationResponseReceivedListener(atender);
+    return () => sub.remove();
+  }, [ready, marcarToma]);
 
   // Reprogramar recordatorios cuando cambian los datos (con una pausa).
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);

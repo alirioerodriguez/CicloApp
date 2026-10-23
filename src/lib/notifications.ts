@@ -2,7 +2,9 @@
 // Cada vez que se abre la app o cambia un ajuste, se borran y se vuelven a programar.
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import { pillStatus, type Summary } from './cycle';
+import { diaDelBlister, esquema, proximaPausa, tocaTomar } from './blister';
+import type { Summary } from './cycle';
+import { CATEGORIA_DISCRETA, CATEGORIA_PASTILLA, idRecordatorio, idSegundoAviso, registrarAccionesPastilla } from './tareaPastilla';
 import { NOTIF, fill } from '../content/textos';
 import { proximoAutoexamen } from './salud';
 import { addDays, diffDays, fromISO, today } from './dates';
@@ -47,12 +49,27 @@ function at(date: ISODate, hour: number, minute = 0): Date {
 }
 
 // Título y texto se traducen al idioma y país elegidos (lib/region).
-async function once(title: string, body: string, date: Date) {
+// `id` permite cancelar un aviso puntual (el segundo aviso de la pastilla); `categoria` agrega el botón "Ya la tomé".
+// `exacta`: en Android usa AlarmManager.setAlarmClock(), que el sistema no corre de hora (si hay permiso de alarmas exactas).
+async function once(title: string, body: string, date: Date, extra: { id?: string; categoria?: string; data?: Record<string, string>; exacta?: boolean } = {}) {
   if (date.getTime() <= Date.now()) return;
   await Notifications.scheduleNotificationAsync({
-    content: { title: tr(title), body: tr(body) },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId: CHANNEL },
+    identifier: extra.id,
+    content: { title: tr(title), body: tr(body), categoryIdentifier: extra.categoria, data: extra.data },
+    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date, channelId: CHANNEL, delivery: extra.exacta ? 'alarmClock' : 'bestEffort' },
   });
+}
+
+// Android 12+: las alarmas exactas necesitan un permiso aparte. Se pide al activar el recordatorio de la pastilla;
+// sin él, el aviso llega igual, aunque puede correrse unos minutos.
+export async function pedirAlarmasExactas(): Promise<void> {
+  if (Platform.OS !== 'android') return;
+  try {
+    const actual = await Notifications.getExactAlarmPermissionsAsync();
+    if (!actual.granted && actual.canAskAgain !== false) await Notifications.requestExactAlarmPermissionsAsync();
+  } catch {
+    // Versiones de Android sin este permiso: no hace falta.
+  }
 }
 
 async function daily(title: string, body: string, hour: number, minute: number) {
@@ -83,28 +100,31 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
   // Modo discreto: en la pantalla bloqueada no se lee "pastilla" ni "período".
   const msg = (title: string, body: string): [string, string] => (settings.discreet ? ['Savia', 'Tienes un recordatorio en tu app.'] : [title, body]);
 
-  // Pastilla: a la hora elegida y, si no se marcó, un aviso una hora después. Salta los días sin pastilla.
-  if (settings.pillMode && r.pill.on) {
+  // Pastilla (blíster digital): a la hora del blíster, con el botón "Ya la tomé"; si no se marcó, otro aviso
+  // una hora después. Salta los días de descanso y los ya marcados. Al marcarla, el segundo aviso se cancela.
+  const b = settings.pillMode ? data.blister : null;
+  if (b && r.pill.on) {
+    await registrarAccionesPastilla(tr('Ya la tomé'), tr('Listo'));
+    const categoria = settings.discreet ? CATEGORIA_DISCRETA : CATEGORIA_PASTILLA;
+    const [h, m] = b.hora.split(':').map(Number);
     for (let i = 0; i < PILL_DAYS; i++) {
       const d = addDays(t, i);
-      const st = pillStatus(settings, d);
-      if (st && !st.takesToday) continue;
-      if (data.tomasPastilla[d]) continue; // ya marcada en el blíster digital
-      const when = at(d, r.pill.hour, r.pill.minute);
-      await once(...msg('Pastilla', rotate(NOTIF.pastilla, dayNum(d))), when);
-      await once(...msg('Pastilla', NOTIF.pastillaAtrasada), new Date(when.getTime() + LATE_MINUTES * 60000));
+      if (!tocaTomar(b, d) || data.tomasPastilla[d]) continue;
+      const when = at(d, h, m);
+      const datos = { tipo: 'pastilla', fecha: d };
+      await once(...msg('Pastilla', rotate(NOTIF.pastilla, dayNum(d))), when, { id: idRecordatorio(d), categoria, data: datos, exacta: true });
+      await once(...msg('Pastilla', NOTIF.pastillaAtrasada), new Date(when.getTime() + LATE_MINUTES * 60000), { id: idSegundoAviso(d), categoria, data: datos, exacta: true });
     }
   }
 
-  // Blíster: aviso el día antes del descanso y del blíster nuevo.
-  if (settings.pillMode && r.pack.on) {
-    const st = pillStatus(settings, t);
-    if (st) {
-      const conDescanso = settings.pillType === '21-7';
-      await once(...msg('Blíster', conDescanso ? NOTIF.blisterTrasDescanso : NOTIF.blisterNuevo), at(addDays(st.nextPackStart, -1), r.pack.hour));
-      if (st.breakStart) {
-        await once(...msg('Blíster', conDescanso ? NOTIF.descansoSinPastilla : NOTIF.descansoPlacebo), at(addDays(st.breakStart, -1), r.pack.hour));
-      }
+  // Blíster: aviso el día antes del blíster nuevo y de los días sin hormona.
+  if (b && r.pack.on) {
+    const e = esquema(b);
+    const conDescanso = e.inactivas > 0 && e.inactiva === 'descanso';
+    await once(...msg('Blíster', conDescanso ? NOTIF.blisterTrasDescanso : NOTIF.blisterNuevo), at(addDays(diaDelBlister(b, t).siguienteInicio, -1), r.pack.hour));
+    const pausa = proximaPausa(b, t);
+    if (pausa && !pausa.ahora) {
+      await once(...msg('Blíster', conDescanso ? NOTIF.descansoSinPastilla : NOTIF.descansoPlacebo), at(addDays(pausa.desde, -1), r.pack.hour));
     }
   }
 

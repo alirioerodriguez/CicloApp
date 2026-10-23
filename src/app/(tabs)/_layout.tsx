@@ -15,6 +15,8 @@ export default function TabsLayout() {
   const { data } = useStore();
   const L = useLayout();
   if (!data.settings.onboarded) return <Redirect href="/onboarding" />;
+  // Solo acompaña a su pareja: su inicio es la pantalla de la pareja.
+  if (data.settings.soloPareja) return <Redirect href="/acompanar" />;
   if (!data.settings.tutorialVisto) return <Redirect href="/tutorial" />;
   const n = NOMBRES[data.settings.etapa] ?? { cal: 'Calendario', stats: 'Resumen' };
 

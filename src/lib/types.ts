@@ -46,6 +46,7 @@ export interface RedApoyo {
   on: boolean;
   nombre: string;
   compartir: CompartirRed[];
+  enVivo: boolean; // conectada con su pareja en Savia (modo pareja): el resumen se sube solo
 }
 
 export type EtapaMeno = 'peri' | 'meno' | 'post';
@@ -119,6 +120,7 @@ export interface Settings {
   embarazo: { fpp: ISODate | null }; // fecha probable de parto: de aquí salen las semanas
   meno: { etapa: EtapaMeno; trh: boolean; trhTipo: string; suplementos: string[] };
   red: RedApoyo;
+  soloPareja: boolean; // usa Savia solo para acompañar a su pareja (sin registrar un ciclo propio)
   silencioEmbarazo: boolean; // tras una pérdida o "prefiero no decir": sin avisos ni sugerencias de embarazo
   cycleLength: number; // valor inicial; luego se aprende de los datos
   periodLength: number;

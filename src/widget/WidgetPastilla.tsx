@@ -9,7 +9,7 @@ export const WIDGET_CHICO = 'PastillaChico';
 export const WIDGET_SEMANA = 'PastillaSemana';
 export const ACCION_MARCAR = 'MARCAR_PASTILLA';
 
-interface Paleta {
+export interface Paleta {
   fondo: ColorProp;
   texto: ColorProp;
   suave: ColorProp;
@@ -26,11 +26,11 @@ interface Paleta {
   botonTexto: ColorProp;
 }
 
-const CLARA: Paleta = {
+export const CLARA: Paleta = {
   fondo: '#FBF5F2', texto: '#2A1E28', suave: '#7A6873', rosa: '#C24E7A', rosaSuave: '#F6DCE5', lila: '#8F7FE0', lilaSuave: '#E7E2FB',
   salvia: '#5E9A73', salviaSuave: '#E2EFE6', durazno: '#D98A3D', duraznoSuave: '#FBE8D6', linea: '#E8DEDA', boton: '#7E2F52', botonTexto: '#FFFFFF',
 };
-const OSCURA: Paleta = {
+export const OSCURA: Paleta = {
   fondo: '#231A21', texto: '#F6EEF1', suave: '#B9A8B2', rosa: '#F0A3C4', rosaSuave: '#4A2A3A', lila: '#BDB3F5', lilaSuave: '#352F52',
   salvia: '#A8D4B4', salviaSuave: '#24382B', durazno: '#F6C58F', duraznoSuave: '#46331F', linea: '#3A2E36', boton: '#F0A3C4', botonTexto: '#231A21',
 };

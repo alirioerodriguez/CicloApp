@@ -10,6 +10,8 @@ import { proximoAutoexamen } from './salud';
 import { addDays, diffDays, fromISO, today } from './dates';
 import { t as tr } from './region';
 import type { AppData, ISODate } from './types';
+import { leerParejaGuardada, vistaPareja } from './pareja';
+import { region } from './region';
 
 const CHANNEL = 'recordatorios';
 export const notificationsSupported = Platform.OS !== 'web';
@@ -99,6 +101,18 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
   const t = today();
   // Modo discreto: en la pantalla bloqueada no se lee "pastilla" ni "período".
   const msg = (title: string, body: string): [string, string] => (settings.discreet ? ['Savia', 'Tienes un recordatorio en tu app.'] : [title, body]);
+
+  // Modo pareja: si acompaña a alguien, un aviso a las 9 con la misión del día (14 días por delante).
+  const pareja = await leerParejaGuardada();
+  if (pareja?.avisos) {
+    for (let i = 0; i < 14; i++) {
+      const d = addDays(t, i);
+      const v = vistaPareja(pareja.resumen, region().pais, d);
+      await once(...msg(`${v.nombre} hoy`, v.mision ?? v.titulo), at(d, 9), { id: `pareja-${d}` });
+    }
+  }
+  // Solo acompaña a su pareja: no hay ciclo propio que recordar.
+  if (settings.soloPareja) return;
 
   // Pastilla (blíster digital): a la hora del blíster, con el botón "Ya la tomé"; si no se marcó, otro aviso
   // una hora después. Salta los días de descanso y los ya marcados. Al marcarla, el segundo aviso se cancela.

@@ -4,9 +4,9 @@ import { registerWidgetTaskHandler, type WidgetTaskHandlerProps } from 'react-na
 import { today } from '../lib/dates';
 import { cargarRegionGuardada } from '../lib/region';
 import { guardarTomaSinApp } from '../lib/tareaPastilla';
-import { leerDatosWidget } from './datosWidget';
-import { ACCION_MARCAR, widgetPastilla } from './WidgetPastilla';
+import { ACCION_MARCAR } from './WidgetPastilla';
 import { actualizarWidgets } from './actualizarWidgets';
+import { dibujar } from './dibujar';
 
 export async function tareaWidget({ widgetInfo, widgetAction, clickAction, renderWidget }: WidgetTaskHandlerProps): Promise<void> {
   if (widgetAction === 'WIDGET_DELETED') return;
@@ -14,11 +14,11 @@ export async function tareaWidget({ widgetInfo, widgetAction, clickAction, rende
   if (widgetAction === 'WIDGET_CLICK' && clickAction === ACCION_MARCAR) {
     // Mismo camino que el botón "Ya la tomé" de la notificación: guarda y cancela el segundo aviso.
     await guardarTomaSinApp(today());
-    renderWidget(widgetPastilla(widgetInfo.widgetName, await leerDatosWidget()));
-    await actualizarWidgets(); // el otro tamaño, si también está en la pantalla
+    renderWidget(await dibujar(widgetInfo.widgetName));
+    await actualizarWidgets(); // los demás widgets, si también están en la pantalla
     return;
   }
-  renderWidget(widgetPastilla(widgetInfo.widgetName, await leerDatosWidget()));
+  renderWidget(await dibujar(widgetInfo.widgetName));
 }
 
 registerWidgetTaskHandler(tareaWidget);

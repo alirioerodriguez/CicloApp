@@ -217,6 +217,7 @@ export default function Perfil() {
         <LinkRow emoji="🎨" label="Personalizar la app" hint="Color, modo noche o día" to="/personalizar" />
         <LinkRow emoji="📋" label="Modo consulta médica" hint="Resumen para tu médica y exportar tus datos" to="/consulta" />
         <LinkRow emoji="🤝" label="Tu red de apoyo" hint={s.red.on ? `Compartes con ${s.red.nombre || 'alguien de confianza'}` : 'Comparte lo que elijas con tu pareja'} to="/red" />
+        <LinkRow emoji="💞" label="Acompañar a mi pareja" hint="Si tu pareja también usa Savia y te pasó su código" to="/acompanar" />
         {(s.etapa === 'ttc' || s.etapa === 'embarazo') && <LinkRow emoji="🌙" label="Un cambio en tu embarazo" hint="Nació tu bebé, una pérdida o prefieres no decir" to="/cambio" />}
         <LinkRow emoji="🩺" label="Salud ginecológica" hint="Controles, autoexamen, ovarios y quistes" to="/salud" />
         <LinkRow emoji="🧘‍♀️" label="Ejercicios y alivio" hint="Movimiento por fase y respiración" to="/ejercicios" />

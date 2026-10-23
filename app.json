@@ -68,6 +68,28 @@
         {
           "widgets": [
             {
+              "name": "PeriodoCuenta",
+              "label": "Savia · Tu próximo período",
+              "description": "Cuántos días faltan para tu período",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "CicloHoy",
+              "label": "Savia · Tu ciclo hoy",
+              "description": "Día del ciclo, fase, próximo período y días fértiles",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal",
+              "updatePeriodMillis": 1800000
+            },
+            {
               "name": "PastillaChico",
               "label": "Savia · Pastilla",
               "description": "Pastilla de hoy con botón para marcarla",
@@ -82,6 +104,17 @@
               "name": "PastillaSemana",
               "label": "Savia · Semana del blíster",
               "description": "La semana actual de tu blíster",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "ParejaHoy",
+              "label": "Savia · Tu pareja hoy",
+              "description": "En qué etapa está tu pareja y qué puedes hacer hoy",
               "minWidth": "250dp",
               "minHeight": "110dp",
               "targetCellWidth": 4,

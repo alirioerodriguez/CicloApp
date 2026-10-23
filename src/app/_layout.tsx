@@ -21,10 +21,13 @@ import { ElegirPais } from '../components/ElegirPais';
 import * as Notifications from 'expo-notifications';
 import { nowTime } from '../lib/dates';
 import { ACCION_TOMADA, fechaDeRespuesta, idSegundoAviso } from '../lib/tareaPastilla';
+import { subirResumenPareja } from '../lib/nube';
+import { resumenPareja } from '../lib/pareja';
 
 function Gate() {
   const c = useColors();
   const { ready, data, summary, marcarToma } = useStore();
+  const { session } = useAuth();
   const [locked, setLocked] = useState(true);
   const lockEnabled = data.settings.lock && Platform.OS !== 'web';
 
@@ -72,6 +75,22 @@ function Gate() {
     timer.current = setTimeout(() => rescheduleAll(data, summary).catch(() => {}), 1500);
   }, [ready, data, summary]);
 
+  // Modo pareja en vivo: cuando cambia lo que ella comparte, se sube el resumen (con una pausa y solo si cambió).
+  const userId = session?.user.id ?? null;
+  const compartida = ready && userId && data.settings.red.on && data.settings.red.enVivo ? JSON.stringify(resumenPareja(data, summary)) : null;
+  const subida = useRef<string | null>(null);
+  useEffect(() => {
+    if (!compartida || !userId || compartida === subida.current) return;
+    const tm = setTimeout(() => {
+      subirResumenPareja(userId, JSON.parse(compartida))
+        .then(() => {
+          subida.current = compartida;
+        })
+        .catch(() => {});
+    }, 3000);
+    return () => clearTimeout(tm);
+  }, [compartida, userId]);
+
   if (!ready) {
     return (
       <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -109,6 +128,7 @@ function Gate() {
       <Stack.Screen name="cambio" />
       <Stack.Screen name="perdida" options={{ gestureEnabled: false }} />
       <Stack.Screen name="red" />
+      <Stack.Screen name="acompanar" options={{ gestureEnabled: !data.settings.soloPareja }} />
       <Stack.Screen name="personalizar" />
       <Stack.Screen name="patadas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="contracciones" options={{ presentation: 'modal' }} />

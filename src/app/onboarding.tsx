@@ -36,7 +36,7 @@ const FLUJOS: Record<'ciclo' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'm
 
 export default function Onboarding() {
   const c = useColors();
-  const { data, replaceAll } = useStore();
+  const { data, replaceAll, updateSettings } = useStore();
   const s0 = data.settings;
   const [i, setI] = useState(0);
   const [name, setName] = useState(s0.name);
@@ -163,6 +163,20 @@ export default function Onboarding() {
           <Text style={{ fontFamily: serif, fontSize: 32, lineHeight: 38, color: c.text, textAlign: 'center' }}>Hola, te damos la bienvenida a Savia</Text>
           <Body style={{ textAlign: 'center' }}>La vida que eres y la vida que das. Te acompañamos en tu ciclo, tu embarazo y tu menopausia.</Body>
           <Muted style={{ textAlign: 'center' }}>{nubeConfigurada ? 'Tus datos quedan respaldados en tu cuenta.' : 'Sin cuentas ni nube: todo queda en tu teléfono.'}</Muted>
+          {nubeConfigurada && (
+            <Card tint={c.rosaSuave} style={{ marginTop: 10 }}>
+              <Label>¿Vienes a acompañar a tu pareja?</Label>
+              <Muted>Si ella te pasó un código de Savia, entra directo a ver su día y cómo ayudarla.</Muted>
+              <Button
+                kind="soft"
+                label="Acompañar a mi pareja"
+                onPress={() => {
+                  updateSettings({ soloPareja: true, onboarded: true, tutorialVisto: true });
+                  router.replace('/acompanar');
+                }}
+              />
+            </Card>
+          )}
         </>
       )}
 

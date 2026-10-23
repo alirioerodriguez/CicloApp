@@ -3,6 +3,7 @@
 // Los patrones usan {0}, {1}… para las partes que cambian.
 
 export const NEUTRO: Record<string, string> = {
+  "Un paseo corto y lento, si a ella le provoca.": "Un paseo corto y lento, si a ella se le antoja.",
   "Cambur": "Plátano (banana)",
   "Pimentón": "Pimiento",
   "Auyama": "Calabaza",

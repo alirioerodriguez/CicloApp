@@ -1,6 +1,7 @@
 // Blíster digital, parte 1: posición en el blíster, tomas a tiempo o tarde, olvidos y migración.
 import { describe, expect, jest, test } from '@jest/globals';
 import { clasificarToma, configDesdePillType, pillTypeDesdeBlister, diaDelBlister, encabezado, estadoDelDia, migrarBlister, tocaTomar } from '../src/lib/blister';
+import { pillAdherence } from '../src/lib/cycle';
 import { emptyData, emptyLog, normalize } from '../src/lib/store';
 import type { BlisterConfig } from '../src/lib/types';
 
@@ -55,6 +56,23 @@ describe('Tomas', () => {
     expect(estadoDelDia(base, tomas, '2026-10-14', hoy)).toBe('pendiente');
     expect(estadoDelDia(base, tomas, '2026-10-15', hoy)).toBe('futura');
     expect(estadoDelDia(base, tomas, '2026-10-23', '2026-10-30')).toBe('descanso');
+  });
+});
+
+describe('Estadísticas de la pastilla con el registro nuevo', () => {
+  test('cuenta tomas a tiempo y tarde, no las olvidadas ni los días de descanso', () => {
+    const d = emptyData();
+    d.settings = { ...d.settings, pillMode: true };
+    d.blister = base;
+    d.tomasPastilla = {
+      '2026-10-19': { fecha: '2026-10-19', estado: 'tomada', hora: '21:00' },
+      '2026-10-20': { fecha: '2026-10-20', estado: 'tarde', hora: '11:00' },
+      '2026-10-21': { fecha: '2026-10-21', estado: 'olvidada', hora: null },
+    };
+    // Del 18 al 21 de octubre: 4 días con pastilla (días 18 a 21 del blíster), 2 marcadas como tomadas.
+    expect(pillAdherence(d, 4, '2026-10-21')).toEqual({ taken: 2, expected: 4 });
+    // En el descanso (días 22 a 28) no se espera ninguna toma.
+    expect(pillAdherence(d, 3, '2026-10-26')).toEqual({ taken: 0, expected: 0 });
   });
 });
 

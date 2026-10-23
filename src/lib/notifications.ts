@@ -89,7 +89,7 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
       const d = addDays(t, i);
       const st = pillStatus(settings, d);
       if (st && !st.takesToday) continue;
-      if (data.logs[d]?.pillTaken) continue;
+      if (data.tomasPastilla[d]) continue; // ya marcada en el blíster digital
       const when = at(d, r.pill.hour, r.pill.minute);
       await once(...msg('Pastilla', rotate(NOTIF.pastilla, dayNum(d))), when);
       await once(...msg('Pastilla', NOTIF.pastillaAtrasada), new Date(when.getTime() + LATE_MINUTES * 60000));

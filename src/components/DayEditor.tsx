@@ -7,8 +7,7 @@ import { FLOW_LABELS, MOODS, SYMPTOMS } from '../content/catalogo';
 import { CUIDATE } from '../content/cuidate';
 import { MOCOS } from '../content/etapas';
 import { URGENTE } from '../content/info';
-import { pillStatus, summarize } from '../lib/cycle';
-import { nowTime } from '../lib/dates';
+import { summarize } from '../lib/cycle';
 import { useStore } from '../lib/store';
 import { fonts, radius, useColors } from '../lib/theme';
 import type { DayLog, ISODate } from '../lib/types';
@@ -40,8 +39,6 @@ export function DayEditor({ date }: { date: ISODate }) {
   const [note, setNote] = useState(log.note);
   useEffect(() => setNote(log.note), [date]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const pill = pillStatus(data.settings, date);
-
   // Los síntomas típicos de la fase de ese día salen primero.
   const phaseId = useMemo(() => summarize(data, date).phase, [data, date]);
   const phase = phaseId ? CUIDATE[phaseId] : null;
@@ -49,33 +46,13 @@ export function DayEditor({ date }: { date: ISODate }) {
     const common = phase?.sintomasComunes ?? [];
     return [...SYMPTOMS].sort((a, b) => Number(common.includes(b.id)) - Number(common.includes(a.id)));
   }, [phase]);
-  const showPill = data.settings.pillMode && (!pill || pill.takesToday);
   const ttc = data.settings.etapa === 'ttc' ? data.settings.ttcRegistro : [];
 
   const painColor = (n: number) => (n <= 3 ? c.salvia : n <= 6 ? c.durazno : c.rosa);
 
   return (
     <View style={{ gap: 14 }}>
-      {showPill && (
-        <Card tint={log.pillTaken ? c.salviaSuave : c.card}>
-          <Row
-            label={log.pillTaken ? 'Pastilla tomada' : '¿Tomaste la pastilla?'}
-            hint={log.pillTaken ? `A las ${log.pillTime ?? '—'}` : pill ? `Toca la ${pill.dayInPack} de ${pill.packLength}${pill.active ? '' : ' (placebo)'}` : data.settings.pillName || undefined}
-          >
-            <Pressable
-              accessibilityRole="button"
-              onPress={() => {
-                tap();
-                set(log.pillTaken ? { pillTaken: false, pillTime: null } : { pillTaken: true, pillTime: nowTime() });
-              }}
-              style={{ paddingVertical: 10, paddingHorizontal: 16, borderRadius: radius.pill, backgroundColor: log.pillTaken ? c.salvia : c.rosa }}
-            >
-              <Text style={{ color: c.onAccent, fontFamily: fonts.bold }}>{log.pillTaken ? 'Deshacer' : 'Sí, ya ✓'}</Text>
-            </Pressable>
-          </Row>
-        </Card>
-      )}
-
+      {/* La pastilla se marca en el blíster digital (tarjeta de Hoy), no en el registro del día. */}
       <Card>
         <Label>Flujo</Label>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>

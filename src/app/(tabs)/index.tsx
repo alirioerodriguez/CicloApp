@@ -9,16 +9,17 @@ import { HoyPosparto } from '../../components/HoyPosparto';
 import { Logo } from '../../components/Logo';
 import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
-import { Body, Button, Card, Columnas, Label, Muted, Screen } from '../../components/ui';
+import { Body, Button, Card, Columnas, Label, Screen } from '../../components/ui';
 import { useLayout } from '../../lib/layout';
 import { CUIDATE } from '../../content/cuidate';
-import { LOGROS, PASTILLA_AYER, VACIOS, saludo } from '../../content/textos';
+import { LOGROS, VACIOS, saludo } from '../../content/textos';
 import { detectAlertas } from '../../lib/alertas';
-import { pillStatus, sinAtrasos, unlockedLogros } from '../../lib/cycle';
-import { addDays, diffDays, inDays, longDate, shortDate, today } from '../../lib/dates';
+import { sinAtrasos, unlockedLogros } from '../../lib/cycle';
+import { longDate, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
 import { fonts, serif, useColors } from '../../lib/theme';
 import { QuizEntrada } from '../../components/QuizEntrada';
+import { TarjetaBlister } from '../../components/TarjetaBlister';
 import { t as traducir } from '../../lib/region';
 
 function Status() {
@@ -57,7 +58,6 @@ function Status() {
     line = s.ventana ? `Ventana probable: entre el ${shortDate(s.ventana[0])} y el ${shortDate(s.ventana[1])}` : `Estimado para el ${longDate(s.nextStart!)}`;
   }
   const phase = s.phase ? CUIDATE[s.phase] : null;
-  const pill = pillStatus(data.settings, t);
   const pct = s.cycleDay ? Math.min(1, s.cycleDay / s.avgCycle) : 0;
 
   return (
@@ -72,8 +72,6 @@ function Status() {
         <Tag text={`Día ${s.cycleDay} del ciclo`} />
         {phase && <Tag text={phase.nombre} />}
         {s.fertileStart && !s.inPeriod && <Tag text={`Fértil (estimado): ${shortDate(s.fertileStart)}–${shortDate(s.fertileEnd!)}`} />}
-        {pill && <Tag text={pill.active ? `${pill.dayInPack}/${pill.packLength}` : `Descanso · día ${pill.dayInPack}`} />}
-        {pill && <Tag text={`Blíster nuevo ${inDays(diffDays(pill.nextPackStart, t))}`} />}
       </View>
       {!s.inPeriod && <Button small kind="soft" label="Me vino hoy" onPress={startPeriodToday} />}
     </Card>
@@ -87,16 +85,6 @@ function Tag({ text }: { text: string }) {
       <Text style={{ fontSize: 12.5, color: c.text, fontFamily: fonts.semibold }}>{text}</Text>
     </View>
   );
-}
-
-// Aviso si ayer tocaba pastilla y no se marcó (solo si viene marcándola, para no molestar al empezar).
-function missedPillYesterday(data: ReturnType<typeof useStore>['data']): boolean {
-  if (!data.settings.pillMode) return false;
-  const y = addDays(today(), -1);
-  const st = pillStatus(data.settings, y);
-  if ((st && !st.takesToday) || data.logs[y]?.pillTaken) return false;
-  for (let i = 2; i <= 7; i++) if (data.logs[addDays(today(), -i)]?.pillTaken) return true;
-  return false;
 }
 
 export default function Hoy() {
@@ -132,6 +120,7 @@ function HoyCiclo() {
         desde="escritorio"
         izquierda={
           <>
+      <TarjetaBlister />
       {nuevos.map((l) => (
         <Card key={l.id} tint={c.duraznoSuave}>
           <Label>{l.titulo}</Label>
@@ -144,13 +133,6 @@ function HoyCiclo() {
         <Card tint={c.lavandaSuave}>
           <Label>{VACIOS.primerDia.titulo}</Label>
           <Body>{VACIOS.primerDia.texto}</Body>
-        </Card>
-      )}
-
-      {missedPillYesterday(data) && (
-        <Card tint={c.duraznoSuave}>
-          <Body>{PASTILLA_AYER[0]}</Body>
-          <Muted>Si sí la tomaste, márcala en el calendario (día de ayer).</Muted>
         </Card>
       )}
 

@@ -1,6 +1,7 @@
 // Lógica pura del ciclo: sin React, sin almacenamiento. Fácil de probar.
 import { CONDICIONES_RANGO } from '../content/condiciones';
 import { SIN_OVULACION } from '../content/etapas';
+import { tocaTomar } from './blister';
 import { addDays, diffDays, today as todayISO } from './dates';
 import type { AppData, DayLog, ISODate, Phase, PillType, Settings } from './types';
 
@@ -336,12 +337,14 @@ export function pillAdherence(data: AppData, days = 30, ref: ISODate = todayISO(
   if (!data.settings.pillMode) return null;
   let taken = 0;
   let expected = 0;
+  const b = data.blister;
   for (let i = 0; i < days; i++) {
     const d = addDays(ref, -i);
-    const st = pillStatus(data.settings, d);
-    if (st && !st.takesToday) continue;
+    // Con blíster digital, los días de descanso no cuentan y las tomas salen del registro propio.
+    if (b ? !tocaTomar(b, d) : pillStatus(data.settings, d)?.takesToday === false) continue;
     expected++;
-    if (data.logs[d]?.pillTaken) taken++;
+    const toma = data.tomasPastilla[d];
+    if (toma ? toma.estado !== 'olvidada' : data.logs[d]?.pillTaken) taken++;
   }
   return { taken, expected };
 }

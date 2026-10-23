@@ -58,7 +58,7 @@ export async function exportCsv(data: AppData): Promise<void> {
         l.symptoms.map((x) => tr(symptomById(x).label)).join(' | '),
         l.water,
         l.sleep,
-        l.pillTaken ? tr('sí') : '',
+        data.tomasPastilla[l.date] ? tr(data.tomasPastilla[l.date].estado) : '',
         l.moco,
         l.temp,
         l.lh,

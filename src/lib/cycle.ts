@@ -1,7 +1,7 @@
 // Lógica pura del ciclo: sin React, sin almacenamiento. Fácil de probar.
 import { CONDICIONES_RANGO } from '../content/condiciones';
 import { SIN_OVULACION } from '../content/etapas';
-import { tocaTomar } from './blister';
+import { diaDelBlister, esperaDeprivacion, sinHormona, tocaTomar } from './blister';
 import { addDays, diffDays, today as todayISO } from './dates';
 import type { AppData, DayLog, ISODate, Phase, PillType, Settings } from './types';
 
@@ -165,6 +165,8 @@ export function summarize(data: AppData, ref: ISODate = todayISO()): Summary {
 export interface DayMarks {
   period?: boolean; // registrado
   predicted?: boolean; // período estimado
+  deprivacion?: boolean; // sangrado registrado en días de placebo o descanso de la pastilla
+  deprivacionEsperada?: boolean; // días sin hormona por venir (con pastilla no se predice período)
   fertile?: boolean;
   ovulation?: boolean;
   intimidad?: boolean;
@@ -177,9 +179,24 @@ export function calendarMarks(data: AppData, s: Summary, ref: ISODate = todayISO
     (marks[d] ??= {})[k] = true;
   };
 
+  // Con pastilla y blíster digital, el sangrado de los días sin hormona es por deprivación, no un período.
+  const b = data.settings.pillMode ? data.blister : null;
   for (const l of Object.values(data.logs)) {
-    if (l.flow >= 1 && enPeriodo(l.date, s.periods)) mark(l.date, 'period');
+    if (l.flow >= 1 && enPeriodo(l.date, s.periods)) mark(l.date, b && sinHormona(b, l.date) ? 'deprivacion' : 'period');
     if (l.intimidad) mark(l.date, 'intimidad');
+  }
+
+  // Con pastilla no se predicen períodos: se marcan los días sin hormona de los próximos blísteres
+  // (solo con la combinada; con solo progestágeno el sangrado es irregular).
+  if (b) {
+    if (esperaDeprivacion(b)) {
+      const dias = diaDelBlister(b, ref).total * 6;
+      for (let i = 1; i <= dias; i++) {
+        const d = addDays(ref, i);
+        if (sinHormona(b, d) && !marks[d]?.deprivacion) mark(d, 'deprivacionEsperada');
+      }
+    }
+    return marks;
   }
 
   const showFertile = !sinOvulacion(data.settings);

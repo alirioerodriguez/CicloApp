@@ -89,6 +89,13 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
           if (mk.period) {
             bg = c.rosa;
             fg = c.onAccent;
+          } else if (mk.deprivacion) {
+            // Sangrado por deprivación (placebo o descanso de la pastilla): lila, distinto del período.
+            bg = c.lavanda;
+            fg = c.onAccent;
+          } else if (mk.deprivacionEsperada) {
+            border = c.lavanda;
+            dashed = true;
           } else if (mk.predicted) {
             border = c.rosa;
             dashed = true;
@@ -121,7 +128,7 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
                 })}
               >
                 <Text style={{ fontSize: 15, color: fg, fontFamily: isToday ? fonts.bold : fonts.medium }}>{Number(d.slice(8))}</Text>
-                {logged?.(d) && !mk.period ? <View style={{ position: 'absolute', bottom: 5, width: 4, height: 4, borderRadius: 2, backgroundColor: c.rosa }} /> : null}
+                {logged?.(d) && !mk.period && !mk.deprivacion ? <View style={{ position: 'absolute', bottom: 5, width: 4, height: 4, borderRadius: 2, backgroundColor: c.rosa }} /> : null}
                 {mk.intimidad ? <View style={{ position: 'absolute', top: 1, right: 1 }}><Icono e="🔥" size={11} color={c.durazno} /></View> : null}
               </Pressable>
             </View>
@@ -132,7 +139,8 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
   );
 }
 
-export function Legend({ showFertile }: { showFertile: boolean }) {
+// `pastilla`: en vez de "Estimado" (período) se explica el sangrado por deprivación.
+export function Legend({ showFertile, pastilla = false, esperada = false }: { showFertile: boolean; pastilla?: boolean; esperada?: boolean }) {
   const c = useColors();
   const item = (label: string, style: object) => (
     <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -142,8 +150,11 @@ export function Legend({ showFertile }: { showFertile: boolean }) {
   );
   return (
     <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 14 }}>
-      {item('Período', { backgroundColor: c.rosa })}
-      {item('Estimado', { borderWidth: 2, borderColor: c.rosa, borderStyle: 'dashed' })}
+      {item(pastilla ? 'Sangrado' : 'Período', { backgroundColor: c.rosa })}
+      {pastilla && item('Sangrado por deprivación', { backgroundColor: c.lavanda })}
+      {pastilla
+        ? esperada && item('Días sin hormona (est.)', { borderWidth: 2, borderColor: c.lavanda, borderStyle: 'dashed' })
+        : item('Estimado', { borderWidth: 2, borderColor: c.rosa, borderStyle: 'dashed' })}
       {showFertile && item('Fértil (est.)', { backgroundColor: c.lavandaSuave, borderWidth: 1, borderColor: c.lavanda })}
       {showFertile && item('Ovulación (est.)', { backgroundColor: c.durazno })}
       {item('Hoy', { borderWidth: 2, borderColor: c.text })}

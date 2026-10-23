@@ -7,6 +7,7 @@ import { FLOW_LABELS, MOODS, SYMPTOMS } from '../content/catalogo';
 import { CUIDATE } from '../content/cuidate';
 import { MOCOS } from '../content/etapas';
 import { URGENTE } from '../content/info';
+import { sinHormona } from '../lib/blister';
 import { summarize } from '../lib/cycle';
 import { useStore } from '../lib/store';
 import { fonts, radius, useColors } from '../lib/theme';
@@ -48,6 +49,9 @@ export function DayEditor({ date }: { date: ISODate }) {
   }, [phase]);
   const ttc = data.settings.etapa === 'ttc' ? data.settings.ttcRegistro : [];
 
+  // Con pastilla, el sangrado de los días de placebo o descanso es por deprivación.
+  const deprivacion = !!(data.settings.pillMode && data.blister && sinHormona(data.blister, date));
+
   const painColor = (n: number) => (n <= 3 ? c.salvia : n <= 6 ? c.durazno : c.rosa);
 
   return (
@@ -78,10 +82,14 @@ export function DayEditor({ date }: { date: ISODate }) {
             );
           })}
         </View>
-        {log.flow === 1 && (
-          <Muted>
-            Lo anotamos como manchado: no reinicia tu ciclo. Si hoy empezó tu período, elige Leve o más.
-          </Muted>
+        {log.flow >= 1 && deprivacion ? (
+          <Muted>Es un día sin hormona de tu blíster: este sangrado es por deprivación, no un período.</Muted>
+        ) : (
+          log.flow === 1 && (
+            <Muted>
+              Lo anotamos como manchado: no reinicia tu ciclo. Si hoy empezó tu período, elige Leve o más.
+            </Muted>
+          )
         )}
         {log.flow >= 4 && <Muted style={{ color: c.text }}>{URGENTE[0]}</Muted>}
       </Card>

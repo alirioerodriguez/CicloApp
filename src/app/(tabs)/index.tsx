@@ -14,6 +14,7 @@ import { useLayout } from '../../lib/layout';
 import { CUIDATE } from '../../content/cuidate';
 import { LOGROS, VACIOS, saludo } from '../../content/textos';
 import { detectAlertas } from '../../lib/alertas';
+import { sinHormona } from '../../lib/blister';
 import { sinAtrasos, unlockedLogros } from '../../lib/cycle';
 import { longDate, shortDate, today } from '../../lib/dates';
 import { useStore } from '../../lib/store';
@@ -39,7 +40,13 @@ function Status() {
   let big: string;
   let unit: string;
   let line: string;
-  if (s.inPeriod) {
+  // Con pastilla, el sangrado de los días de placebo o descanso es por deprivación, no un período.
+  const deprivacion = s.inPeriod && !!(data.settings.pillMode && data.blister && sinHormona(data.blister, t));
+  if (deprivacion) {
+    big = String(s.cycleDay);
+    unit = 'día de sangrado por deprivación';
+    line = 'Es por los días sin hormona de tu blíster, no un período.';
+  } else if (s.inPeriod) {
     big = String(s.cycleDay);
     unit = 'día de período';
     line = 'Cuídate mucho estos días';
@@ -70,7 +77,7 @@ function Status() {
       <Body style={{ textAlign: 'center', marginTop: 6 }}>{line}</Body>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
         <Tag text={`Día ${s.cycleDay} del ciclo`} />
-        {phase && <Tag text={phase.nombre} />}
+        {phase && !deprivacion && <Tag text={phase.nombre} />}
         {s.fertileStart && !s.inPeriod && <Tag text={`Fértil (estimado): ${shortDate(s.fertileStart)}–${shortDate(s.fertileEnd!)}`} />}
       </View>
       {!s.inPeriod && <Button small kind="soft" label="Me vino hoy" onPress={startPeriodToday} />}

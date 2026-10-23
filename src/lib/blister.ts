@@ -55,6 +55,22 @@ export function diaDelBlister(c: BlisterConfig, fecha: ISODate): DiaBlister {
 // ¿Hay que tomar algo ese día? (en los días de descanso no se toma nada).
 export const tocaTomar = (c: BlisterConfig, fecha: ISODate) => diaDelBlister(c, fecha).alveolo !== 'descanso';
 
+// Días sin hormona (placebo o descanso): el sangrado de esos días es por deprivación, no un período.
+export const sinHormona = (c: BlisterConfig, fecha: ISODate) => diaDelBlister(c, fecha).alveolo !== 'activa';
+
+// Solo con la combinada y días sin hormona se espera un sangrado por deprivación; con solo progestágeno es irregular.
+export const esperaDeprivacion = (c: BlisterConfig) => c.tipoPastilla === 'combinada' && esquema(c).inactivas > 0;
+
+// Próximos días sin hormona: si hoy ya es uno, el tramo actual; si no, el siguiente. null si el blíster no tiene.
+export function proximaPausa(c: BlisterConfig, hoy: ISODate): { desde: ISODate; hasta: ISODate; ahora: boolean } | null {
+  const e = esquema(c);
+  if (!e.inactivas) return null;
+  const d = diaDelBlister(c, hoy);
+  // Los días sin hormona van al final de cada blíster: tanto antes como durante, el tramo empieza ahí.
+  const desde = addDays(d.inicioBlister, e.activas);
+  return { desde, hasta: addDays(desde, e.inactivas - 1), ahora: d.alveolo !== 'activa' };
+}
+
 const minutos = (hora: string) => {
   const [h, m] = hora.split(':').map(Number);
   return h * 60 + (m || 0);

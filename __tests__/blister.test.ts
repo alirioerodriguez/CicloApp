@@ -1,7 +1,8 @@
 // Blíster digital, parte 1: posición en el blíster, tomas a tiempo o tarde, olvidos y migración.
 import { describe, expect, jest, test } from '@jest/globals';
 import { clasificarToma, configDesdePillType, pillTypeDesdeBlister, diaDelBlister, encabezado, estadoDelDia, migrarBlister, tocaTomar } from '../src/lib/blister';
-import { pillAdherence } from '../src/lib/cycle';
+import { calendarMarks, pillAdherence, summarize } from '../src/lib/cycle';
+import { proximaPausa } from '../src/lib/blister';
 import { emptyData, emptyLog, normalize } from '../src/lib/store';
 import type { BlisterConfig } from '../src/lib/types';
 
@@ -73,6 +74,47 @@ describe('Estadísticas de la pastilla con el registro nuevo', () => {
     expect(pillAdherence(d, 4, '2026-10-21')).toEqual({ taken: 2, expected: 4 });
     // En el descanso (días 22 a 28) no se espera ninguna toma.
     expect(pillAdherence(d, 3, '2026-10-26')).toEqual({ taken: 0, expected: 0 });
+  });
+});
+
+describe('Calendario con pastilla', () => {
+  // Blíster 21 + 7 desde el 1 de oct: días sin hormona del 22 al 28 de oct, del 19 al 25 de nov…
+  const conSangrado = (b: BlisterConfig, dias: string[]) => {
+    const d = emptyData();
+    d.settings = { ...d.settings, pillMode: true };
+    d.blister = b;
+    for (const f of dias) d.logs[f] = { ...emptyLog(f), flow: 2 };
+    return d;
+  };
+
+  test('el sangrado en descanso es por deprivación y no se predice período', () => {
+    const d = conSangrado(base, ['2026-10-23', '2026-10-24', '2026-10-25']);
+    const marks = calendarMarks(d, summarize(d, '2026-10-26'), '2026-10-26');
+    expect(marks['2026-10-23']).toMatchObject({ deprivacion: true });
+    expect(marks['2026-10-23']?.period).toBeUndefined();
+    expect(marks['2026-11-19']).toMatchObject({ deprivacionEsperada: true });
+    expect(marks['2026-11-12']).toBeUndefined();
+    expect(Object.values(marks).some((m) => m.predicted || m.fertile)).toBe(false);
+  });
+
+  test('un sangrado con pastilla activa sigue siendo sangrado (no deprivación)', () => {
+    const d = conSangrado(base, ['2026-10-10']);
+    const marks = calendarMarks(d, summarize(d, '2026-10-26'), '2026-10-26');
+    expect(marks['2026-10-10']).toMatchObject({ period: true });
+  });
+
+  test('solo progestágeno o 28 continuo: no se marca sangrado esperado', () => {
+    for (const b of [{ ...base, tipoPastilla: 'progestageno' as const }, { ...base, tipo: '28' as const }]) {
+      const d = conSangrado(b, []);
+      const marks = calendarMarks(d, summarize(d, '2026-10-26'), '2026-10-26');
+      expect(Object.values(marks).some((m) => m.deprivacionEsperada)).toBe(false);
+    }
+  });
+
+  test('próxima pausa: antes y durante los días sin hormona', () => {
+    expect(proximaPausa(base, '2026-10-14')).toEqual({ desde: '2026-10-22', hasta: '2026-10-28', ahora: false });
+    expect(proximaPausa(base, '2026-10-24')).toEqual({ desde: '2026-10-22', hasta: '2026-10-28', ahora: true });
+    expect(proximaPausa({ ...base, tipo: '28' }, '2026-10-24')).toBeNull();
   });
 });
 

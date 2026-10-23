@@ -9,6 +9,7 @@ import { Platform } from 'react-native';
 import { CLAVE_ACTIVA, clasificarToma, normalizarBlister, normalizarTomas } from './blister';
 import { nowTime, today } from './dates';
 import type { ISODate } from './types';
+import { actualizarWidgets } from '../widget/actualizarWidgets';
 
 export const TAREA_PASTILLA = 'savia-pastilla';
 export const ACCION_TOMADA = 'ya-la-tome';
@@ -35,8 +36,9 @@ export async function guardarTomaSinApp(fecha: ISODate, hora: string = nowTime()
       [`${clave}:updatedAt`, new Date().toISOString()],
     ]);
   }
-  // Ya no hace falta el segundo aviso de ese día.
+  // Ya no hace falta el segundo aviso de ese día, y el widget muestra el check.
   await Notifications.cancelScheduledNotificationAsync(idSegundoAviso(fecha)).catch(() => {});
+  await actualizarWidgets();
   return true;
 }
 

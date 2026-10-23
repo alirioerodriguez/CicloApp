@@ -47,6 +47,16 @@ function delDispositivo(): Region {
 let actual: Region = delDispositivo();
 export const region = () => actual;
 
+// Para lo que corre sin la app abierta (widget, botón de la notificación): usa el país e idioma elegidos.
+export async function cargarRegionGuardada(): Promise<void> {
+  try {
+    const raw = await AsyncStorage.getItem(KEY);
+    if (raw) actual = { ...actual, ...(JSON.parse(raw) as Partial<Region>) };
+  } catch {
+    // Sin lo guardado, queda el idioma del dispositivo.
+  }
+}
+
 // ---------- Traducción ----------
 // Todo el texto de la app está escrito en español venezolano. t() lo pasa a inglés o a español
 // neutro (para los demás países) con diccionarios; si una frase no está, queda como está.

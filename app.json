@@ -23,7 +23,9 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "permissions": ["android.permission.SCHEDULE_EXACT_ALARM"]
+      "permissions": [
+        "android.permission.SCHEDULE_EXACT_ALARM"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -60,7 +62,36 @@
           "backgroundColor": "#7E2F52"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "PastillaChico",
+              "label": "Savia · Pastilla",
+              "description": "Pastilla de hoy con botón para marcarla",
+              "minWidth": "110dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 2,
+              "targetCellHeight": 2,
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            },
+            {
+              "name": "PastillaSemana",
+              "label": "Savia · Semana del blíster",
+              "description": "La semana actual de tu blíster",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "targetCellWidth": 4,
+              "targetCellHeight": 2,
+              "resizeMode": "horizontal",
+              "updatePeriodMillis": 1800000
+            }
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": false

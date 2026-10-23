@@ -13,6 +13,7 @@ jest.mock('expo-localization', () => ({ getLocales: () => [{ languageCode: 'es',
 jest.mock('@react-native-async-storage/async-storage', () => require('@react-native-async-storage/async-storage/jest/async-storage-mock'));
 jest.mock('../src/lib/nube', () => ({ nubeConfigurada: false, neon: null }));
 jest.mock('expo-task-manager', () => ({ defineTask: jest.fn() }));
+jest.mock('react-native-android-widget', () => ({ requestWidgetUpdate: jest.fn(() => Promise.resolve()), FlexWidget: () => null, TextWidget: () => null }));
 jest.mock('react-native', () => ({ Platform: { OS: 'android', select: (o: Record<string, unknown>) => o.android ?? o.default } }));
 jest.mock('expo-notifications', () => ({
   setNotificationHandler: jest.fn(),

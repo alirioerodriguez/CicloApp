@@ -5,6 +5,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './blister';
 import { summarize, type Summary } from './cycle';
+import { actualizarWidgets } from '../widget/actualizarWidgets';
 import { deleteRemote, pullRemote, pushRemote } from './nube';
 import { addDays, today } from './dates';
 import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
@@ -240,7 +241,10 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
       AsyncStorage.multiSet([
         [key, JSON.stringify(data)],
         [stampKey, stamp],
-      ]).catch(() => {});
+      ])
+        // El widget de inicio lee lo guardado: se actualiza después de escribir (solo Android).
+        .then(() => actualizarWidgets())
+        .catch(() => {});
     }, 300);
     if (!userId) return;
     if (pushTimer.current) clearTimeout(pushTimer.current);

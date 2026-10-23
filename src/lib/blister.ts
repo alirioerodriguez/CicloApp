@@ -104,6 +104,25 @@ const DESDE_PILLTYPE: Record<PillType, Pick<BlisterConfig, 'tipo' | 'tipoPastill
   'pop-24-4': { tipo: '24-4', tipoPastilla: 'progestageno' },
 };
 
+// Para elegir una marca conocida (content/pastillas usa el esquema anterior).
+export function configDesdePillType(tipo: PillType): Pick<BlisterConfig, 'tipo' | 'tipoPastilla' | 'activas' | 'inactivas' | 'inactivasPlacebo'> {
+  return { ...DESDE_PILLTYPE[tipo] };
+}
+
+// Al revés: lo más parecido en el esquema anterior, que todavía usan recordatorios, PDF y estadísticas.
+export function pillTypeDesdeBlister(c: BlisterConfig): PillType {
+  const pop = c.tipoPastilla === 'progestageno';
+  if (c.tipo === '28') return pop ? 'pop' : 'continua';
+  if (c.tipo === '24-4') return pop ? 'pop-24-4' : '24-4';
+  if (c.tipo === 'personalizado') {
+    const e = esquema(c);
+    if (e.inactivas === 0) return pop ? 'pop' : 'continua';
+    if (e.activas === 26 && e.inactivas === 2) return '26-2';
+    return e.inactiva === 'placebo' ? '21-7p' : '21-7';
+  }
+  return c.tipo;
+}
+
 const hora = (h: number, m: number) => `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
 
 export function blisterDesdeAjustes(s: Settings): BlisterConfig | null {

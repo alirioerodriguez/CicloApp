@@ -3,7 +3,6 @@ import { router, type Href } from 'expo-router';
 import { useState } from 'react';
 import { Platform, Pressable, TextInput, View } from 'react-native';
 import { Text } from '../../components/Texto';
-import { MonthGrid } from '../../components/MonthGrid';
 import { EtapaPicker } from '../../components/EtapaPicker';
 import { SEMANA_MAX, SEMANA_MIN, fppDesdeSemanas, semanasEmbarazo } from '../../content/embarazo';
 import { ETAPAS_MENO } from '../../content/menopausia';
@@ -13,9 +12,7 @@ import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOT
 import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
 import { NO_DISPOSITIVO } from '../../content/info';
 import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
-import { PillPicker } from '../../components/PillPicker';
-import { pillStatus } from '../../lib/cycle';
-import { diffDays, longDate, shortDate, timeLabel, today } from '../../lib/dates';
+import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
 import { useStore } from '../../lib/store';
@@ -26,6 +23,7 @@ import { IconoBurbuja } from '../../components/Icono';
 import { t } from '../../lib/region';
 import { SelectorRegion } from '../../components/ElegirPais';
 import { AnimoEnPdf } from '../../components/AnimoEnPdf';
+import { BlisterAjustes } from '../../components/BlisterAjustes';
 
 const WATER_HOURS = [8, 10, 12, 14, 16, 18, 20];
 
@@ -51,10 +49,8 @@ export default function Perfil() {
   const { session } = useAuth();
   const s = data.settings;
   const r = s.reminders;
-  const [pickPack, setPickPack] = useState(false);
   const [cambio, setCambio] = useState(false);
   const [etapaSel, setEtapaSel] = useState(s.etapa);
-  const pill = pillStatus(s);
 
   // La etapa se cambia solo al tocar Guardar: suele durar mucho tiempo y no se debe mover por un toque.
   const guardarEtapa = () => {
@@ -263,28 +259,7 @@ export default function Perfil() {
       </Card>
 
       <Card>
-        <Toggle
-          label="Tomo pastilla anticonceptiva"
-          hint="Oculta los días fértiles y activa el seguimiento del blíster"
-          value={s.pillMode}
-          onChange={(pillMode) => updateSettings({ pillMode, anticonceptivo: pillMode ? 'pastilla' : s.anticonceptivo === 'pastilla' ? 'ninguno' : s.anticonceptivo })}
-        />
-        {s.pillMode && (
-          <>
-            <PillPicker name={s.pillName} type={s.pillType} onName={(pillName) => updateSettings({ pillName })} onType={(pillType) => updateSettings({ pillType })} />
-            <Divider />
-            <Row label="Blíster actual" hint={pill ? `Pastilla ${pill.dayInPack} de ${pill.packLength} · el próximo empieza el ${shortDate(pill.nextPackStart)}` : 'Aún no sabemos qué día empezaste'}>
-              <Button small kind="soft" label={pickPack ? 'Cerrar' : 'Cambiar'} onPress={() => setPickPack((v) => !v)} />
-            </Row>
-            {pickPack && (
-              <>
-                <Button small label="Hoy empecé un blíster nuevo" onPress={() => { updateSettings({ pillPackStart: today() }); setPickPack(false); }} />
-                <Muted>O toca el día en que empezaste el blíster actual:</Muted>
-                <MonthGrid maxDate={today()} selected={s.pillPackStart} onPress={(d) => { updateSettings({ pillPackStart: d }); setPickPack(false); }} />
-              </>
-            )}
-          </>
-        )}
+        <BlisterAjustes />
       </Card>
           </>
         }

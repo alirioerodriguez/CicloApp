@@ -75,6 +75,8 @@ export default function Onboarding() {
     const condFinal = etapa === 'especial' ? condiciones : condiciones.filter((x) => !CONDICIONES_ESPECIAL.some((k) => k.id === x));
     replaceAll({
       ...data,
+      // Con pastilla, el blíster digital se arma de nuevo desde estos ajustes al normalizar.
+      blister: pastilla ? null : data.blister,
       settings: {
         ...s0,
         onboarded: true,

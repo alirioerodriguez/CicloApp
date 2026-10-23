@@ -1,6 +1,6 @@
 // Blíster digital, parte 1: posición en el blíster, tomas a tiempo o tarde, olvidos y migración.
 import { describe, expect, jest, test } from '@jest/globals';
-import { clasificarToma, diaDelBlister, encabezado, estadoDelDia, migrarBlister, tocaTomar } from '../src/lib/blister';
+import { clasificarToma, configDesdePillType, pillTypeDesdeBlister, diaDelBlister, encabezado, estadoDelDia, migrarBlister, tocaTomar } from '../src/lib/blister';
 import { emptyData, emptyLog, normalize } from '../src/lib/store';
 import type { BlisterConfig } from '../src/lib/types';
 
@@ -55,6 +55,16 @@ describe('Tomas', () => {
     expect(estadoDelDia(base, tomas, '2026-10-14', hoy)).toBe('pendiente');
     expect(estadoDelDia(base, tomas, '2026-10-15', hoy)).toBe('futura');
     expect(estadoDelDia(base, tomas, '2026-10-23', '2026-10-30')).toBe('descanso');
+  });
+});
+
+describe('Conversión con el esquema anterior', () => {
+  test('marcas conocidas y vuelta al pillType que leen recordatorios y PDF', () => {
+    expect(configDesdePillType('pop-24-4')).toEqual({ tipo: '24-4', tipoPastilla: 'progestageno' });
+    expect(pillTypeDesdeBlister({ ...base, tipo: '24-4', tipoPastilla: 'progestageno' })).toBe('pop-24-4');
+    expect(pillTypeDesdeBlister({ ...base, tipo: '28' })).toBe('continua');
+    expect(pillTypeDesdeBlister({ ...base, tipo: 'personalizado', activas: 26, inactivas: 2, inactivasPlacebo: true })).toBe('26-2');
+    expect(pillTypeDesdeBlister({ ...base, tipo: 'personalizado', activas: 63, inactivas: 7, inactivasPlacebo: false })).toBe('21-7');
   });
 });
 

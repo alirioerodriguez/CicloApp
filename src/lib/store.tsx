@@ -35,6 +35,7 @@ export const DEFAULT_SETTINGS: Settings = {
   condiciones: [],
   ocultarRetrasos: false,
   pdfAnimo: false,
+  pdfReloj: true,
   reminders: {
     pill: { on: false, hour: 21, minute: 0 },
     water: { on: false, hours: [10, 13, 16, 19] },
@@ -69,6 +70,7 @@ export const emptyData = (): AppData => ({
   pruebas: { misiones: {}, sus: [], ideas: [] },
   blister: null,
   tomasPastilla: {},
+  reloj: { fuente: null, ultimaSync: null, dias: {} },
 });
 
 export function emptyLog(date: ISODate): DayLog {
@@ -144,6 +146,7 @@ export function normalize(raw: unknown): AppData {
     chequeosMeno: Array.isArray(r.chequeosMeno) ? r.chequeosMeno : base.chequeosMeno,
     quiz: r.quiz && typeof r.quiz === 'object' ? r.quiz : base.quiz,
     pruebas: { ...base.pruebas, ...r.pruebas },
+    reloj: { ...base.reloj, ...r.reloj, dias: r.reloj?.dias && typeof r.reloj.dias === 'object' ? r.reloj.dias : {} },
   };
 }
 

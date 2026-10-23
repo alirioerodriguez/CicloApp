@@ -6,6 +6,7 @@ import { detectAlertas } from './alertas';
 import { PILL_PACKS, pillAdherence, topCounts, type Summary } from './cycle';
 import { addDays, diffDays, longDate, shortDate, today } from './dates';
 import { region, t as tr } from './region';
+import { formatoSueno, formatoTemp, resumenReloj } from './reloj';
 import { ovarioHistorial } from './salud';
 import type { AppData, DayLog, ISODate } from './types';
 
@@ -184,7 +185,70 @@ export function reportHtml(data: AppData, s: Summary): string {
     }</div>`;
   };
 
-  const pie = (n: number) => `<footer><span>${tr('Generado con Savia · Registro personal, no es un diagnóstico.')}</span><span>${tr(`${n} de 2`)}</span></footer>`;
+  // ---------- Página 3 (opcional): reloj o app de salud ----------
+  const rel = st.pdfReloj ? resumenReloj(data, s, hoy, desde) : null;
+  const conReloj = !!rel && rel.noches >= 7;
+  const total = conReloj ? 3 : 2;
+  const pie = (n: number) => `<footer><span>${tr('Generado con Savia · Registro personal, no es un diagnóstico.')}</span><span>${tr(`${n} de ${total}`)}</span></footer>`;
+
+  const paginaReloj = () => {
+    if (!rel || !conReloj) return '';
+    const fuente = data.reloj.fuente === 'apple' ? 'Apple Salud' : 'Health Connect';
+    const filasFase: [string, 'fcReposo' | 'vfc' | 'sueno' | 'pasos' | 'tempPiel' | 'tempBasal', (v: number) => string][] = [
+      ['Pulso en reposo', 'fcReposo', (v) => `${Math.round(v)} lpm`],
+      ['Variabilidad cardíaca', 'vfc', (v) => `${Math.round(v)} ms`],
+      ['Sueño por noche', 'sueno', formatoSueno],
+      ['Pasos al día', 'pasos', (v) => Math.round(v).toLocaleString(en ? 'en-US' : 'es')],
+      ['Temperatura al dormir (desvío)', 'tempPiel', formatoTemp],
+      ['Temperatura basal', 'tempBasal', (v) => `${decimal(v)} °C`],
+    ];
+    const fases = ['menstrual', 'folicular', 'lutea'] as const;
+    const tabla = `<div class="tabla"><table><tr><th></th>${['Fase menstrual', 'Fase folicular', 'Fase lútea'].map((h) => `<th>${tr(h)}</th>`).join('')}</tr>${filasFase
+      .filter(([, k]) => fases.some((f) => rel.porFase[f][k] != null))
+      .map(([label, k, fmt]) => `<tr><td><b>${tr(label)}</b></td>${fases.map((f) => `<td>${rel.porFase[f][k] != null ? tr(fmt(rel.porFase[f][k]!)) : '—'}</td>`).join('')}</tr>`)
+      .join('')}<tr><td>${tr('Días con datos')}</td>${fases.map((f) => `<td>${rel.porFase[f].dias}</td>`).join('')}</tr></table></div>`;
+    const saltos = rel.saltos.length
+      ? `<div class="tabla"><table><tr>${['Ciclo que empezó', 'Subida de temperatura', 'Día del ciclo', 'Subida'].map((h) => `<th>${tr(h)}</th>`).join('')}</tr>${rel.saltos
+          .slice(-6)
+          .reverse()
+          .map((x) => `<tr><td><b>${fechaCorta(x.inicioCiclo)}</b></td><td>${fechaCorta(x.fecha)}</td><td>${x.diaCiclo}</td><td>${formatoTemp(x.subida)}</td></tr>`)
+          .join('')}</table></div>`
+      : `<p class="vacio">${tr('Sin una subida clara de temperatura en el período analizado.')}</p>`;
+    // Curva del último ciclo con datos: puntos por noche y la línea base.
+    const curva = rel.curva;
+    let grafico = '';
+    if (curva.length >= 5) {
+      const W = 640, H = 150, dmax = Math.max(28, ...curva.map((p) => p.dia));
+      const vs = curva.map((p) => p.valor);
+      const lo = Math.min(...vs) - 0.1, hi = Math.max(...vs) + 0.1;
+      const x = (d: number) => 30 + ((d - 1) / (dmax - 1)) * (W - 40);
+      const y = (v: number) => 10 + (1 - (v - lo) / (hi - lo)) * (H - 30);
+      const salto = rel.saltos.find((z) => curva.some((p) => p.fecha === z.fecha));
+      const linea = curva.map((p, i) => `${i ? 'L' : 'M'}${x(p.dia).toFixed(1)} ${y(p.valor).toFixed(1)}`).join(' ');
+      grafico = `<svg width="100%" viewBox="0 0 ${W} ${H}" style="margin-top:6px">
+        ${salto ? `<rect x="${x(salto.diaCiclo)}" y="6" width="${W - 10 - x(salto.diaCiclo)}" height="${H - 22}" fill="#F8E6EC"/>` : ''}
+        ${data.reloj.fuente && curva.every((p) => Math.abs(p.valor) < 3) ? `<line x1="30" x2="${W - 10}" y1="${y(0)}" y2="${y(0)}" stroke="#CDBFBA" stroke-dasharray="4 4"/>` : ''}
+        <path d="${linea}" fill="none" stroke="#7E2F52" stroke-width="2"/>
+        ${curva.map((p) => `<circle cx="${x(p.dia)}" cy="${y(p.valor)}" r="3" fill="#7E2F52"/>`).join('')}
+        ${[1, 7, 14, 21, 28].filter((d) => d <= dmax).map((d) => `<text x="${x(d)}" y="${H - 2}" font-size="10" fill="#7A6873" text-anchor="middle">${d}</text>`).join('')}
+      </svg><div class="leyenda"><span>${tr('Temperatura de cada noche del último ciclo, por día del ciclo.')}${salto ? ` ${tr('En rosa: desde la subida de temperatura.')}` : ''}</span></div>`;
+    }
+    const notas: string[] = [];
+    if (rel.difFcReposo != null) notas.push(tr(`Pulso en reposo en fase lútea vs. folicular: ${rel.difFcReposo > 0 ? '+' : ''}${decimal(rel.difFcReposo)} lpm.`));
+    if (rel.difTemp != null) notas.push(tr(`Temperatura en fase lútea vs. folicular: ${formatoTemp(rel.difTemp)}.`));
+    return `<section class="pagina">
+  <div class="cab2">${marca(22, 21)}<span>${tr('Resumen de ciclo')} · ${nombre} · ${fechaCorta(hoy)}</span></div>
+  <div class="ante" style="margin-top:22px">${tr('Reloj o app de salud')} · ${fuente}</div>
+  <h2 class="h2grande">${tr('Pulso, sueño y temperatura por fase')}</h2>
+  ${tabla}
+  ${notas.length ? `<p style="margin:10px 0 0;font-size:11.5px">${notas.join(' ')}</p>` : ''}
+  <h2>${tr('Subida de temperatura por ciclo')}</h2>
+  ${saltos}
+  ${grafico}
+  <div class="aviso">${tr('Datos medidos por el reloj o el teléfono de la usuaria y leídos de su app de salud. La fase lútea se cuenta desde la subida de temperatura (regla 3 sobre 6) o, sin ella, desde 14 días antes del período siguiente. No es un método anticonceptivo ni un diagnóstico.')}</div>
+  ${pie(3)}
+</section>`;
+  };
 
   return `<!doctype html><html lang="${region().idioma}"><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -280,5 +344,6 @@ export function reportHtml(data: AppData, s: Summary): string {
   <div class="aviso">${tr(conAnimo ? 'No incluye intimidad, notas personales ni diario de sueños.' : 'No incluye intimidad, notas personales, estado de ánimo ni diario de sueños.')} ${tr('Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico.')} ${tr('Las fechas futuras y las fases son estimaciones.')}</div>
   ${pie(2)}
 </section>
+${paginaReloj()}
 </body></html>`;
 }

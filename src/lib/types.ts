@@ -130,6 +130,7 @@ export interface Settings {
   pillPackStart: ISODate | null; // día 1 del blíster actual (o de cualquiera)
   condiciones: Condicion[];
   ocultarRetrasos: boolean; // sin avisos de retraso ni sugerencias de prueba de embarazo
+  pdfReloj: boolean; // incluir los datos del reloj o la app de salud en el PDF para la médica
   pdfAnimo: boolean; // la usuaria eligió incluir sus estados de ánimo en el PDF para la médica
   reminders: {
     pill: ReminderTime;
@@ -205,6 +206,28 @@ export interface AppData {
   // Blíster digital: null si nunca se configuró. Se muestra solo con settings.pillMode encendido.
   blister: BlisterConfig | null;
   tomasPastilla: Record<ISODate, PillLog>;
+  // Reloj y apps de salud (Apple Salud o Health Connect): un resumen por día, solo lectura.
+  reloj: DatosReloj;
+}
+
+// Lo que se lee del reloj o de la app de salud del teléfono, resumido por día.
+// El sueño y la temperatura de la noche cuentan para el día en que se despierta.
+export interface MedidaReloj {
+  pasos?: number;
+  fcReposo?: number; // latidos por minuto en reposo
+  fcMedia?: number; // promedio del día
+  vfc?: number; // variabilidad cardíaca, ms
+  sueno?: number; // minutos dormidos
+  tempPiel?: number; // desvío de la temperatura de la piel o la muñeca al dormir, °C, respecto a su línea base
+  tempBasal?: number; // temperatura basal (termómetro), °C
+}
+
+export type FuenteReloj = 'apple' | 'healthconnect';
+
+export interface DatosReloj {
+  fuente: FuenteReloj | null; // null = sin conectar
+  ultimaSync: string | null; // fecha y hora ISO de la última lectura
+  dias: Record<ISODate, MedidaReloj>;
 }
 
 export type Phase = 'menstrual' | 'folicular' | 'ovulatoria' | 'lutea' | 'pastilla';

@@ -24,7 +24,16 @@
       },
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "android.permission.SCHEDULE_EXACT_ALARM"
+        "android.permission.SCHEDULE_EXACT_ALARM",
+        "android.permission.health.READ_STEPS",
+        "android.permission.health.READ_HEART_RATE",
+        "android.permission.health.READ_RESTING_HEART_RATE",
+        "android.permission.health.READ_HEART_RATE_VARIABILITY",
+        "android.permission.health.READ_SLEEP",
+        "android.permission.health.READ_SKIN_TEMPERATURE",
+        "android.permission.health.READ_BASAL_BODY_TEMPERATURE",
+        "android.permission.health.READ_BODY_TEMPERATURE",
+        "android.permission.health.READ_HEALTH_DATA_HISTORY"
       ]
     },
     "web": {
@@ -123,6 +132,22 @@
               "updatePeriodMillis": 1800000
             }
           ]
+        }
+      ],
+      "react-native-health-connect",
+      [
+        "@kingstinct/react-native-healthkit",
+        {
+          "NSHealthShareUsageDescription": "Savia lee tus pasos, pulso, sueño y temperatura de Apple Salud para mostrarte cómo cambian en tu ciclo y sumarlos a tu resumen para la médica.",
+          "NSHealthUpdateUsageDescription": false
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
         }
       ]
     ],

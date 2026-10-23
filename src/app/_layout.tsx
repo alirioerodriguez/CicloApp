@@ -23,10 +23,11 @@ import { nowTime } from '../lib/dates';
 import { ACCION_TOMADA, fechaDeRespuesta, idSegundoAviso } from '../lib/tareaPastilla';
 import { subirResumenPareja } from '../lib/nube';
 import { resumenPareja } from '../lib/pareja';
+import { sincronizarReloj } from '../lib/sincronizarReloj';
 
 function Gate() {
   const c = useColors();
-  const { ready, data, summary, marcarToma } = useStore();
+  const { ready, data, summary, marcarToma, update } = useStore();
   const { session } = useAuth();
   const [locked, setLocked] = useState(true);
   const lockEnabled = data.settings.lock && Platform.OS !== 'web';
@@ -91,6 +92,17 @@ function Gate() {
     return () => clearTimeout(tm);
   }, [compartida, userId]);
 
+  // Reloj y apps de salud: al abrir y al volver a la app trae lo nuevo (como mucho cada 3 horas).
+  const datosRef = useRef(data);
+  datosRef.current = data;
+  useEffect(() => {
+    if (!ready || Platform.OS === 'web') return;
+    const traer = () => sincronizarReloj(datosRef.current, update).catch(() => {});
+    traer();
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && traer());
+    return () => sub.remove();
+  }, [ready, update]);
+
   if (!ready) {
     return (
       <View style={{ flex: 1, backgroundColor: c.bg, alignItems: 'center', justifyContent: 'center' }}>
@@ -128,6 +140,7 @@ function Gate() {
       <Stack.Screen name="cambio" />
       <Stack.Screen name="perdida" options={{ gestureEnabled: false }} />
       <Stack.Screen name="red" />
+      <Stack.Screen name="reloj" />
       <Stack.Screen name="acompanar" options={{ gestureEnabled: !data.settings.soloPareja }} />
       <Stack.Screen name="personalizar" />
       <Stack.Screen name="patadas" options={{ presentation: 'modal' }} />

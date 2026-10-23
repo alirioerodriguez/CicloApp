@@ -3,10 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppState, Platform } from 'react-native';
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
+import { clasificarToma, migrarBlister } from './blister';
 import { summarize, type Summary } from './cycle';
 import { deleteRemote, pullRemote, pushRemote } from './nube';
 import { addDays, today } from './dates';
-import type { AppData, DayLog, ISODate, Settings } from './types';
+import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
 
 const KEY = 'ciclo:data:v1';
 
@@ -64,6 +65,8 @@ export const emptyData = (): AppData => ({
   chequeosMeno: [],
   quiz: {},
   pruebas: { misiones: {}, sus: [], ideas: [] },
+  blister: null,
+  tomasPastilla: {},
 });
 
 export function emptyLog(date: ISODate): DayLog {
@@ -121,8 +124,12 @@ export function normalize(raw: unknown): AppData {
     logs[date] = { ...log, ...migrateIds(log.moods, log.symptoms) };
   }
   const base = emptyData();
+  // Blíster digital: datos de antes (pillType, pillPackStart y pillTaken en DayLog) se migran sin borrar nada.
+  const { blister, tomasPastilla } = migrarBlister({ settings, logs, blister: r.blister, tomasPastilla: r.tomasPastilla });
   return {
     version: 1,
+    blister,
+    tomasPastilla,
     settings,
     logs,
     dreams: Array.isArray(r.dreams) ? r.dreams : base.dreams,
@@ -148,6 +155,9 @@ interface Store {
   startPeriodToday: () => void;
   updateSettings: (patch: Partial<Settings>) => void;
   update: (fn: (d: AppData) => AppData) => void; // para diario, controles, quistes y pruebas
+  guardarBlister: (blister: BlisterConfig | null) => void;
+  marcarToma: (fecha: ISODate, hora: string | null, estado?: EstadoToma) => void;
+  quitarToma: (fecha: ISODate) => void;
   mision: { id: string; inicio: number } | null; // prueba en curso (no se guarda)
   setMision: (m: { id: string; inicio: number } | null) => void;
   replaceAll: (data: AppData) => void;
@@ -291,6 +301,31 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   }, []);
 
   const update = useCallback((fn: (d: AppData) => AppData) => setData(fn), []);
+
+  // ---------- Blíster digital ----------
+  // Guardar o editar el blíster (null lo borra). Mantiene en sincronía los ajustes anteriores
+  // (pillPackStart) mientras el resto de la app los siga usando.
+  const guardarBlister = useCallback((blister: BlisterConfig | null) => {
+    setData((d) => ({ ...d, blister, settings: blister ? { ...d.settings, pillPackStart: blister.inicio } : d.settings }));
+  }, []);
+
+  // Marcar la toma de un día. Sin estado, se clasifica sola como a tiempo o tarde según la hora.
+  const marcarToma = useCallback((fecha: ISODate, hora: string | null, estado?: EstadoToma) => {
+    setData((d) => {
+      if (!d.blister) return d;
+      const final: EstadoToma = estado ?? (hora ? clasificarToma(d.blister, hora) : 'tomada');
+      return { ...d, tomasPastilla: { ...d.tomasPastilla, [fecha]: { fecha, estado: final, hora: final === 'olvidada' ? null : hora } } };
+    });
+  }, []);
+
+  // Quitar lo registrado ese día (vuelve a "pendiente" si es hoy u "olvidada" si ya pasó).
+  const quitarToma = useCallback((fecha: ISODate) => {
+    setData((d) => {
+      const tomasPastilla = { ...d.tomasPastilla };
+      delete tomasPastilla[fecha];
+      return { ...d, tomasPastilla };
+    });
+  }, []);
   const [mision, setMision] = useState<{ id: string; inicio: number } | null>(null);
 
   const replaceAll = useCallback((nd: AppData) => setData(normalize(nd)), []);
@@ -308,8 +343,8 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const getLog = useCallback((date: ISODate) => data.logs[date] ?? emptyLog(date), [data.logs]);
 
   const value = useMemo(
-    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, setMision, replaceAll, resetAll, sync }),
-    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, mision, replaceAll, resetAll, sync],
+    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, setMision, replaceAll, resetAll, sync }),
+    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, replaceAll, resetAll, sync],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

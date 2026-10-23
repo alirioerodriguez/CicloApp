@@ -65,6 +65,31 @@ export interface Posparto {
 // 21-7: días sin pastilla · 21-7p: placebo · pop: solo progestágeno.
 export type PillType = '21-7' | '21-7p' | '24-4' | '26-2' | 'continua' | 'pop' | 'pop-24-4';
 
+// ---------- Blíster digital ----------
+// Va separado de DayLog: la configuración del blíster y un registro propio de tomas.
+// 21-7: 21 activas + 7 días sin pastilla · 21-7p / 24-4: con placebo · 28: continuo · personalizado: N + M.
+export type TipoBlister = '21-7' | '24-4' | '21-7p' | '28' | 'personalizado';
+export type TipoPastilla = 'combinada' | 'progestageno';
+
+export interface BlisterConfig {
+  tipo: TipoBlister;
+  inicio: ISODate; // día 1 del blíster actual; los siguientes arrancan solos al terminar
+  hora: string; // 'HH:MM', toma diaria
+  tipoPastilla: TipoPastilla;
+  // Solo para 'personalizado': activas + inactivas, y si las inactivas son placebo o descanso.
+  activas?: number;
+  inactivas?: number;
+  inactivasPlacebo?: boolean;
+}
+
+export type EstadoToma = 'tomada' | 'tarde' | 'olvidada';
+
+export interface PillLog {
+  fecha: ISODate;
+  estado: EstadoToma;
+  hora: string | null; // 'HH:MM' real de la toma (null si se marcó olvidada)
+}
+
 export interface ReminderTime {
   on: boolean;
   hour: number;
@@ -175,6 +200,9 @@ export interface AppData {
     sus: number[]; // 10 respuestas 1–5
     ideas: { fecha: ISODate; texto: string }[];
   };
+  // Blíster digital: null si nunca se configuró. Se muestra solo con settings.pillMode encendido.
+  blister: BlisterConfig | null;
+  tomasPastilla: Record<ISODate, PillLog>;
 }
 
 export type Phase = 'menstrual' | 'folicular' | 'ovulatoria' | 'lutea' | 'pastilla';

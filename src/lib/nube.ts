@@ -46,7 +46,7 @@ export async function signInGoogle(): Promise<void> {
 export async function resetPassword(email: string): Promise<void> {
   if (!neon) throw new Error('Falta configurar la nube.');
   const { error } = await neon.auth.resetPasswordForEmail(email.trim(), {
-    redirectTo: Platform.OS === 'web' ? window.location.origin : undefined,
+    redirectTo: Platform.OS === 'web' ? window.location.origin : 'https://cicloapp.vercel.app',
   });
   if (error) throw new Error(mensajeError(error.message));
 }

@@ -3,6 +3,7 @@
 // - el botón "Ya la tomé" de la notificación de la pastilla,
 // - los widgets de inicio (solo Android).
 // Se usa require (no import) para respetar este orden: los import se adelantan solos.
+require('./src/polyfills'); // crypto en el teléfono, antes que cualquier librería
 const { Platform } = require('react-native');
 
 require('./src/lib/tareaPastilla');

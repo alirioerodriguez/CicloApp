@@ -129,6 +129,7 @@ function Gate() {
       <Stack.Screen name="dia/[fecha]" options={{ presentation: 'modal' }} />
       <Stack.Screen name="alimentacion" />
       <Stack.Screen name="info" />
+      <Stack.Screen name="olvide-pastilla" />
       <Stack.Screen name="tutorial" options={{ gestureEnabled: false }} />
       <Stack.Screen name="salud" />
       <Stack.Screen name="suenos" />

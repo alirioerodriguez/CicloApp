@@ -1,5 +1,6 @@
 // Tarjeta del blíster digital (arriba de todo en Hoy). Alvéolos en filas de 7 con la inicial del día,
 // como un blíster real. Tocar el de hoy lo marca como tomado; tocar uno pasado permite corregirlo.
+import { router } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Animated, Pressable, View } from 'react-native';
 import { diaDelBlister, encabezado, estadoDelDia, horaLimite, HORAS_TARDE, type EstadoDia } from '../lib/blister';
@@ -202,6 +203,7 @@ export function TarjetaBlister() {
         <View style={{ backgroundColor: c.duraznoSuave, borderRadius: radius.md, padding: 12, gap: 2 }}>
           <Body style={{ fontWeight: '600' }}>{olvidos === 1 ? 'Hay una pastilla sin marcar en este blíster.' : `Hay ${olvidos} pastillas sin marcar en este blíster.`}</Body>
           <Muted style={{ color: c.text }}>Revisa el prospecto o consulta a tu médico. Si sí la tomaste, toca el alvéolo para corregirlo.</Muted>
+          <Button small kind="soft" label="¿Qué hago? Guía rápida" onPress={() => router.push('/olvide-pastilla')} />
         </View>
       )}
 

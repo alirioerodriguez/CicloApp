@@ -170,6 +170,7 @@ export default function Info() {
           <Label>Sobre tu pastilla</Label>
           <Body>{RESTA_EFECTO}</Body>
           <Body>{PASTILLA_OLVIDO}</Body>
+          <Button small kind="soft" label="¿Olvidaste una pastilla? Guía rápida" onPress={() => router.push('/olvide-pastilla')} />
         </Card>
       )}
 

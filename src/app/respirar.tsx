@@ -20,11 +20,16 @@ export default function Respirar() {
   const [fase, setFase] = useState(0);
   const [ciclo, setCiclo] = useState(1);
   const [fin, setFin] = useState(false);
+  const [restan, setRestan] = useState(FASES[0].segundos);
 
   useEffect(() => {
     if (!activo) return;
     const f = FASES[fase];
     tap();
+    // cuenta regresiva visible: baja de a un segundo dentro de cada fase
+    setRestan(f.segundos);
+    const inicio = Date.now();
+    const reloj = setInterval(() => setRestan(Math.max(1, f.segundos - Math.floor((Date.now() - inicio) / 1000))), 200);
     const anim = Animated.timing(scale, {
       toValue: f.to,
       duration: f.segundos * 1000,
@@ -42,7 +47,10 @@ export default function Respirar() {
         setFin(true);
       }
     });
-    return () => anim.stop();
+    return () => {
+      anim.stop();
+      clearInterval(reloj);
+    };
   }, [activo, fase, ciclo, scale]);
 
   const empezar = () => {
@@ -62,7 +70,11 @@ export default function Respirar() {
         </Animated.View>
         <View style={{ position: 'absolute', alignItems: 'center' }}>
           <Text style={{ fontFamily: serif, fontSize: 30, color: c.dark ? c.bg : c.text }}>{fin ? '¡Muy bien!' : activo ? FASES[fase].label : 'Lista'}</Text>
-          {activo && <Text style={{ fontFamily: fonts.bold, color: c.dark ? c.bg : c.text }}>{FASES[fase].segundos} s</Text>}
+          {activo && (
+            <Text accessibilityLiveRegion="polite" accessibilityLabel={`${restan} segundos`} style={{ fontFamily: fonts.bold, fontSize: 40, lineHeight: 46, color: c.dark ? c.bg : c.text, fontVariant: ['tabular-nums'] }}>
+              {restan}
+            </Text>
+          )}
         </View>
       </View>
       {activo ? <Muted style={{ textAlign: 'center' }}>Respiración {ciclo} de {CICLOS}</Muted> : null}

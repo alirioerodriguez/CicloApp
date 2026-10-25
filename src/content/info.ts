@@ -26,14 +26,27 @@ export const RANGOS = [
   'En adolescentes los ciclos pueden ser más variables (21 a 45 días) durante los primeros años.',
 ];
 
-export const ALIVIO: { medida: string; evidencia: string }[] = [
-  { medida: 'Calor local (bolsa de agua tibia, parche térmico)', evidencia: 'Moderada; en algunos estudios, comparable a analgésicos comunes.' },
-  { medida: 'Ejercicio regular', evidencia: 'Baja calidad, pero consistente: reduce la intensidad del dolor.' },
-  { medida: 'TENS (estimulación eléctrica en la piel)', evidencia: 'Limitada; estudios pequeños con beneficio.' },
-  { medida: 'Jengibre', evidencia: 'Limitada (estudios pequeños).' },
-  { medida: 'Omega-3', evidencia: 'Limitada y de baja calidad.' },
-  { medida: 'Yoga, relajación, baño tibio, masaje suave', evidencia: 'Limitada, con bajo riesgo.' },
-  { medida: 'Dejar de fumar', evidencia: 'Fumar se asocia con más dolor menstrual.' },
+// Versión para tocar: cada situación de RANGOS como pregunta corta; el detalle es el mismo texto de arriba.
+export const RANGOS_PREGUNTAS: { pregunta: string; detalle: string }[] = [
+  { pregunta: '¿Tus ciclos duran menos de 24 o más de 38 días?', detalle: RANGOS[0] },
+  { pregunta: '¿Tu período dura más de 8 días?', detalle: RANGOS[1] },
+  { pregunta: '¿Tus ciclos cambian mucho de un mes a otro?', detalle: RANGOS[2] },
+  { pregunta: '¿Llevas 3 meses o más sin período?', detalle: RANGOS[3] },
+  { pregunta: '¿Cambias la toalla o el tampón cada 1–2 horas?', detalle: RANGOS[4] },
+  { pregunta: '¿Sangras entre períodos o después de las relaciones?', detalle: RANGOS[5] },
+  { pregunta: '¿El dolor no te deja hacer tu día normal?', detalle: RANGOS[6] },
+];
+export const RANGOS_NOTA = RANGOS[7];
+
+// nivel: cuánta evidencia hay (3 moderada, 2 baja pero consistente, 1 limitada). Se dibuja como barra.
+export const ALIVIO: { medida: string; evidencia: string; nivel: 1 | 2 | 3 }[] = [
+  { medida: 'Calor local (bolsa de agua tibia, parche térmico)', evidencia: 'Moderada; en algunos estudios, comparable a analgésicos comunes.', nivel: 3 },
+  { medida: 'Ejercicio regular', evidencia: 'Baja calidad, pero consistente: reduce la intensidad del dolor.', nivel: 2 },
+  { medida: 'TENS (estimulación eléctrica en la piel)', evidencia: 'Limitada; estudios pequeños con beneficio.', nivel: 1 },
+  { medida: 'Jengibre', evidencia: 'Limitada (estudios pequeños).', nivel: 1 },
+  { medida: 'Omega-3', evidencia: 'Limitada y de baja calidad.', nivel: 1 },
+  { medida: 'Yoga, relajación, baño tibio, masaje suave', evidencia: 'Limitada, con bajo riesgo.', nivel: 1 },
+  { medida: 'Dejar de fumar', evidencia: 'Fumar se asocia con más dolor menstrual.', nivel: 2 },
 ];
 
 export const MITOS = [

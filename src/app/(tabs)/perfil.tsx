@@ -441,11 +441,12 @@ export default function Perfil() {
         </Card>
       </Pressable>
 
+      <Button kind="soft" label="Qué sale de tu teléfono" onPress={() => router.push('/privacidad-datos')} />
       <Button
         kind="danger"
         label="Borrar todos mis datos"
         onPress={async () => {
-          if (await confirm('¿Borrar todo?', 'Se eliminarán todos tus registros y ajustes, en este teléfono y en tu cuenta. No se puede deshacer.', 'Borrar')) {
+          if (await confirm('¿Borrar todo?', 'Se eliminarán todos tus registros y ajustes, en este teléfono y en tu cuenta, y dejarás de compartir con tu pareja. No se puede deshacer.', 'Borrar')) {
             resetAll();
             router.replace('/onboarding');
           }

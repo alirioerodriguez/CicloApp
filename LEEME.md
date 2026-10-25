@@ -1,6 +1,6 @@
 # Ciclo · app de seguimiento menstrual (Android + iPhone)
 
-Para cualquier mujer que quiera llevar su ciclo con privacidad. Un solo código para los dos teléfonos, hecho con **Expo (React Native)**. Datos 100 % en el teléfono: sin cuentas, sin servidor, sin internet.
+Para cualquier mujer que quiera llevar su ciclo con privacidad. Un solo código para los dos teléfonos (y la web), hecho con **Expo (React Native)**. Los datos se guardan en el teléfono y, con la cuenta, una copia de respaldo en Neon (servidor en EE. UU., protegida por las reglas RLS de la cuenta; el cifrado con una clave de la usuaria está pendiente). El modo pareja comparte solo un resumen mínimo. Detalle completo en la pantalla «Qué sale de tu teléfono» (`src/app/privacidad-datos.tsx`).
 
 ## Qué cambió respecto a la guía original
 

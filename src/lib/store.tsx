@@ -6,7 +6,7 @@ import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './blister';
 import { summarize, type Summary } from './cycle';
 import { actualizarWidgets } from '../widget/actualizarWidgets';
-import { deleteRemote, pullRemote, pushRemote } from './nube';
+import { dejarDeCompartir, deleteRemote, pullRemote, pushRemote, soltarPareja } from './nube';
 import { addDays, today } from './dates';
 import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
 
@@ -357,7 +357,12 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const replaceAll = useCallback((nd: AppData) => setData(normalize(nd)), []);
   const resetAll = useCallback(() => {
     setData(emptyData());
-    if (userId) deleteRemote(userId).catch(() => {});
+    // En la nube: el respaldo, lo que ella comparte con su pareja y, si era la pareja de alguien, ese vínculo.
+    if (userId) {
+      deleteRemote(userId).catch(() => {});
+      dejarDeCompartir(userId).catch(() => {});
+      soltarPareja().catch(() => {});
+    }
   }, [userId]);
 
   // Solo en desarrollo web: permite cargar datos de prueba desde la consola.

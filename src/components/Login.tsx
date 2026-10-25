@@ -1,6 +1,6 @@
 // Pantalla de inicio de sesión: entrar, crear cuenta o recuperar la contraseña.
 import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, Switch, TextInput, View } from 'react-native';
 import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { googleDisponible, resetPassword, signIn, signInGoogle, signUp } from '../lib/nube';
@@ -24,6 +24,9 @@ export function Login() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [aviso, setAviso] = useState<string | null>(null);
+  // Consentimiento explícito para datos de salud (sensibles en MX, CO y AR): apagado hasta que ella lo prenda.
+  const [acepto, setAcepto] = useState(false);
+  const FALTA_ACEPTAR = 'Para crear la cuenta necesitas aceptar cómo cuidamos tus datos de salud.';
 
   const cambiar = (m: Modo) => {
     setModo(m);
@@ -37,6 +40,7 @@ export function Login() {
     if (!/^\S+@\S+\.\S+$/.test(email.trim())) return setError('Escribe un correo válido.');
     if (modo !== 'olvide' && password.length < 8) return setError('La contraseña debe tener al menos 8 caracteres.');
     if (modo === 'crear' && password !== password2) return setError('Las contraseñas no coinciden.');
+    if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
     setBusy(true);
     try {
       if (modo === 'entrar') await signIn(email, password);
@@ -96,6 +100,7 @@ export function Login() {
                 accessibilityRole="button"
                 onPress={async () => {
                   setError(null);
+                  if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
                   try {
                     await signInGoogle();
                   } catch (e) {
@@ -181,6 +186,15 @@ export function Login() {
               style={input}
               onSubmitEditing={enviar}
             />
+          )}
+
+          {modo === 'crear' && (
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: c.card, borderRadius: radius.md, padding: 12, borderWidth: 1, borderColor: c.line }}>
+              <Switch value={acepto} onValueChange={setAcepto} trackColor={{ true: c.rosa, false: c.line }} thumbColor="#fff" accessibilityLabel={t('Acepto cómo se cuidan mis datos de salud')} />
+              <Text style={{ flex: 1, fontFamily: fonts.regular, fontSize: 13.5, lineHeight: 19, color: c.text }}>
+                Acepto que Savia guarde mis datos de salud (ciclo, síntomas, embarazo) en este teléfono y una copia en mi cuenta, en un servidor en Estados Unidos, para no perderlos. No se venden ni se usan para publicidad, y puedo borrarlos cuando quiera desde Perfil.
+              </Text>
+            </View>
           )}
 
           {error ? <Text style={{ fontFamily: fonts.medium, color: c.durazno, fontSize: 14 }}>{error}</Text> : null}

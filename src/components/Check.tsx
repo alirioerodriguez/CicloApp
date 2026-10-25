@@ -8,7 +8,7 @@ export function Check({ label, sub, on, onPress, chip, chipResaltado, textoHecho
   const c = useColors();
   return (
     <Pressable
-      accessibilityRole="checkbox"
+      accessibilityRole="switch"
       accessibilityState={{ checked: on }}
       onPress={() => {
         tap();
@@ -16,8 +16,9 @@ export function Check({ label, sub, on, onPress, chip, chipResaltado, textoHecho
       }}
       style={({ pressed }) => ({ flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10, borderTopWidth: 1, borderTopColor: c.line, opacity: pressed ? 0.7 : 1 })}
     >
-      <View style={{ width: 26, height: 26, borderRadius: 8, borderWidth: 1.5, borderColor: on ? c.rosa : c.line, backgroundColor: on ? c.rosa : 'transparent', alignItems: 'center', justifyContent: 'center' }}>
-        {on && <Text style={{ color: c.onAccent, fontFamily: fonts.bold, fontSize: 14 }}>✓</Text>}
+      {/* Interruptor estilo iPhone (toda la fila se toca; esto solo muestra el estado) */}
+      <View style={{ width: 46, height: 28, borderRadius: 14, padding: 3, backgroundColor: on ? c.rosa : c.line, justifyContent: 'center' }}>
+        <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: '#fff', alignSelf: on ? 'flex-end' : 'flex-start', shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 2, shadowOffset: { width: 0, height: 1 }, elevation: 2 }} />
       </View>
       <View style={{ flex: 1, gap: 2 }}>
         <Text style={{ fontFamily: fonts.semibold, fontSize: 15, color: c.text, textDecorationLine: on ? 'line-through' : 'none', opacity: on ? 0.6 : 1 }}>{label}</Text>

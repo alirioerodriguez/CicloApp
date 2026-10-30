@@ -78,6 +78,19 @@ describe.each(modos)('contraste AA en modo $nombre', ({ dark }) => {
     }
   });
 
+  it('los colores de aviso como TEXTO (error del login, alertas de presión y de loquios, «control») se leen sobre el fondo, las tarjetas y las tarjetas de color', () => {
+    for (const texto of [base.lavandaTexto, base.salviaTexto, base.duraznoTexto]) {
+      for (const fondo of [base.bg, base.card, base.lavandaSuave, base.salviaSuave, base.duraznoSuave]) {
+        expect(contraste(texto, fondo)).toBeGreaterThanOrEqual(AA);
+      }
+    }
+  });
+
+  it('los tonos claros de lavanda, salvia y durazno son para rellenos: como letra NO llegan a AA en modo Día', () => {
+    // Si esto deja de ser cierto, ya no hace falta la versión «Texto». Mientras lo sea, no usar `c.durazno` como color de texto.
+    if (!base.dark) for (const relleno of [base.lavanda, base.salvia, base.durazno]) expect(contraste(relleno, base.card)).toBeLessThan(AA);
+  });
+
   it.each(todos)('con el tono $tono: el color de acento como texto se lee sobre el fondo y las tarjetas', ({ c }) => {
     expect(contraste(c.rosa, c.bg)).toBeGreaterThanOrEqual(AA);
     expect(contraste(c.rosa, c.card)).toBeGreaterThanOrEqual(AA);

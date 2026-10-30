@@ -102,7 +102,7 @@ export function HoyPosparto() {
                   <Chip key={o.id} label={o.label} selected={log.loquios === o.id} onPress={() => set({ loquios: log.loquios === o.id ? null : o.id })} />
                 ))}
               </View>
-              {log.loquios === 'rojo' && semanas >= 2 && <Body style={{ color: c.durazno, fontWeight: '600' }}>{ALERTA_LOQUIOS}</Body>}
+              {log.loquios === 'rojo' && semanas >= 2 && <Body style={{ color: c.duraznoTexto, fontWeight: '600' }}>{ALERTA_LOQUIOS}</Body>}
             </Card>
 
             <Card>
@@ -112,7 +112,7 @@ export function HoyPosparto() {
                   <Chip key={o} label={o} selected={log.cicatriz === o} onPress={() => set({ cicatriz: log.cicatriz === o ? null : o })} />
                 ))}
               </View>
-              <Muted style={log.cicatriz && CICATRIZ_ALERTA.includes(log.cicatriz) ? { color: c.durazno, fontFamily: fonts.semibold } : undefined}>{CUIDADO_CICATRIZ}</Muted>
+              <Muted style={log.cicatriz && CICATRIZ_ALERTA.includes(log.cicatriz) ? { color: c.duraznoTexto, fontFamily: fonts.semibold } : undefined}>{CUIDADO_CICATRIZ}</Muted>
             </Card>
 
             <Card>

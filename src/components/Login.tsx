@@ -197,8 +197,8 @@ export function Login() {
             </View>
           )}
 
-          {error ? <Text style={{ fontFamily: fonts.medium, color: c.durazno, fontSize: 14 }}>{error}</Text> : null}
-          {aviso ? <Text style={{ fontFamily: fonts.medium, color: c.salvia, fontSize: 14 }}>{aviso}</Text> : null}
+          {error ? <Text style={{ fontFamily: fonts.medium, color: c.duraznoTexto, fontSize: 14 }}>{error}</Text> : null}
+          {aviso ? <Text style={{ fontFamily: fonts.medium, color: c.salviaTexto, fontSize: 14 }}>{aviso}</Text> : null}
 
           <Pressable
             accessibilityRole="button"

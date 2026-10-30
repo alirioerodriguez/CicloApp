@@ -110,7 +110,7 @@ export default function Perfil() {
             <Button kind="ghost" label="Cancelar" onPress={() => setEtapaSel(s.etapa)} />
           </View>
         )}
-        {cambio && etapaSel === s.etapa && <Body style={{ color: c.salvia, fontWeight: '600' }}>✓ Guardado. {CAMBIO_ETAPA}</Body>}
+        {cambio && etapaSel === s.etapa && <Body style={{ color: c.salviaTexto, fontWeight: '600' }}>✓ Guardado. {CAMBIO_ETAPA}</Body>}
         {s.silencioEmbarazo && (
           <Toggle
             label="Avisos del embarazo en pausa"

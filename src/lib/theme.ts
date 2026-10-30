@@ -35,6 +35,10 @@ export interface Colors {
   salviaSuave: string;
   durazno: string;
   duraznoSuave: string;
+  /** Versiones para usar como COLOR DE TEXTO: en modo Día los tonos de arriba son claros y están pensados para rellenos, y no se leen como letra (1,8 a 2,7:1). */
+  lavandaTexto: string;
+  salviaTexto: string;
+  duraznoTexto: string;
   onAccent: string;
   dark: boolean;
 }
@@ -57,6 +61,9 @@ export function construirColores(tonoId: TonoId, dark: boolean): Colors {
       salviaSuave: '#22322C',
       durazno: '#F2BF84',
       duraznoSuave: '#3D2E24',
+      lavandaTexto: '#B9AEF0',
+      salviaTexto: '#9FCDB7',
+      duraznoTexto: '#F2BF84',
       onAccent: '#1A1219',
     };
   }
@@ -76,6 +83,9 @@ export function construirColores(tonoId: TonoId, dark: boolean): Colors {
     salviaSuave: '#E3F1EA',
     durazno: '#E9A15F',
     duraznoSuave: '#FBEBD5',
+    lavandaTexto: '#68609D',
+    salviaTexto: '#4A705F',
+    duraznoTexto: '#8A5F38',
     onAccent: '#FFFFFF',
   };
 }

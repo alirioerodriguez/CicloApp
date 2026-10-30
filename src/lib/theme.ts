@@ -39,7 +39,7 @@ export interface Colors {
   dark: boolean;
 }
 
-function build(tonoId: TonoId, dark: boolean): Colors {
+export function construirColores(tonoId: TonoId, dark: boolean): Colors {
   const t = TONOS.find((x) => x.id === tonoId) ?? TONOS[0];
   if (dark) {
     return {
@@ -65,7 +65,8 @@ function build(tonoId: TonoId, dark: boolean): Colors {
     bg: '#FBF7F4',
     card: '#FFFFFF',
     text: '#2A1F2B',
-    muted: 'rgba(42,31,43,0.58)',
+    // 0,65 y no 0,58: con 0,58 el texto secundario daba 3,9:1 y no llegaba a WCAG AA (4,5:1). Ver __tests__/contraste.test.ts.
+    muted: 'rgba(42,31,43,0.65)',
     line: 'rgba(42,31,43,0.12)',
     rosa: t.profundo,
     rosaSuave: `${t.suave}55`,
@@ -86,7 +87,7 @@ export function useColors(): Colors {
   const { tono, modo } = useContext(ThemePrefs);
   const scheme = useColorScheme();
   const dark = modo === 'auto' ? scheme === 'dark' : modo === 'noche';
-  return build(tono, dark);
+  return construirColores(tono, dark);
 }
 
 export const radius = { sm: 10, md: 16, lg: 22, pill: 999 };

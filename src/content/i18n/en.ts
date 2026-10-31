@@ -2666,4 +2666,9 @@ export const EN_PATRONES: Record<string, string> = {
   "Datos en este teléfono": "Data on this phone",
   "Con copia en tu cuenta": "Backed up to your account",
   "Toca para cambiar de modo": "Tap to change mode",
+  "¿Tu ciclo es parecido cada mes?": "Is your cycle similar each month?",
+  "Si cambia bastante, te mostramos un rango de fechas en vez de una sola fecha.": "If it changes a lot, we show a range of dates instead of a single date.",
+  "Casi siempre igual": "Almost always the same",
+  "Cambia bastante": "It changes a lot",
+  "Tengo SOP": "I have PCOS",
 };

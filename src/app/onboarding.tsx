@@ -12,6 +12,7 @@ import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper, Toggle } 
 import { ETAPAS_MENO } from '../content/menopausia';
 import { SEMANA_MAX, SEMANA_MIN, bebe, fppDesdeSemanas, semanasEmbarazo } from '../content/embarazo';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../content/posparto';
+import { REGULARIDAD, conRegularidad, type Regularidad } from '../lib/regularidad';
 import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../content/etapas';
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
@@ -47,6 +48,7 @@ export default function Onboarding() {
   const [periodLength, setPeriodLength] = useState(5);
   const [anti, setAnti] = useState<Anticonceptivo | null>(null);
   const [condiciones, setCondiciones] = useState<Condicion[]>(s0.condiciones);
+  const [regularidad, setRegularidad] = useState<Regularidad | null>(null);
   const [ttc, setTtc] = useState<SenalTtc[]>(s0.ttcRegistro);
   const [pillName, setPillName] = useState('');
   const [pillType, setPillType] = useState<PillType>('21-7');
@@ -72,7 +74,7 @@ export default function Onboarding() {
 
   const finish = async () => {
     const granted = notificationsSupported ? await ensurePermission().catch(() => false) : false;
-    const condFinal = etapa === 'especial' ? condiciones : condiciones.filter((x) => !CONDICIONES_ESPECIAL.some((k) => k.id === x));
+    const condFinal = etapa === 'especial' ? condiciones : conRegularidad(condiciones.filter((x) => !CONDICIONES_ESPECIAL.some((k) => k.id === x)), etapa === 'ciclo' || etapa === 'ttc' ? regularidad : null);
     replaceAll({
       ...data,
       // Con pastilla, el blíster digital se arma de nuevo desde estos ajustes al normalizar.
@@ -227,6 +229,11 @@ export default function Onboarding() {
             <Row label="Duración del período" hint="Días de sangrado">
               <Stepper value={periodLength} onChange={setPeriodLength} min={2} max={10} format={(v) => `${v} d`} />
             </Row>
+          </Card>
+          <Card>
+            <Label>¿Tu ciclo es parecido cada mes?</Label>
+            <Muted>Si cambia bastante, te mostramos un rango de fechas en vez de una sola fecha.</Muted>
+            {opcion(REGULARIDAD.map((o) => ({ id: o.id, label: t(o.label) })), regularidad ?? ('' as Regularidad), setRegularidad)}
           </Card>
         </>
       )}

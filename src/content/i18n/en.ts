@@ -2671,4 +2671,13 @@ export const EN_PATRONES: Record<string, string> = {
   "Casi siempre igual": "Almost always the same",
   "Cambia bastante": "It changes a lot",
   "Tengo SOP": "I have PCOS",
+  "Preguntas para mi próxima consulta": "Questions for my next appointment",
+  "Anota las dudas cuando aparecen en la semana. En la consulta, márcalas a medida que las conversas.": "Write down questions as they come up during the week. At the appointment, check them off as you talk them through.",
+  "Por ejemplo: ¿puedo viajar en avión?": "For example: can I fly?",
+  "Nueva pregunta para la consulta": "New question for the appointment",
+  "Anotar pregunta": "Add question",
+  "Todavía no anotaste ninguna.": "You haven't added any yet.",
+  "Conversada": "Discussed",
+  "Quitar las ya conversadas": "Remove the ones already discussed",
+  "MIS PREGUNTAS": "MY QUESTIONS",
 };

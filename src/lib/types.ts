@@ -55,6 +55,15 @@ export interface DatosEmbarazo {
   hechos: string[]; // controles, exámenes, pendientes y bolso marcados como listos
   patadas: Record<ISODate, { n: number; segundos: number }>;
   medidas: Record<ISODate, { kg: number | null; sys: number | null; dia: number | null }>;
+  preguntas: PreguntaConsulta[]; // dudas para la próxima consulta prenatal (lib/preguntasConsulta.ts)
+}
+
+export interface PreguntaConsulta {
+  id: string;
+  fecha: ISODate;
+  semana: number | null; // semana de gestación del día en que se anotó
+  texto: string;
+  hecha: boolean; // ya se conversó en la consulta
 }
 
 export interface Posparto {

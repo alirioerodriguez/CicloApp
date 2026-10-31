@@ -6,6 +6,7 @@ import { CICATRIZ_ALERTA, EDIMBURGO, lunes, nivelEdimburgo, semanasPosparto } fr
 import { EXAMENES, presionAlta, semanasEmbarazo } from '../content/embarazo';
 import { CHEQUEOS_MENO, MRS, NIVELES_MRS, diasSinPeriodo, etapaMeno, puntajeMrs } from '../content/menopausia';
 import { detectAlertas } from './alertas';
+import { lineaPregunta, pendientes } from './preguntasConsulta';
 import type { Summary } from './cycle';
 import { addDays, today } from './dates';
 import type { AppData } from './types';
@@ -16,6 +17,7 @@ export interface Consulta {
   kpis: { valor: string; label: string }[];
   frecuentes: { label: string; nivel: string; pct: number }[];
   conversar: string[];
+  preguntas: string[]; // solo en embarazo: sus dudas pendientes, en el orden en que surgieron
   diasRegistrados: number;
 }
 
@@ -121,7 +123,8 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
   }
   if (!conversar.length) conversar.push('Sin señales de alerta en este período.');
 
-  return { quien, modo, kpis, frecuentes, conversar, diasRegistrados: dias };
+  const preguntas = st.etapa === 'embarazo' ? pendientes(data.embarazo).map(lineaPregunta) : [];
+  return { quien, modo, kpis, frecuentes, conversar, preguntas, diasRegistrados: dias };
 }
 
 // Texto corto para compartir por WhatsApp o correo.
@@ -137,5 +140,6 @@ export function consultaTexto(c: Consulta): string {
     '',
     'Para conversar:',
     ...c.conversar.map((x) => `• ${x}`),
+    ...(c.preguntas.length ? ['', 'Mis preguntas:', ...c.preguntas.map((x) => `• ${x}`)] : []),
   ].join('\n');
 }

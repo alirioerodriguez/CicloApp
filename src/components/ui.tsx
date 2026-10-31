@@ -1,7 +1,7 @@
 // Piezas visuales reutilizables.
 import * as Haptics from 'expo-haptics';
-import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
-import { Alert, Platform, Pressable, ScrollView, StyleSheet, Switch, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
+import { Children, cloneElement, isValidElement, useEffect, useRef, type ReactNode } from 'react';
+import { Alert, Animated, Easing, Platform, Pressable, ScrollView, StyleSheet, View, type StyleProp, type TextStyle, type ViewStyle } from 'react-native';
 import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLayout } from '../lib/layout';
@@ -232,11 +232,55 @@ export function Row({ label, hint, children }: { label: string; hint?: string; c
   );
 }
 
-export function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
+// Medidas del interruptor del iPhone: pista de 51×31, perilla de 27 con 2 de margen, que se ensancha a 33 al apretarla.
+export const INTERRUPTOR = { ancho: 51, alto: 31, perilla: 27, margen: 2, perillaApretada: 33 } as const;
+/** Cuánto se corre la perilla (en px) desde la izquierda: apagado = 0; prendido = hasta el otro margen, menos lo que se ensancha. */
+export function recorridoPerilla(prendido: boolean, apretado: boolean): number {
+  const { ancho, perilla, margen, perillaApretada } = INTERRUPTOR;
+  const w = apretado ? perillaApretada : perilla;
+  return prendido ? ancho - 2 * margen - w : 0;
+}
+
+/** Interruptor con la forma y el movimiento del de iPhone en los tres sistemas (el nativo de Android es distinto). */
+export function Interruptor({ value, onValueChange, accessibilityLabel, disabled }: { value: boolean; onValueChange: (v: boolean) => void; accessibilityLabel?: string; disabled?: boolean }) {
   const c = useColors();
+  const { ancho, alto, perilla, margen, perillaApretada } = INTERRUPTOR;
+  const x = useRef(new Animated.Value(recorridoPerilla(value, false))).current;
+  const w = useRef(new Animated.Value(perilla)).current;
+  const apretado = useRef(false);
+  const mover = (prendido: boolean, ap: boolean) => {
+    Animated.parallel([
+      Animated.timing(x, { toValue: recorridoPerilla(prendido, ap), duration: 220, easing: Easing.out(Easing.cubic), useNativeDriver: false }),
+      Animated.timing(w, { toValue: ap ? perillaApretada : perilla, duration: 160, useNativeDriver: false }),
+    ]).start();
+  };
+  useEffect(() => mover(value, apretado.current), [value]); // eslint-disable-line react-hooks/exhaustive-deps
+  return (
+    <Pressable
+      accessibilityRole="switch"
+      accessibilityLabel={accessibilityLabel}
+      accessibilityState={{ checked: value, disabled: !!disabled }}
+      disabled={disabled}
+      hitSlop={{ top: 7, bottom: 7, left: 4, right: 4 }}
+      onPressIn={() => { apretado.current = true; mover(value, true); }}
+      onPressOut={() => { apretado.current = false; mover(value, false); }}
+      onPress={() => { tap(); onValueChange(!value); }}
+      style={{ width: ancho, height: alto, borderRadius: alto / 2, justifyContent: 'center', backgroundColor: value ? c.rosa : c.line, opacity: disabled ? 0.45 : 1 }}
+    >
+      <Animated.View
+        style={{
+          width: w, height: perilla, borderRadius: perilla / 2, backgroundColor: '#fff', marginLeft: margen, transform: [{ translateX: x }],
+          shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }, elevation: 3,
+        }}
+      />
+    </Pressable>
+  );
+}
+
+export function Toggle({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) {
   return (
     <Row label={label} hint={hint}>
-      <Switch value={value} onValueChange={onChange} trackColor={{ true: c.rosa, false: c.line }} thumbColor="#fff" />
+      <Interruptor value={value} onValueChange={onChange} accessibilityLabel={label} />
     </Row>
   );
 }

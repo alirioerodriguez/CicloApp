@@ -1,12 +1,13 @@
 // Pantalla de inicio de sesión: entrar, crear cuenta o recuperar la contraseña.
 import { useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, Switch, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { googleDisponible, resetPassword, signIn, signInGoogle, signUp } from '../lib/nube';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import Svg, { Path } from 'react-native-svg';
 import { Logo } from './Logo';
+import { Interruptor } from './ui';
 import { t } from '../lib/region';
 
 type Modo = 'entrar' | 'crear' | 'olvide';
@@ -190,15 +191,15 @@ export function Login() {
 
           {modo === 'crear' && (
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: c.card, borderRadius: radius.md, padding: 12, borderWidth: 1, borderColor: c.line }}>
-              <Switch value={acepto} onValueChange={setAcepto} trackColor={{ true: c.rosa, false: c.line }} thumbColor="#fff" accessibilityLabel={t('Acepto cómo se cuidan mis datos de salud')} />
+              <Interruptor value={acepto} onValueChange={setAcepto} accessibilityLabel={t('Acepto cómo se cuidan mis datos de salud')} />
               <Text style={{ flex: 1, fontFamily: fonts.regular, fontSize: 13.5, lineHeight: 19, color: c.text }}>
                 Acepto que Savia guarde mis datos de salud (ciclo, síntomas, embarazo) en este teléfono y una copia en mi cuenta, en un servidor en Estados Unidos, para no perderlos. No se venden ni se usan para publicidad, y puedo borrarlos cuando quiera desde Perfil.
               </Text>
             </View>
           )}
 
-          {error ? <Text style={{ fontFamily: fonts.medium, color: c.durazno, fontSize: 14 }}>{error}</Text> : null}
-          {aviso ? <Text style={{ fontFamily: fonts.medium, color: c.salvia, fontSize: 14 }}>{aviso}</Text> : null}
+          {error ? <Text style={{ fontFamily: fonts.medium, color: c.duraznoTexto, fontSize: 14 }}>{error}</Text> : null}
+          {aviso ? <Text style={{ fontFamily: fonts.medium, color: c.salviaTexto, fontSize: 14 }}>{aviso}</Text> : null}
 
           <Pressable
             accessibilityRole="button"

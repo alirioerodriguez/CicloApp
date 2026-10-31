@@ -2662,4 +2662,8 @@ export const EN_PATRONES: Record<string, string> = {
   "¿Dónde la veo? te dice en qué plataforma está cada película o serie en tu país. Gratis y sin cuenta.": "¿Dónde la veo? tells you which platform has each movie or show in your country. Free, no account needed.",
   "¿Estás buscando trabajo?": "Looking for a job?",
   "Un nuevo comienzo te ayuda a ordenar el envío de CVs con una rutina semanal, llevar tus entrevistas, encontrar eventos de tu rubro y prepararte con tips para entrevistas y para mejorar tu CV. Gratis y sin cuenta.": "Un nuevo comienzo helps you organize sending your CV with a weekly routine, keep track of your interviews, find events in your field and get ready with interview and CV tips. Free, no account needed (in Spanish).",
+  "Etapa": "Stage",
+  "Datos en este teléfono": "Data on this phone",
+  "Con copia en tu cuenta": "Backed up to your account",
+  "Toca para cambiar de modo": "Tap to change mode",
 };

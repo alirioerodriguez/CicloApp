@@ -5,7 +5,7 @@ import * as Notifications from 'expo-notifications';
 import { CLAVE_ACTIVA } from '../src/lib/blister';
 import { summarize } from '../src/lib/cycle';
 import { rescheduleAll } from '../src/lib/notifications';
-import { emptyData } from '../src/lib/store';
+import { emptyData, normalize } from '../src/lib/store';
 import { guardarTomaSinApp, idSegundoAviso } from '../src/lib/tareaPastilla';
 import type { AppData } from '../src/lib/types';
 
@@ -32,7 +32,7 @@ const N = Notifications as unknown as Record<string, jest.Mock>;
 
 function datos(): AppData {
   const d = emptyData();
-  d.settings = { ...d.settings, onboarded: true, pillMode: true, reminders: { ...d.settings.reminders, pill: { on: true, hour: 21, minute: 0 }, pack: { on: true, hour: 9 }, period: { ...d.settings.reminders.period, on: false } } };
+  d.settings = { ...d.settings, discreet: false, onboarded: true, pillMode: true, reminders: { ...d.settings.reminders, pill: { on: true, hour: 21, minute: 0 }, pack: { on: true, hour: 9 }, period: { ...d.settings.reminders.period, on: false } } };
   d.blister = { tipo: '21-7', inicio: '2026-10-01', hora: '21:00', tipoPastilla: 'combinada' };
   return d;
 }
@@ -111,6 +111,42 @@ describe('Programación de recordatorios', () => {
     await rescheduleAll(d, summarize(d, '2026-10-14'));
     const ids = N.scheduleNotificationAsync.mock.calls.map((c) => (c[0] as { identifier?: string }).identifier ?? '');
     expect(ids.some((i) => i.startsWith('pastilla'))).toBe(false);
+    jest.useRealTimers();
+  });
+});
+
+describe('Notificaciones discretas por defecto', () => {
+  const textos = () => N.scheduleNotificationAsync.mock.calls.map((c) => (c[0] as { content: { title: string; body: string } }).content);
+  const PALABRAS = /pastilla|per[ií]odo|ciclo|blíster|bl[ií]ster|mama|autoexamen|respaldo|registr|control/i;
+
+  test('una usuaria nueva parte con el modo discreto activado', () => {
+    expect(emptyData().settings.discreet).toBe(true);
+  });
+
+  test('una usuaria que ya lo había apagado conserva su elección', () => {
+    expect(normalize({ settings: { discreet: false } }).settings.discreet).toBe(false);
+    expect(normalize({ settings: { discreet: true } }).settings.discreet).toBe(true);
+  });
+
+  test('con los valores por defecto, ningún aviso de la pantalla bloqueada menciona pastilla, período, etc.', async () => {
+    jest.useFakeTimers({ now: new Date(2026, 9, 14, 8, 0) });
+    const d = datos();
+    d.settings = { ...d.settings, discreet: emptyData().settings.discreet, reminders: { ...d.settings.reminders, registro: { on: true, hour: 21, minute: 30 }, autoexamen: { ...d.settings.reminders.autoexamen, on: true }, period: { ...d.settings.reminders.period, on: true } } };
+    await rescheduleAll(d, summarize(d, '2026-10-14'));
+    const t = textos();
+    expect(t.length).toBeGreaterThan(5);
+    for (const c of t) {
+      expect(`${c.title} ${c.body}`).not.toMatch(PALABRAS);
+      expect(c.title).toBe('Savia');
+    }
+    jest.useRealTimers();
+  });
+
+  test('si la usuaria activa el detalle en Perfil, los avisos vuelven a ser explícitos', async () => {
+    jest.useFakeTimers({ now: new Date(2026, 9, 14, 8, 0) });
+    const d = datos(); // discreet: false
+    await rescheduleAll(d, summarize(d, '2026-10-14'));
+    expect(textos().some((c) => c.title === 'Pastilla')).toBe(true);
     jest.useRealTimers();
   });
 });

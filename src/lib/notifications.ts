@@ -173,5 +173,5 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
   const firstLog = Object.keys(data.logs).sort()[0] ?? t;
   let backupDay = addDays(settings.lastBackup ?? firstLog, 30);
   if (backupDay <= t) backupDay = addDays(t, 1);
-  await once('Respaldo', rotate(NOTIF.respaldo, dayNum(backupDay)), at(backupDay, 12));
+  await once(...msg('Respaldo', rotate(NOTIF.respaldo, dayNum(backupDay))), at(backupDay, 12));
 }

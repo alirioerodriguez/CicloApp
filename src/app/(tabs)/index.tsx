@@ -7,6 +7,7 @@ import { HoyEmbarazo } from '../../components/HoyEmbarazo';
 import { HoyMeno } from '../../components/HoyMeno';
 import { HoyPosparto } from '../../components/HoyPosparto';
 import { Logo } from '../../components/Logo';
+import { EtapaChip } from '../../components/EtapaChip';
 import { ModoCard } from '../../components/ModoCard';
 import { DayEditor } from '../../components/DayEditor';
 import { Body, Button, Card, Columnas, Label, Screen } from '../../components/ui';
@@ -121,6 +122,7 @@ function HoyCiclo() {
 
   return (
     <Screen subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
+      <EtapaChip />
       <Body style={{ marginTop: -6 }}>{hello.texto}</Body>
 
       <Columnas

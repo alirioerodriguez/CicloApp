@@ -76,7 +76,7 @@ export function ControlesEmbarazo() {
               <Row label="Presión baja" hint="Diastólica">
                 <Stepper value={hoy?.dia ?? ultimo('dia') ?? 70} onChange={(dia) => guardarMedida({ dia })} min={40} max={130} />
               </Row>
-              {alta ? <Body style={{ color: c.durazno, fontWeight: '700' }}>{AVISO_PRESION}</Body> : <Muted>Se guarda solo al cambiar un valor. Lo ves también en el modo consulta.</Muted>}
+              {alta ? <Body style={{ color: c.duraznoTexto, fontWeight: '700' }}>{AVISO_PRESION}</Body> : <Muted>Se guarda solo al cambiar un valor. Lo ves también en el modo consulta.</Muted>}
               {pesos.length >= 2 && (
                 <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 90, marginTop: 6 }}>
                   {pesos.map(([f, m]) => (

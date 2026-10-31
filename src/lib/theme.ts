@@ -35,11 +35,15 @@ export interface Colors {
   salviaSuave: string;
   durazno: string;
   duraznoSuave: string;
+  /** Versiones para usar como COLOR DE TEXTO: en modo Día los tonos de arriba son claros y están pensados para rellenos, y no se leen como letra (1,8 a 2,7:1). */
+  lavandaTexto: string;
+  salviaTexto: string;
+  duraznoTexto: string;
   onAccent: string;
   dark: boolean;
 }
 
-function build(tonoId: TonoId, dark: boolean): Colors {
+export function construirColores(tonoId: TonoId, dark: boolean): Colors {
   const t = TONOS.find((x) => x.id === tonoId) ?? TONOS[0];
   if (dark) {
     return {
@@ -57,6 +61,9 @@ function build(tonoId: TonoId, dark: boolean): Colors {
       salviaSuave: '#22322C',
       durazno: '#F2BF84',
       duraznoSuave: '#3D2E24',
+      lavandaTexto: '#B9AEF0',
+      salviaTexto: '#9FCDB7',
+      duraznoTexto: '#F2BF84',
       onAccent: '#1A1219',
     };
   }
@@ -65,7 +72,8 @@ function build(tonoId: TonoId, dark: boolean): Colors {
     bg: '#FBF7F4',
     card: '#FFFFFF',
     text: '#2A1F2B',
-    muted: 'rgba(42,31,43,0.58)',
+    // 0,65 y no 0,58: con 0,58 el texto secundario daba 3,9:1 y no llegaba a WCAG AA (4,5:1). Ver __tests__/contraste.test.ts.
+    muted: 'rgba(42,31,43,0.65)',
     line: 'rgba(42,31,43,0.12)',
     rosa: t.profundo,
     rosaSuave: `${t.suave}55`,
@@ -75,6 +83,9 @@ function build(tonoId: TonoId, dark: boolean): Colors {
     salviaSuave: '#E3F1EA',
     durazno: '#E9A15F',
     duraznoSuave: '#FBEBD5',
+    lavandaTexto: '#68609D',
+    salviaTexto: '#4A705F',
+    duraznoTexto: '#8A5F38',
     onAccent: '#FFFFFF',
   };
 }
@@ -86,7 +97,7 @@ export function useColors(): Colors {
   const { tono, modo } = useContext(ThemePrefs);
   const scheme = useColorScheme();
   const dark = modo === 'auto' ? scheme === 'dark' : modo === 'noche';
-  return build(tono, dark);
+  return construirColores(tono, dark);
 }
 
 export const radius = { sm: 10, md: 16, lg: 22, pill: 999 };

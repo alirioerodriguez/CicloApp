@@ -57,7 +57,7 @@ export function SemanasEmbarazo() {
                   {hoy ? (
                     <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.rosa }}>Hoy</Text>
                   ) : controles.has(w) ? (
-                    <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.lavanda }}>control</Text>
+                    <Text style={{ fontFamily: fonts.bold, fontSize: 12, color: c.lavandaTexto }}>control</Text>
                   ) : null}
                 </Pressable>
               );

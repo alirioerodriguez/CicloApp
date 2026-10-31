@@ -48,7 +48,8 @@ export const DEFAULT_SETTINGS: Settings = {
   lock: false,
   lastBackup: null,
   logrosVistos: [],
-  discreet: false,
+  // Discretas desde el primer día: mucha gente ve la pantalla bloqueada frente a otras personas. El detalle se activa en Perfil.
+  discreet: true,
   tono: 'rosa',
   modo: 'auto',
   signo: null,

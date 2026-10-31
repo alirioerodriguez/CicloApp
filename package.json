@@ -54,7 +54,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "test": "jest"
+    "test": "jest",
+    "test:husos": "node scripts/probar-husos.js"
   },
   "private": true,
   "jest": {

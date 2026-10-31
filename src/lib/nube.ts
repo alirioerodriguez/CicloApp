@@ -4,11 +4,16 @@
 import 'react-native-url-polyfill/auto';
 import { createClient, defaultDeriveNeonUrls, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import { Platform } from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
 
 // Por defecto, el proyecto "savia" en Neon (plan Free). Es pública: sin usuario ni contraseña.
 const url = process.env.EXPO_PUBLIC_NEON_URL ?? 'https://ep-old-bar-b5e0wyej.c-7.us-east-2.aws.neon.tech/neondb';
 
 export const nubeConfigurada = !!url;
+
+// Versión web publicada: el ingreso con Google del celular pasa por ella (ver signInGoogle).
+export const WEB = 'https://cicloapp.vercel.app';
+const urlAuth = url ? defaultDeriveNeonUrls(url).auth : '';
 
 function crear() {
   const u = defaultDeriveNeonUrls(url);
@@ -18,8 +23,10 @@ function crear() {
 
 export const neon = nubeConfigurada ? crear() : null;
 
-// Google funciona en la web: Neon Auth redirige a Google y vuelve a la app.
-export const googleDisponible = nubeConfigurada && Platform.OS === 'web';
+// Google: en la web, Neon Auth redirige a Google y vuelve a la página. En el celular se abre la versión web
+// en una ventana segura del sistema; esa página entra con Google y vuelve a la app con un código de un
+// solo uso (neon_auth_session_verifier), que la app canjea por la sesión. Ver index.js.
+export const googleDisponible = nubeConfigurada;
 
 // ---------- Cuenta ----------
 
@@ -37,10 +44,29 @@ export async function signUp(email: string, password: string): Promise<boolean> 
   return !!data.session;
 }
 
-export async function signInGoogle(): Promise<void> {
+// Devuelve false si la usuaria cerró la ventana de Google sin terminar.
+export async function signInGoogle(volverA?: string): Promise<boolean> {
   if (!neon) throw new Error('Falta configurar la nube.');
-  const { error } = await neon.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: window.location.origin } });
-  if (error) throw new Error(mensajeError(error.message));
+  if (Platform.OS === 'web') {
+    const { error } = await neon.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: volverA ?? window.location.origin } });
+    if (error) throw new Error(mensajeError(error.message));
+    return true;
+  }
+  const r = await WebBrowser.openAuthSessionAsync(`${WEB}/?ingresoApp=google`, 'ciclo://auth');
+  if (r.type !== 'success') return false;
+  const codigo = /[?&]neon_auth_session_verifier=([^&#]+)/.exec(r.url)?.[1];
+  if (!codigo) throw new Error('No se pudo entrar con Google. Prueba de nuevo.');
+  // El servidor de Neon Auth canjea el código por la sesión y la deja guardada en el teléfono (cookie)
+  const res = await fetch(`${urlAuth}/get-session?neon_auth_session_verifier=${codigo}`, { credentials: 'include' });
+  if (!res.ok) throw new Error('No se pudo entrar con Google. Prueba de nuevo.');
+  await refrescarSesion?.();
+  return true;
+}
+
+// La pone AuthProvider (lib/auth.tsx) para avisar que hay sesión nueva después de Google en el celular
+let refrescarSesion: (() => Promise<void>) | null = null;
+export function alCambiarSesion(f: (() => Promise<void>) | null) {
+  refrescarSesion = f;
 }
 
 export async function resetPassword(email: string): Promise<void> {

@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { Platform, Share, View } from 'react-native';
 import { Text } from './Texto';
 import { AnimoEnPdf } from './AnimoEnPdf';
+import { PreguntasConsulta } from './PreguntasConsulta';
 import { exportBackup, exportCsv, shareReport } from '../lib/backup';
 import { consulta, consultaTexto } from '../lib/consulta';
 import { useStore } from '../lib/store';
@@ -81,11 +82,23 @@ export function ConsultaMedica({ enPestana }: { enPestana?: boolean }) {
                 </View>
               ))}
             </View>
+            {r.preguntas.length > 0 && (
+              <View style={{ gap: 6 }}>
+                <Text style={{ fontFamily: fonts.bold, fontSize: 11.5, letterSpacing: 1.5, color: PAPEL.acento }}>MIS PREGUNTAS</Text>
+                {r.preguntas.map((x) => (
+                  <View key={x} style={{ flexDirection: 'row', gap: 8 }}>
+                    <Text style={{ color: PAPEL.text }}>?</Text>
+                    <Text style={{ flex: 1, fontFamily: fonts.regular, fontSize: 14, lineHeight: 20, color: PAPEL.text }}>{x}</Text>
+                  </View>
+                ))}
+              </View>
+            )}
             <Text style={{ fontFamily: fonts.regular, fontSize: 11.5, color: PAPEL.muted }}>{r.diasRegistrados} días registrados. Datos anotados por ella misma; no es un diagnóstico.</Text>
           </View>
         }
         derecha={
           <>
+            {data.settings.etapa === 'embarazo' && <PreguntasConsulta />}
             <AnimoEnPdf />
             <View style={{ flexDirection: 'row', gap: 10 }}>
               <View style={{ flex: 1 }}>

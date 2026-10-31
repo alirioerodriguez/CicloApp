@@ -1,13 +1,6 @@
 // iPhone: Apple Salud (HealthKit). Ahí guardan sus datos el Apple Watch, Oura, Garmin y otras apps.
 // Solo lectura. La temperatura de la muñeca al dormir necesita Apple Watch Series 8 / Ultra o más nuevo.
-import {
-  isHealthDataAvailable,
-  queryCategorySamples,
-  queryQuantitySamples,
-  queryStatisticsCollectionForQuantity,
-  requestAuthorization,
-} from '@kingstinct/react-native-healthkit';
-import { Linking } from 'react-native';
+import { Linking, TurboModuleRegistry } from 'react-native';
 import { desviosDesdeAbsolutos } from './reloj';
 import { Acumulador, diaDe, finDia, inicioDia, type FuenteSalud } from './fuentesSalud.comun';
 import type { ISODate } from './types';
@@ -33,18 +26,43 @@ const seguro = async <T,>(f: () => Promise<readonly T[]>): Promise<readonly T[]>
   }
 };
 
+// La librería de Apple Salud se carga recién cuando hace falta, y solo si el teléfono tiene su parte nativa.
+// En Expo Go no viene incluida: importarla arriba hacía que toda la app se cayera al abrir
+// («Failed to get NitroModules»). Así, en Expo Go Apple Salud figura como no disponible y lo demás anda.
+type HealthKit = typeof import('@kingstinct/react-native-healthkit');
+let cargada: HealthKit | null | undefined;
+function healthkit(): HealthKit | null {
+  if (cargada === undefined) {
+    cargada = null;
+    if (TurboModuleRegistry.get('NitroModules')) {
+      try {
+        cargada = require('@kingstinct/react-native-healthkit') as HealthKit;
+      } catch {
+        cargada = null;
+      }
+    }
+  }
+  return cargada;
+}
+
 type ConFuente = { sourceRevision?: { source?: { bundleIdentifier?: string } } };
 
 export const fuenteSalud: FuenteSalud = {
   fuente: 'apple',
   nombre: 'Apple Salud',
 
-  estado: async () => (isHealthDataAvailable() ? 'disponible' : 'no'),
+  estado: async () => (healthkit()?.isHealthDataAvailable() ? 'disponible' : 'no'),
 
   // Apple no dice qué permisos se negaron (por privacidad): si alguno falta, ese dato simplemente no llega.
-  conectar: async () => requestAuthorization({ toRead: [PASOS, FC, FC_REPOSO, VFC, MUNECA, BASAL, SUENO] }),
+  conectar: async () => {
+    const hk = healthkit();
+    return hk ? hk.requestAuthorization({ toRead: [PASOS, FC, FC_REPOSO, VFC, MUNECA, BASAL, SUENO] }) : false;
+  },
 
   leer: async (desde: ISODate, hasta: ISODate) => {
+    const hk = healthkit();
+    if (!hk) return {};
+    const { queryCategorySamples, queryQuantitySamples, queryStatisticsCollectionForQuantity } = hk;
     const acc = new Acumulador();
     const filter = { date: { startDate: inicioDia(desde), endDate: finDia(hasta) } };
 

@@ -1,6 +1,6 @@
 // Sesión de la usuaria (correo y contraseña o Google, vía Neon Auth).
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { neon, nubeConfigurada } from './nube';
+import { alCambiarSesion, neon, nubeConfigurada } from './nube';
 
 export interface Sesion {
   user: { id: string; email?: string | null };
@@ -20,13 +20,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!neon) return;
-    neon.auth
-      .getSession()
-      .then(({ data }) => setSession((data.session as Sesion | null) ?? null))
-      .catch(() => setSession(null))
-      .finally(() => setLoading(false));
+    const leer = () =>
+      neon!.auth
+        .getSession()
+        .then(({ data }) => setSession((data.session as Sesion | null) ?? null))
+        .catch(() => setSession(null));
+    leer().finally(() => setLoading(false));
+    alCambiarSesion(leer);
     const { data } = neon.auth.onAuthStateChange((_evento, s) => setSession((s as Sesion | null) ?? null));
-    return () => data.subscription.unsubscribe();
+    return () => {
+      alCambiarSesion(null);
+      data.subscription.unsubscribe();
+    };
   }, []);
 
   return <Ctx.Provider value={{ loading, session, configured: nubeConfigurada }}>{children}</Ctx.Provider>;

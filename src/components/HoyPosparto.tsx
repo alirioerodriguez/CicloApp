@@ -22,6 +22,7 @@ import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Toma } from '../lib/types';
 import { EjercicioCard } from './EjercicioCard';
 import { Logo } from './Logo';
+import { EtapaChip } from './EtapaChip';
 import { Body, Card, Chip, Columnas, Label, Muted, Row, Screen, Stepper, tap } from './ui';
 import { Icono } from './Icono';
 import { QuizEntrada } from './QuizEntrada';
@@ -68,6 +69,7 @@ export function HoyPosparto() {
 
   return (
     <Screen subtitle={longDate(t)} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
+      <EtapaChip />
       <Body style={{ marginTop: -6 }}>Hoy la protagonista también eres tú.</Body>
 
       <Columnas

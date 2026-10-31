@@ -12,6 +12,7 @@ import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Check } from './Check';
 import { Logo } from './Logo';
+import { EtapaChip } from './EtapaChip';
 import { Body, Card, Columnas, Label, Muted, Screen, tap } from './ui';
 import { Icono } from './Icono';
 import { QuizEntrada } from './QuizEntrada';
@@ -50,6 +51,7 @@ export function HoyEmbarazo() {
   if (data.settings.silencioEmbarazo) {
     return (
       <Screen angosta subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`}>
+        <EtapaChip />
         <Card tint={c.lavandaSuave}>
           <Label>Avisos del embarazo en pausa</Label>
           <Body>Cuando quieras volver a verlos, actívalos en Perfil. Mientras tanto, aquí puedes registrar tu día.</Body>
@@ -82,6 +84,7 @@ export function HoyEmbarazo() {
 
   return (
     <Screen subtitle={longDate(today())} title={`${traducir(hello.titulo)}${name ? `, ${name}` : ''}`} right={<Logo size={32} />}>
+      <EtapaChip />
       <Body style={{ marginTop: -6 }}>¿Cómo amaneces tú y tu bebé?</Body>
 
       <Columnas

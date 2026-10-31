@@ -19,6 +19,7 @@ import { addDays, longDate, today } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Logo } from './Logo';
+import { EtapaChip } from './EtapaChip';
 import { Platos } from './Platos';
 import { Body, Button, Card, Columnas, Label, Muted, Screen, tap } from './ui';
 import { Icono } from './Icono';
@@ -56,6 +57,7 @@ export function HoyMeno() {
 
   return (
     <Screen subtitle={longDate(t)} title={`${hello.titulo}${st.name ? `, ${st.name}` : ''}`} right={<Logo size={32} />}>
+      <EtapaChip />
       <Body style={{ marginTop: -6 }}>¿Cómo dormiste anoche?</Body>
 
       <Columnas

@@ -8,12 +8,14 @@ import { MonthGrid } from '../components/MonthGrid';
 import { Logo } from '../components/Logo';
 import { PillPicker } from '../components/PillPicker';
 import { TonePicker } from '../components/TonePicker';
-import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper, Toggle } from '../components/ui';
+import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper, Toggle, tap } from '../components/ui';
 import { ETAPAS_MENO } from '../content/menopausia';
 import { SEMANA_MAX, SEMANA_MIN, bebe, fppDesdeSemanas, semanasEmbarazo } from '../content/embarazo';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../content/posparto';
 import { REGULARIDAD, type Regularidad } from '../lib/regularidad';
-import { anticonceptivoFinal, flujoOnboarding, modoInicial } from '../lib/onboarding';
+import { anticonceptivoFinal, entradaElegida, flujoOnboarding, inicioDesdePastillaDeHoy, modoInicial } from '../lib/onboarding';
+import { PILL_PACKS } from '../lib/cycle';
+import { blisterDesdeAjustes } from '../lib/blister';
 import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../content/etapas';
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
@@ -22,7 +24,7 @@ import { nubeConfigurada } from '../lib/nube';
 import { seedFirstPeriod, useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
-import { Icono } from '../components/Icono';
+import { Icono, IconoBurbuja } from '../components/Icono';
 import { t } from '../lib/region';
 
 export default function Onboarding() {
@@ -42,7 +44,11 @@ export default function Onboarding() {
   const [ttc, setTtc] = useState<SenalTtc[]>(s0.ttcRegistro);
   const [pillName, setPillName] = useState('');
   const [pillType, setPillType] = useState<PillType>('21-7');
-  const [packStart, setPackStart] = useState<ISODate | null>(null);
+  // Blíster en dos datos: el esquema y el número de pastilla que toca hoy (null: lo configura después)
+  const [pillHoy, setPillHoy] = useState<number | null>(null);
+  // Entrada doble: si eligió «Llevo mi ciclo» o «Tomo pastilla», no se repite la pregunta de la pastilla
+  const [alEntrar, setAlEntrar] = useState(false);
+  const [otraEtapa, setOtraEtapa] = useState(s0.etapa !== 'ciclo');
   const [pillHour, setPillHour] = useState(21);
   const [ppSemanas, setPpSemanas] = useState(s0.posparto.nacimiento ? semanasPosparto(s0.posparto) : 2);
   const [semanasEmb, setSemanasEmb] = useState(s0.embarazo.fpp ? semanasEmbarazo(s0.embarazo.fpp) : 12);
@@ -52,7 +58,9 @@ export default function Onboarding() {
   const [alimentacion, setAlimentacion] = useState<Posparto['alimentacion']>(s0.posparto.alimentacion);
 
   // Con pastilla se saltan el último período y la duración del ciclo (ver lib/onboarding.ts)
-  const flujo = flujoOnboarding(etapa, anti);
+  const flujo = flujoOnboarding(etapa, anti, alEntrar);
+  const packStart = inicioDesdePastillaDeHoy(pillHoy, today());
+  const largoBlister = PILL_PACKS[pillType].length;
   const meno = etapa === 'meno';
   const posparto = etapa === 'posparto';
   const embarazada = etapa === 'embarazo';
@@ -63,18 +71,20 @@ export default function Onboarding() {
 
   const finish = async () => {
     const granted = notificationsSupported ? await ensurePermission().catch(() => false) : false;
+    const settings = {
+      ...s0,
+      ...modoInicial(s0, { name, edad, etapa, anti, condiciones, regularidad, cycleLength, periodLength, pillName, pillType, packStart, pillHour }, granted),
+      ttcRegistro: ttc,
+      posparto: posparto ? { nacimiento: nacimientoHace(ppSemanas), parto, alimentacion } : s0.posparto,
+      embarazo: embarazada ? { fpp: fppDesdeSemanas(semanasEmb) } : s0.embarazo,
+      meno: meno ? { ...s0.meno, etapa: menoEtapa, trh } : s0.meno,
+    };
+    // Con pastilla, el blíster se arma con estos ajustes y se empieza a seguir hoy: las pastillas de antes no cuentan como olvido.
+    const nuevo = pastilla ? blisterDesdeAjustes(settings) : null;
     replaceAll({
       ...data,
-      // Con pastilla, el blíster digital se arma de nuevo desde estos ajustes al normalizar.
-      blister: pastilla ? null : data.blister,
-      settings: {
-        ...s0,
-        ...modoInicial(s0, { name, edad, etapa, anti, condiciones, regularidad, cycleLength, periodLength, pillName, pillType, packStart, pillHour }, granted),
-        ttcRegistro: ttc,
-        posparto: posparto ? { nacimiento: nacimientoHace(ppSemanas), parto, alimentacion } : s0.posparto,
-        embarazo: embarazada ? { fpp: fppDesdeSemanas(semanasEmb) } : s0.embarazo,
-        meno: meno ? { ...s0.meno, etapa: menoEtapa, trh } : s0.meno,
-      },
+      blister: pastilla ? (nuevo ? { ...nuevo, desde: today() } : null) : data.blister,
+      settings,
       logs: lastStart ? seedFirstPeriod(data.logs, lastStart, periodLength) : data.logs,
     });
     router.replace(s0.tutorialVisto ? '/' : '/tutorial');
@@ -103,9 +113,15 @@ export default function Onboarding() {
         </Row>
       </Card>
       <Card>
-        <Label>¿Qué día empezaste el blíster actual?</Label>
-        <Muted>Así sabemos qué pastilla te toca y cuándo es tu descanso. Puedes saltarlo.</Muted>
-        <MonthGrid maxDate={today()} selected={packStart} onPress={setPackStart} marks={packStart ? { [packStart]: { ovulation: true } } : {}} />
+        <Label>¿Qué número de pastilla te toca hoy?</Label>
+        <Muted>Míralo en el blíster. Así sabemos cuándo es tu descanso. Si no lo sabes, lo configuras después.</Muted>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+          <Chip label="Empiezo un blíster hoy" selected={pillHoy === 1} onPress={() => setPillHoy(1)} />
+          <Chip label="No lo sé" selected={pillHoy == null} onPress={() => setPillHoy(null)} />
+        </View>
+        <Row label="Pastilla de hoy" hint={pillHoy ? `Empezaste el blíster el ${longDate(packStart!)}` : undefined}>
+          <Stepper value={pillHoy ?? 1} onChange={(n) => setPillHoy(Math.min(n, largoBlister))} min={1} max={largoBlister} format={(n) => (pillHoy == null ? '–' : `${n} de ${largoBlister}`)} />
+        </Row>
       </Card>
     </>
   );
@@ -166,14 +182,53 @@ export default function Onboarding() {
               <Stepper value={edad} onChange={setEdad} min={10} max={80} />
             </Row>
           </Card>
-          <Label style={{ marginTop: 4 }}>¿En qué etapa estás?</Label>
-          <EtapaPicker
-            value={etapa}
-            onChange={(e) => {
-              setEtapa(e);
-              if (e === 'especial' && !condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x))) setCondiciones([...condiciones, 'sop']);
-            }}
-          />
+          <Label style={{ marginTop: 4 }}>¿Qué quieres llevar en Savia?</Label>
+          {([
+            { id: 'ciclo', emoji: '🌸', label: 'Llevo mi ciclo', sub: 'Tu período, tus fases y tus síntomas' },
+            { id: 'pastilla', emoji: '💊', label: 'Tomo pastilla anticonceptiva', sub: 'Tu blíster, el recordatorio y tu descanso' },
+          ] as const).map((o) => {
+            const on = !otraEtapa && entradaElegida(etapa, anti) === o.id;
+            return (
+              <Pressable
+                key={o.id}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: on }}
+                onPress={() => {
+                  tap();
+                  setEtapa('ciclo');
+                  setAnti(o.id === 'pastilla' ? 'pastilla' : 'ninguno');
+                  setAlEntrar(true);
+                  setOtraEtapa(false);
+                }}
+                style={({ pressed }) => ({
+                  flexDirection: 'row', alignItems: 'center', gap: 14, paddingVertical: 16, paddingHorizontal: 16, borderRadius: radius.lg,
+                  borderWidth: on ? 2 : 1, borderColor: on ? c.rosa : c.line, backgroundColor: on ? c.rosaSuave : c.card, opacity: pressed ? 0.8 : 1,
+                })}
+              >
+                <IconoBurbuja e={o.emoji} size={44} />
+                <View style={{ flex: 1, gap: 2 }}>
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 17, color: c.text }}>{o.label}</Text>
+                  <Text style={{ fontSize: 14, color: c.muted }}>{o.sub}</Text>
+                </View>
+              </Pressable>
+            );
+          })}
+          {otraEtapa ? (
+            <>
+              <Label style={{ marginTop: 4 }}>¿En qué etapa estás?</Label>
+              <EtapaPicker
+                value={etapa}
+                onChange={(e) => {
+                  setEtapa(e);
+                  setAlEntrar(false);
+                  if (e === 'ciclo') setAnti(null);
+                  if (e === 'especial' && !condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x))) setCondiciones([...condiciones, 'sop']);
+                }}
+              />
+            </>
+          ) : (
+            <Button small kind="ghost" label="Estoy en otra etapa: embarazo, posparto, menopausia, buscando embarazo o ciclo especial" onPress={() => setOtraEtapa(true)} />
+          )}
           <Muted>Tu historial se queda contigo cuando cambies de modo.</Muted>
         </>
       )}
@@ -211,12 +266,12 @@ export default function Onboarding() {
 
       {paso === 'pastilla' && (
         <>
-          {h1('¿Tomas pastilla anticonceptiva?')}
+          {h1(alEntrar && pastilla ? 'Tu pastilla' : '¿Tomas pastilla anticonceptiva?')}
           <Muted>Si la tomas, no mostramos días fértiles (con la pastilla no aplican) y te ayudamos a recordarla.</Muted>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
+          {!(alEntrar && pastilla) && <View style={{ flexDirection: 'row', gap: 10 }}>
             <View style={{ flex: 1 }}><Button label="Sí" kind={pastilla ? 'primary' : 'soft'} onPress={() => setAnti('pastilla')} /></View>
             <View style={{ flex: 1 }}><Button label="No" kind={anti === 'ninguno' ? 'primary' : 'soft'} onPress={() => setAnti('ninguno')} /></View>
-          </View>
+          </View>}
           {pillCard}
         </>
       )}

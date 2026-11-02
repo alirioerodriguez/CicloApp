@@ -87,7 +87,7 @@ export function clasificarToma(c: BlisterConfig, hora: string, fecha?: ISODate, 
   return dias * 24 * 60 + minutos(hora) - minutos(c.hora) > HORAS_TARDE[c.tipoPastilla] * 60 ? 'tarde' : 'tomada';
 }
 
-export type EstadoDia = EstadoToma | 'pendiente' | 'futura' | 'descanso';
+export type EstadoDia = EstadoToma | 'pendiente' | 'futura' | 'descanso' | 'previa';
 
 // Estado que se ve en el alvéolo: lo registrado manda; un día pasado sin marcar cuenta como olvidado.
 export function estadoDelDia(c: BlisterConfig, tomas: Record<ISODate, PillLog>, fecha: ISODate, hoy: ISODate = today()): EstadoDia {
@@ -96,6 +96,8 @@ export function estadoDelDia(c: BlisterConfig, tomas: Record<ISODate, PillLog>, 
   if (log) return log.estado;
   if (fecha > hoy) return 'futura';
   if (fecha === hoy) return 'pendiente';
+  // Antes de empezar a usar Savia no hay registro: no es un olvido
+  if (c.desde && fecha < c.desde) return 'previa';
   return 'olvidada';
 }
 
@@ -172,6 +174,7 @@ export function normalizarBlister(raw: unknown): BlisterConfig | null {
     inicio: b.inicio,
     hora: typeof b.hora === 'string' && /^\d{2}:\d{2}$/.test(b.hora) ? b.hora : '21:00',
     tipoPastilla: b.tipoPastilla === 'progestageno' ? 'progestageno' : 'combinada',
+    ...(typeof b.desde === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(b.desde) ? { desde: b.desde } : {}),
     ...(tipo === 'personalizado' ? { activas: b.activas ?? 21, inactivas: b.inactivas ?? 7, inactivasPlacebo: !!b.inactivasPlacebo } : {}),
   };
 }

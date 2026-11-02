@@ -16,4 +16,8 @@ describe('Chip de etapa en Hoy', () => {
   test('hay texto para los 6 modos', () => {
     for (const e of ETAPAS) { const x = textoEtapa(e.id, false); expect(x.etapa).toBe(e.label); expect(x.emoji.length).toBeGreaterThan(0); }
   });
+  test('con pastilla dice «Ciclo con pastilla»', () => {
+    expect(textoEtapa('ciclo', false, true)).toEqual({ emoji: '💊', etapa: 'Ciclo con pastilla', datos: 'Datos en este teléfono' });
+    expect(textoEtapa('embarazo', false, true).etapa).toBe('Estoy embarazada');
+  });
 });

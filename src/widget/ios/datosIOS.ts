@@ -18,7 +18,7 @@ export function propsPeriodo(r: ResumenCiclo): PropsPeriodo {
 
 export function propsPastilla(r: ResumenWidget): PropsPastilla {
   if (!r.activo) return { activo: false, titulo: '', estado: t('Configura tu blíster para ver qué pastilla te toca cada día.'), marca: 'pendiente' };
-  return { activo: true, titulo: tituloPastilla(r), estado: estadoPastilla(r), marca: r.estadoHoy === 'futura' ? 'pendiente' : r.estadoHoy };
+  return { activo: true, titulo: tituloPastilla(r), estado: estadoPastilla(r), marca: r.estadoHoy === 'futura' || r.estadoHoy === 'previa' ? 'pendiente' : r.estadoHoy };
 }
 
 // fromISO da el mediodía (para no saltar de día con los husos); el widget tiene que cambiar a las 00:00

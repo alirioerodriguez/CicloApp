@@ -1,9 +1,12 @@
 // Bienvenida: qué pasos ve cada una y con qué modo arranca la app. Lógica pura, para poder probarla.
 // Ciclo se bifurca en la pregunta de la pastilla: con pastilla no hay período que predecir, así que se
 // saltan «¿Cuándo empezó tu último período?» y «¿Cada cuántos días te viene?» (el alta baja de 6 a 4 pasos).
+// La entrada es doble (Llevo mi ciclo / Tomo pastilla) con las otras etapas detrás de un enlace: si ya eligió
+// ahí, no se le vuelve a preguntar por la pastilla.
 import { CONDICIONES_ESPECIAL } from '../content/etapas';
+import { addDays } from './dates';
 import { conRegularidad, type Regularidad } from './regularidad';
-import type { Anticonceptivo, Condicion, Etapa, Settings } from './types';
+import type { Anticonceptivo, Condicion, Etapa, ISODate, Settings } from './types';
 
 export type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno' | 'listo';
 
@@ -16,10 +19,27 @@ const FLUJOS: Record<Etapa, Paso[]> = {
   meno: ['bienvenida', 'cuenta', 'meno', 'listo'],
 };
 
-/** Los pasos de la bienvenida según la etapa y lo que contestó sobre la pastilla. */
-export function flujoOnboarding(etapa: Etapa, anti: Anticonceptivo | null): Paso[] {
+/** Los pasos de la bienvenida según la etapa, lo que contestó sobre la pastilla y si lo eligió en la entrada doble. */
+export function flujoOnboarding(etapa: Etapa, anti: Anticonceptivo | null, elegidoAlEntrar = false): Paso[] {
   const f = FLUJOS[etapa] ?? FLUJOS.ciclo;
-  return etapa === 'ciclo' && anti === 'pastilla' ? f.filter((p) => p !== 'periodo' && p !== 'duracion') : f;
+  if (etapa !== 'ciclo') return f;
+  // Con pastilla el paso de la pastilla queda: ahí se arma el blíster
+  if (anti === 'pastilla') return f.filter((p) => p !== 'periodo' && p !== 'duracion');
+  if (elegidoAlEntrar && anti === 'ninguno') return f.filter((p) => p !== 'pastilla');
+  return f;
+}
+
+/** Entrada doble: lo que eligió en «Crea tu cuenta», o null si fue a otra etapa o no eligió. */
+export type Entrada = 'ciclo' | 'pastilla' | null;
+export function entradaElegida(etapa: Etapa, anti: Anticonceptivo | null): Entrada {
+  if (etapa !== 'ciclo') return null;
+  return anti === 'pastilla' ? 'pastilla' : anti === 'ninguno' ? 'ciclo' : null;
+}
+
+/** Blíster en dos datos: con el número de pastilla de hoy se sabe qué día empezó (la 1 es hoy). */
+export function inicioDesdePastillaDeHoy(numero: number | null, hoy: ISODate): ISODate | null {
+  if (numero == null || numero < 1) return null;
+  return addDays(hoy, -(Math.floor(numero) - 1));
 }
 
 /** El anticonceptivo con el que queda: buscando un embarazo, embarazada o en la menopausia no se usa. */

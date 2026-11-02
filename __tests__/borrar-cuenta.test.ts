@@ -13,7 +13,9 @@ jest.mock('react-native-url-polyfill/auto', () => ({}));
 
 import { borrarUsuario } from '../src/lib/nube';
 
-beforeEach(() => mockDeleteUser.mockReset());
+beforeEach(() => {
+  mockDeleteUser.mockReset();
+});
 
 describe('Cerrar el usuario', () => {
   test('el servidor lo permite: queda cerrado', async () => {

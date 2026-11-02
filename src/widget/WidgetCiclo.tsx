@@ -11,46 +11,13 @@ import type { VistaPareja } from '../lib/pareja';
 import { t } from '../lib/region';
 import type { ResumenCiclo } from './datosCiclo';
 import { CLARA, OSCURA, type Paleta } from './WidgetPastilla';
+import { cuenta, type Cuenta } from './textos';
+
+export { cuenta };
 
 export const WIDGET_CUENTA = 'PeriodoCuenta';
 export const WIDGET_CICLO = 'CicloHoy';
 export const WIDGET_PAREJA = 'ParejaHoy';
-
-interface Cuenta {
-  grande: string; // número o palabra grande
-  unidad: string;
-  pie: string | null;
-  color: 'rosa' | 'lila' | 'salvia' | 'texto';
-}
-
-const dias = (n: number, uno: string, varios: string) => t(n === 1 ? uno : varios);
-const fechaCorta = (r: Extract<ResumenCiclo, { tipo: 'ciclo' }>) =>
-  r.rango ? `${shortDate(r.rango[0])} – ${shortDate(r.rango[1])}` : r.fecha ? shortDate(r.fecha) : null;
-
-// Lo mismo para los dos widgets de ella: el número grande y su explicación.
-export function cuenta(r: ResumenCiclo): Cuenta {
-  switch (r.tipo) {
-    case 'embarazo':
-      return { grande: String(r.semana), unidad: t('semanas de embarazo'), pie: r.faltan != null ? t(`Faltan ${r.faltan} días`) : null, color: 'lila' };
-    case 'posparto':
-      return { grande: String(r.semana), unidad: t('semanas de posparto'), pie: null, color: 'salvia' };
-    case 'pastilla':
-      if (r.enPausa) return { grande: t('Hoy'), unidad: t(r.discreto ? 'días de descanso' : 'días sin hormona del blíster'), pie: `${t('Blíster')} ${r.dia}/${r.de}`, color: 'lila' };
-      if (r.diasParaPausa == null) return { grande: `${r.dia}/${r.de}`, unidad: t(r.discreto ? 'tu día de hoy' : 'pastilla de hoy'), pie: null, color: 'rosa' };
-      return { grande: String(r.diasParaPausa), unidad: dias(r.diasParaPausa, 'día para tu descanso', 'días para tu descanso'), pie: `${t('Blíster')} ${r.dia}/${r.de}`, color: 'lila' };
-    case 'ciclo': {
-      if (r.enPeriodo) return { grande: String(r.dia), unidad: t(r.discreto ? 'día 1 en curso' : 'día de tu período'), pie: null, color: 'rosa' };
-      if (r.atraso > 0) return { grande: String(r.atraso), unidad: dias(r.atraso, r.discreto ? 'día más' : 'día de retraso', r.discreto ? 'días más' : 'días de retraso'), pie: null, color: 'texto' };
-      if (r.diasPara === 0 || r.diasPara == null)
-        return { grande: t('Hoy'), unidad: t(r.discreto ? 'podría ser tu día 1' : 'podría llegar tu período'), pie: fechaCorta(r), color: 'rosa' };
-      return { grande: String(r.diasPara), unidad: dias(r.diasPara, r.discreto ? 'día para tu día 1' : 'día para tu período', r.discreto ? 'días para tu día 1' : 'días para tu período'), pie: fechaCorta(r), color: 'rosa' };
-    }
-    case 'meno':
-      return { grande: '🌸', unidad: t('Toca para registrar tu día'), pie: null, color: 'texto' };
-    default:
-      return { grande: '🌸', unidad: t('Registra tu período para ver la cuenta'), pie: null, color: 'texto' };
-  }
-}
 
 const colorDe = (p: Paleta, k: Cuenta['color']): ColorProp => ({ rosa: p.rosa, lila: p.lila, salvia: p.salvia, texto: p.texto })[k];
 

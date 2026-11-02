@@ -11,7 +11,9 @@ import { moodById, symptomById } from '../../content/catalogo';
 import { LOGROS, VACIOS, confianza } from '../../content/textos';
 import { painByCycleDay, pillAdherence, symptomWindows, topCounts, unlockedLogros } from '../../lib/cycle';
 import { diffDays, shortDate, today } from '../../lib/dates';
+import { ciclosVisibles } from '../../lib/plus';
 import { useStore } from '../../lib/store';
+import { tendenciaCiclos, textoTendencia } from '../../lib/tendencia';
 import { fonts, serif, useColors } from '../../lib/theme';
 import { Icono } from '../../components/Icono';
 
@@ -46,7 +48,10 @@ function Resumen() {
 
   const first = Object.keys(data.logs).sort()[0];
   const months = first ? Math.max(1, Math.round(diffDays(today(), first) / 30.4)) : 0;
-  const lastCycles = s.cycles.slice(-8);
+  // Savia+: tendencia de hasta 12 ciclos (el plan gratis, cuando se cobre, ve 3). Con pastilla no hay ciclo propio que seguir.
+  const tendencia = useMemo(() => tendenciaCiclos(s.cycles, ciclosVisibles()), [s.cycles]);
+  const lastCycles = tendencia?.ciclos ?? [];
+  const apretado = lastCycles.length > 8;
   const maxCycle = Math.max(35, ...lastCycles.map((x) => x.length));
   const painMax = Math.max(...pain.map((p) => p ?? 0));
   const painDays = pain.findLastIndex((p) => p != null) + 1;
@@ -92,15 +97,23 @@ function Resumen() {
       {lastCycles.length > 0 && (
         <Card>
           <Label>Duración de tus últimos ciclos</Label>
-          <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: 8, height: 150, paddingTop: 16 }}>
+          {tendencia && !data.settings.pillMode && <Muted>{textoTendencia(tendencia)}</Muted>}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-end', gap: apretado ? 4 : 8, height: 150, paddingTop: 16 }}>
             {lastCycles.map((cy) => (
               <View key={cy.start} style={{ flex: 1, alignItems: 'center', gap: 4 }}>
                 <Text style={{ fontSize: 11.5, color: c.text, fontFamily: fonts.bold }}>{cy.length}</Text>
                 <View style={{ width: '100%', maxWidth: 34, height: (cy.length / maxCycle) * 100, backgroundColor: c.rosa, borderRadius: 8 }} />
-                <Text style={{ fontSize: 10, color: c.muted, fontFamily: fonts.regular }}>{shortDate(cy.start)}</Text>
+                {!apretado && <Text style={{ fontSize: 10, color: c.muted, fontFamily: fonts.regular }}>{shortDate(cy.start)}</Text>}
               </View>
             ))}
           </View>
+          {/* Con muchas barras no entra una fecha debajo de cada una: va la primera y la última */}
+          {apretado && (
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+              <Text style={{ fontSize: 10, color: c.muted, fontFamily: fonts.regular }}>{shortDate(lastCycles[0].start)}</Text>
+              <Text style={{ fontSize: 10, color: c.muted, fontFamily: fonts.regular }}>{shortDate(lastCycles[lastCycles.length - 1].start)}</Text>
+            </View>
+          )}
         </Card>
       )}
 

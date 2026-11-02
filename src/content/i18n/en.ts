@@ -2436,6 +2436,19 @@ export const EN: Record<string, string> = {
   "No lo sé": "I don't know",
   "Pastilla de hoy": "Today's pill",
   "Ciclo con pastilla": "Cycle on the pill",
+  "Eliminar mi cuenta": "Delete my account",
+  "¿Eliminar tu cuenta?": "Delete your account?",
+  "Se borran tus registros en este teléfono y en la nube, lo que compartes con tu pareja y tu usuario de Savia. No se puede deshacer.": "Your logs on this phone and in the cloud, what you share with your partner and your Savia user will be deleted. This cannot be undone.",
+  "Eliminar": "Delete",
+  "Cuenta eliminada": "Account deleted",
+  "Borramos tu cuenta y todos tus datos.": "We deleted your account and all your data.",
+  "Tus datos se borraron": "Your data was deleted",
+  "No se pudo eliminar": "Could not delete",
+  "Revisa tu conexión y prueba de nuevo. No se borró nada.": "Check your connection and try again. Nothing was deleted.",
+  "Para que no pierdas nada si cambias o pierdes el teléfono, se guarda una copia en tu cuenta, en un servidor de Neon en Ohio, Estados Unidos.": "So you lose nothing if you change or lose your phone, a copy is kept in your account, on a Neon server in Ohio, United States.",
+  "Viaja cifrada y queda cifrada en el disco del servidor, y solo tu sesión puede leerla. No está cifrada con una clave tuya: si prefieres que nada salga de tu teléfono, usa Savia sin cuenta.": "It travels encrypted and is stored encrypted on the server disk, and only your session can read it. It is not encrypted with a key of your own: if you prefer nothing to leave your phone, use Savia without an account.",
+  "«Eliminar mi cuenta» borra además tu usuario (tu correo y contraseña).": "“Delete my account” also deletes your user (your email and password).",
+  "Si no puedes entrar a la app, escríbenos y borramos tu cuenta y tus datos en menos de 5 días hábiles.": "If you cannot sign in to the app, write to us and we will delete your account and data within 5 business days.",
 };
 
 export const EN_PATRONES: Record<string, string> = {
@@ -2711,4 +2724,5 @@ export const EN_PATRONES: Record<string, string> = {
   "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}. Se mantienen parecidos.": "In your last {0} cycles: {1} days on average, between {2} and {3}. They are staying about the same.",
   "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}.": "In your last {0} cycles: {1} days on average, between {2} and {3}.",
   "Empezaste el blíster el {0}": "You started the pack on {0}",
+  "No pudimos cerrar tu usuario automáticamente. Escríbenos a {0} y lo cerramos en menos de 5 días hábiles.": "We could not close your user automatically. Write to us at {0} and we will close it within 5 business days.",
 };

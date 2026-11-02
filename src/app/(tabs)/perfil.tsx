@@ -11,6 +11,7 @@ import { CONDICIONES } from '../../content/condiciones';
 import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../../content/etapas';
 import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
 import { NO_DISPOSITIVO } from '../../content/info';
+import { CORREO_RESULTADOS } from '../../content/pruebas';
 import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
 import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported, pedirAlarmasExactas } from '../../lib/notifications';
@@ -46,7 +47,7 @@ function LinkRow({ emoji, label, hint, to }: { emoji: string; label: string; hin
 
 export default function Perfil() {
   const c = useColors();
-  const { data, summary, updateSettings, replaceAll, resetAll, sync } = useStore();
+  const { data, summary, updateSettings, replaceAll, resetAll, borrarCuenta, sync } = useStore();
   const { session } = useAuth();
   const s = data.settings;
   const r = s.reminders;
@@ -470,6 +471,23 @@ export default function Perfil() {
       </Pressable>
 
       <Button kind="soft" label="Qué sale de tu teléfono" onPress={() => router.push('/privacidad-datos')} />
+      {session && (
+        <Button
+          kind="danger"
+          label="Eliminar mi cuenta"
+          onPress={async () => {
+            if (!(await confirm('¿Eliminar tu cuenta?', 'Se borran tus registros en este teléfono y en la nube, lo que compartes con tu pareja y tu usuario de Savia. No se puede deshacer.', 'Eliminar'))) return;
+            try {
+              const r = await borrarCuenta();
+              if (r === 'completo') notify('Cuenta eliminada', 'Borramos tu cuenta y todos tus datos.');
+              else notify('Tus datos se borraron', `No pudimos cerrar tu usuario automáticamente. Escríbenos a ${CORREO_RESULTADOS} y lo cerramos en menos de 5 días hábiles.`);
+              router.replace('/');
+            } catch {
+              notify('No se pudo eliminar', 'Revisa tu conexión y prueba de nuevo. No se borró nada.');
+            }
+          }}
+        />
+      )}
       <Button
         kind="danger"
         label="Borrar todos mis datos"

@@ -6,7 +6,7 @@ import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './blister';
 import { summarize, type Summary } from './cycle';
 import { actualizarWidgets } from '../widget/actualizarWidgets';
-import { dejarDeCompartir, deleteRemote, pullRemote, pushRemote, soltarPareja } from './nube';
+import { borrarUsuario, dejarDeCompartir, deleteRemote, pullRemote, pushRemote, signOut, soltarPareja } from './nube';
 import { addDays, today } from './dates';
 import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
 
@@ -168,6 +168,7 @@ interface Store {
   setMision: (m: { id: string; inicio: number } | null) => void;
   replaceAll: (data: AppData) => void;
   resetAll: () => void;
+  borrarCuenta: () => Promise<'completo' | 'falta-usuario'>;
   sync: SyncState;
 }
 
@@ -183,6 +184,8 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const [sync, setSync] = useState<SyncState>('local');
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mientras se elimina la cuenta no se guarda nada (si no, la copia vacía volvería a subirse a la nube)
+  const borrando = useRef(false);
   const fromLoad = useRef(true); // el primer cambio viene de cargar, no de la usuaria
   const key = userId ? `${KEY}:${userId}` : KEY;
   const stampKey = `${key}:updatedAt`;
@@ -235,7 +238,7 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const latest = useRef(data);
   latest.current = data;
   useEffect(() => {
-    if (!ready) return;
+    if (!ready || borrando.current) return;
     if (fromLoad.current) {
       fromLoad.current = false;
       return;
@@ -265,6 +268,7 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   useEffect(() => {
     if (!ready) return;
     const flush = () => {
+      if (borrando.current) return;
       AsyncStorage.setItem(key, JSON.stringify(latest.current)).catch(() => {});
     };
     // Al volver, se suman las pastillas marcadas desde la notificación ("Ya la tomé") mientras la app no estaba.
@@ -366,6 +370,28 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
     }
   }, [userId]);
 
+  // Eliminar la cuenta: primero los datos en la nube (necesitan la sesión para pasar las reglas RLS),
+  // después el usuario y por último la sesión. 'completo' o 'falta-usuario' (los datos sí se borraron).
+  const borrarCuenta = useCallback(async (): Promise<'completo' | 'falta-usuario'> => {
+    borrando.current = true;
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    try {
+      // Si falla borrar la copia en la nube (sin conexión), se corta acá: no se cierra la cuenta con datos adentro
+      if (userId) {
+        await deleteRemote(userId);
+        await dejarDeCompartir(userId).catch(() => {});
+        await soltarPareja().catch(() => {});
+      }
+      setData(emptyData());
+      await AsyncStorage.multiRemove([key, stampKey]).catch(() => {});
+      const ok = userId ? await borrarUsuario() : true;
+      await signOut().catch(() => {});
+      return ok ? 'completo' : 'falta-usuario';
+    } finally {
+      borrando.current = false;
+    }
+  }, [userId, key, stampKey]);
+
   // Solo en desarrollo web: permite cargar datos de prueba desde la consola.
   useEffect(() => {
     if (__DEV__ && Platform.OS === 'web') (window as unknown as Record<string, unknown>).__cicloReplace = replaceAll;
@@ -375,8 +401,8 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   const getLog = useCallback((date: ISODate) => data.logs[date] ?? emptyLog(date), [data.logs]);
 
   const value = useMemo(
-    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, setMision, replaceAll, resetAll, sync }),
-    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, replaceAll, resetAll, sync],
+    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, setMision, replaceAll, resetAll, borrarCuenta, sync }),
+    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, replaceAll, resetAll, borrarCuenta, sync],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

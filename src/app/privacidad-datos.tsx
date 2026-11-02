@@ -30,8 +30,8 @@ export default function PrivacidadDatos() {
 
       {nubeConfigurada && (
         <Bloque emoji="☁️" titulo="Una copia en tu cuenta">
-          <Body>Para que no pierdas nada si cambias o pierdes el teléfono, se guarda una copia en tu cuenta, en un servidor de Neon en Estados Unidos.</Body>
-          <Body>Solo tu sesión puede leerla. Hoy esa copia todavía no está cifrada con una clave tuya: lo estamos preparando.</Body>
+          <Body>Para que no pierdas nada si cambias o pierdes el teléfono, se guarda una copia en tu cuenta, en un servidor de Neon en Ohio, Estados Unidos.</Body>
+          <Body>Viaja cifrada y queda cifrada en el disco del servidor, y solo tu sesión puede leerla. No está cifrada con una clave tuya: si prefieres que nada salga de tu teléfono, usa Savia sin cuenta.</Body>
         </Bloque>
       )}
 
@@ -50,7 +50,8 @@ export default function PrivacidadDatos() {
         <Body>En Perfil, «Borrar todos mis datos» borra lo de este teléfono y, si tienes cuenta, la copia en la nube y lo que compartes con tu pareja.</Body>
         {nubeConfigurada && (
           <>
-            <Muted>Si además quieres cerrar la cuenta (tu correo y contraseña), escríbenos y la borramos.</Muted>
+            <Body>«Eliminar mi cuenta» borra además tu usuario (tu correo y contraseña).</Body>
+            <Muted>Si no puedes entrar a la app, escríbenos y borramos tu cuenta y tus datos en menos de 5 días hábiles.</Muted>
             <Button small kind="soft" label="Pedir que borren mi cuenta" onPress={() => Linking.openURL(`mailto:${CORREO_RESULTADOS}?subject=${encodeURIComponent('Savia: borrar mi cuenta')}`)} />
           </>
         )}

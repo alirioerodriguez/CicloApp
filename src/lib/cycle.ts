@@ -359,6 +359,8 @@ export function pillAdherence(data: AppData, days = 30, ref: ISODate = todayISO(
     const d = addDays(ref, -i);
     // Con blíster digital, los días de descanso no cuentan y las tomas salen del registro propio.
     if (b ? !tocaTomar(b, d) : pillStatus(data.settings, d)?.takesToday === false) continue;
+    // Antes de empezar a seguir el blíster en Savia no hay nada que contar
+    if (b?.desde && d < b.desde) continue;
     expected++;
     const toma = data.tomasPastilla[d];
     if (toma ? toma.estado !== 'olvidada' : data.logs[d]?.pillTaken) taken++;

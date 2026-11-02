@@ -16,6 +16,7 @@ import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported, pedirAlarmasExactas } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
 import { useStore } from '../../lib/store';
+import { ajustesDeEtapa, transicion, type Transicion } from '../../lib/transicion';
 import { signOut } from '../../lib/nube';
 import { radius, useColors } from '../../lib/theme';
 import type { Settings } from '../../lib/types';
@@ -49,21 +50,15 @@ export default function Perfil() {
   const { session } = useAuth();
   const s = data.settings;
   const r = s.reminders;
-  const [cambio, setCambio] = useState(false);
+  const [cambio, setCambio] = useState<Transicion | null>(null);
   const [etapaSel, setEtapaSel] = useState(s.etapa);
+  // Antes de guardar se cuenta qué va a cambiar (lib/transicion.ts); el historial nunca se borra.
+  const previa = transicion(s, etapaSel);
 
   // La etapa se cambia solo al tocar Guardar: suele durar mucho tiempo y no se debe mover por un toque.
   const guardarEtapa = () => {
-    const etapa = etapaSel;
-    const conCond = s.condiciones.some((x) => CONDICIONES_ESPECIAL.some((k) => k.id === x));
-    if (etapa === 'especial' && !conCond) updateSettings({ etapa, condiciones: [...s.condiciones, 'sop'] });
-    // Buscando un embarazo o en menopausia no se usa anticonceptivo.
-    else if (etapa === 'ttc' || etapa === 'meno') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false });
-    // Sin fecha probable de parto, se empieza en la semana 12 y se ajusta abajo.
-    else if (etapa === 'embarazo') updateSettings({ etapa, anticonceptivo: 'ninguno', pillMode: false, embarazo: s.embarazo.fpp ? s.embarazo : { fpp: fppDesdeSemanas(12) } });
-    else if (etapa === 'posparto' && !s.posparto.nacimiento) updateSettings({ etapa, posparto: { ...s.posparto, nacimiento: today() } });
-    else updateSettings({ etapa });
-    setCambio(true);
+    updateSettings(ajustesDeEtapa(s, etapaSel, today()));
+    setCambio(previa);
   };
 
   const setReminders = (patch: Partial<Settings['reminders']>) => updateSettings({ reminders: { ...r, ...patch } });
@@ -99,9 +94,19 @@ export default function Perfil() {
           value={etapaSel}
           onChange={(etapa) => {
             setEtapaSel(etapa);
-            setCambio(false);
+            setCambio(null);
           }}
         />
+        {etapaSel !== s.etapa && (
+          <View style={{ gap: 4 }}>
+            {previa.cambios.map((x) => (
+              <Body key={x} style={{ fontSize: 14.5 }}>• {t(x)}</Body>
+            ))}
+            {previa.ofrecerPerdida && (
+              <Button small kind="ghost" label="¿Fue una pérdida? Te acompañamos con más cuidado" onPress={() => router.push('/cambio')} />
+            )}
+          </View>
+        )}
         {etapaSel !== s.etapa && (
           <View style={{ flexDirection: 'row', gap: 8 }}>
             <View style={{ flex: 1 }}>
@@ -111,6 +116,9 @@ export default function Perfil() {
           </View>
         )}
         {cambio && etapaSel === s.etapa && <Body style={{ color: c.salviaTexto, fontWeight: '600' }}>✓ Guardado. {CAMBIO_ETAPA}</Body>}
+        {cambio?.registrarPeriodo && etapaSel === s.etapa && (
+          <Button small kind="soft" label="Registrar cuándo me vino el período" onPress={() => router.push('/calendario')} />
+        )}
         {s.silencioEmbarazo && (
           <Toggle
             label="Avisos del embarazo en pausa"

@@ -86,6 +86,8 @@ export interface BlisterConfig {
   inicio: ISODate; // día 1 del blíster actual; los siguientes arrancan solos al terminar
   hora: string; // 'HH:MM', toma diaria
   tipoPastilla: TipoPastilla;
+  // Día en que Savia empezó a seguir este blíster: los días de antes no tienen registro y no cuentan como olvido.
+  desde?: ISODate;
   // Solo para 'personalizado': activas + inactivas, y si las inactivas son placebo o descanso.
   activas?: number;
   inactivas?: number;

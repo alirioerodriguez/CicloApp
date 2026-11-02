@@ -2410,7 +2410,32 @@ export const EN: Record<string, string> = {
   "Está con su período.": "She's on her period.",
   "La": "The",
   "sin dato": "no data",
-  "Su": "Her"
+  "Su": "Her",
+  // Cambio de etapa en Perfil
+  "Tu historial queda guardado: no se borra nada.": "Your history stays saved: nothing is deleted.",
+  "Dejamos de predecir tu período y de avisarte atrasos.": "We stop predicting your period and alerting you about delays.",
+  "Vuelve la predicción del período: se va ajustando con lo que registres.": "Period prediction is back: it adjusts as you log.",
+  "Apagamos los recordatorios de la pastilla y del blíster.": "We turn off the pill and pack reminders.",
+  "Empezamos en la semana 12; la ajustas en tu modo embarazo.": "We start at week 12; you can adjust it in your pregnancy mode.",
+  "Te acompañamos en tu recuperación y la lactancia.": "We support you through your recovery and breastfeeding.",
+  "Registras calorones, sueño y ánimo en vez del ciclo.": "You log hot flashes, sleep and mood instead of your cycle.",
+  "Te mostramos tus días fértiles y las señales para buscar embarazo.": "We show your fertile days and the signs for trying to conceive.",
+  "Apagamos las alertas de atraso y aceptamos ciclos largos. Puedes elegir tu condición abajo.": "We turn off delay alerts and accept long cycles. You can choose your condition below.",
+  "¿Fue una pérdida? Te acompañamos con más cuidado": "Was it a loss? We will be with you, gently",
+  "Registrar cuándo me vino el período": "Log when my period came",
+  // Bienvenida: entrada doble y blíster en dos datos
+  "¿Qué quieres llevar en Savia?": "What do you want to track in Savia?",
+  "Llevo mi ciclo": "I track my cycle",
+  "Tu período, tus fases y tus síntomas": "Your period, your phases and your symptoms",
+  "Tu blíster, el recordatorio y tu descanso": "Your pack, your reminder and your break",
+  "Estoy en otra etapa: embarazo, posparto, menopausia, buscando embarazo o ciclo especial": "I am in another stage: pregnancy, postpartum, menopause, trying to conceive or a special cycle",
+  "Tu pastilla": "Your pill",
+  "¿Qué número de pastilla te toca hoy?": "Which pill number are you on today?",
+  "Míralo en el blíster. Así sabemos cuándo es tu descanso. Si no lo sabes, lo configuras después.": "Check your pack. This tells us when your break is. If you are not sure, you can set it up later.",
+  "Empiezo un blíster hoy": "I start a new pack today",
+  "No lo sé": "I don't know",
+  "Pastilla de hoy": "Today's pill",
+  "Ciclo con pastilla": "Cycle on the pill",
 };
 
 export const EN_PATRONES: Record<string, string> = {
@@ -2680,4 +2705,10 @@ export const EN_PATRONES: Record<string, string> = {
   "Conversada": "Discussed",
   "Quitar las ya conversadas": "Remove the ones already discussed",
   "MIS PREGUNTAS": "MY QUESTIONS",
+  // Tendencia de los ciclos (Estadísticas)
+  "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}. Últimamente se vienen alargando (de unos {4} a {5} días).": "In your last {0} cycles: {1} days on average, between {2} and {3}. Lately they have been getting longer (from about {4} to {5} days).",
+  "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}. Últimamente se vienen acortando (de unos {4} a {5} días).": "In your last {0} cycles: {1} days on average, between {2} and {3}. Lately they have been getting shorter (from about {4} to {5} days).",
+  "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}. Se mantienen parecidos.": "In your last {0} cycles: {1} days on average, between {2} and {3}. They are staying about the same.",
+  "En tus últimos {0} ciclos: {1} días en promedio, entre {2} y {3}.": "In your last {0} cycles: {1} days on average, between {2} and {3}.",
+  "Empezaste el blíster el {0}": "You started the pack on {0}",
 };

@@ -2,7 +2,7 @@
 import { describe, expect, jest, test } from '@jest/globals';
 import { clasificarToma, configDesdePillType, pillTypeDesdeBlister, diaDelBlister, encabezado, estadoDelDia, migrarBlister, tocaTomar } from '../src/lib/blister';
 import { calendarMarks, pillAdherence, summarize } from '../src/lib/cycle';
-import { proximaPausa } from '../src/lib/blister';
+import { normalizarBlister, proximaPausa } from '../src/lib/blister';
 import { emptyData, emptyLog, normalize } from '../src/lib/store';
 import type { BlisterConfig } from '../src/lib/types';
 
@@ -152,5 +152,22 @@ describe('Migración sin perder datos', () => {
     const datosSucios = normalize({ settings: {}, logs: {}, blister: { tipo: 'raro', inicio: 'ayer' }, tomasPastilla: { nofecha: {} } });
     expect(datosSucios.blister).toBeNull();
     expect(datosSucios.tomasPastilla).toEqual({});
+  });
+});
+
+describe('Blíster seguido desde hoy (alta con «pastilla de hoy»)', () => {
+  test('los días antes de empezar a usar Savia no cuentan como olvido', () => {
+    const c = { tipo: '21-7' as const, inicio: '2026-10-20', hora: '21:00', tipoPastilla: 'combinada' as const, desde: '2026-11-02' };
+    expect(estadoDelDia(c, {}, '2026-10-25', '2026-11-02')).toBe('previa');
+    expect(estadoDelDia(c, {}, '2026-11-02', '2026-11-02')).toBe('pendiente');
+    expect(estadoDelDia(c, {}, '2026-11-03', '2026-11-04')).toBe('olvidada');
+  });
+  test('sin «desde» (blísteres de antes) sigue igual', () => {
+    const c = { tipo: '21-7' as const, inicio: '2026-10-20', hora: '21:00', tipoPastilla: 'combinada' as const };
+    expect(estadoDelDia(c, {}, '2026-10-25', '2026-11-02')).toBe('olvidada');
+  });
+  test('«desde» se conserva al normalizar', () => {
+    expect(normalizarBlister({ tipo: '21-7', inicio: '2026-10-20', hora: '21:00', desde: '2026-11-02' })?.desde).toBe('2026-11-02');
+    expect(normalizarBlister({ tipo: '21-7', inicio: '2026-10-20', hora: '21:00', desde: 'ayer' })?.desde).toBeUndefined();
   });
 });

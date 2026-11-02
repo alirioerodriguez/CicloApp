@@ -12,7 +12,7 @@ export function EtapaChip() {
   const c = useColors();
   const { session } = useAuth();
   const { data } = useStore();
-  const x = textoEtapa(data.settings.etapa, !!session);
+  const x = textoEtapa(data.settings.etapa, !!session, data.settings.pillMode);
   const texto = `${x.emoji} ${t('Etapa')}: ${t(x.etapa)} · ${t(x.datos)}`;
   return (
     <Pressable

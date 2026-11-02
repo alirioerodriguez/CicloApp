@@ -1,7 +1,7 @@
 // Bienvenida: los pasos de cada camino y el modo con el que arranca la app (que no empiece en Ciclo tras elegir Pastilla).
 import { describe, expect, jest, test } from '@jest/globals';
 import { summarize } from '../src/lib/cycle';
-import { anticonceptivoFinal, flujoOnboarding, modoInicial, type RespuestasOnboarding } from '../src/lib/onboarding';
+import { anticonceptivoFinal, entradaElegida, flujoOnboarding, inicioDesdePastillaDeHoy, modoInicial, type RespuestasOnboarding } from '../src/lib/onboarding';
 import { DEFAULT_SETTINGS, emptyData, normalize, seedFirstPeriod } from '../src/lib/store';
 
 jest.mock('expo-localization', () => ({ getLocales: () => [{ languageCode: 'es', regionCode: 'VE' }] }));
@@ -80,5 +80,38 @@ describe('Modo con el que arranca la app', () => {
     const pastilla = conRegistro('pastilla');
     expect([pastilla.fertileStart, pastilla.fertileEnd, pastilla.ovulation]).toEqual([null, null, null]);
     expect(conRegistro('ninguno').fertileStart).not.toBeNull();
+  });
+});
+
+describe('Entrada doble: Llevo mi ciclo / Tomo pastilla', () => {
+  test('eligió «Llevo mi ciclo» al entrar: no se repite la pregunta de la pastilla', () => {
+    expect(flujoOnboarding('ciclo', 'ninguno', true)).toEqual(['bienvenida', 'cuenta', 'periodo', 'duracion', 'listo']);
+  });
+
+  test('eligió «Tomo pastilla» al entrar: queda el paso para armar el blíster', () => {
+    expect(flujoOnboarding('ciclo', 'pastilla', true)).toEqual(['bienvenida', 'cuenta', 'pastilla', 'listo']);
+  });
+
+  test('si contestó «No» en el paso de la pastilla, ese paso no desaparece debajo de ella', () => {
+    expect(flujoOnboarding('ciclo', 'ninguno', false)).toContain('pastilla');
+  });
+
+  test('qué tarjeta queda marcada', () => {
+    expect(entradaElegida('ciclo', 'pastilla')).toBe('pastilla');
+    expect(entradaElegida('ciclo', 'ninguno')).toBe('ciclo');
+    expect(entradaElegida('ciclo', null)).toBeNull();
+    expect(entradaElegida('embarazo', 'ninguno')).toBeNull();
+  });
+});
+
+describe('Blíster en dos datos', () => {
+  test('la pastilla de hoy da el inicio del blíster', () => {
+    expect(inicioDesdePastillaDeHoy(1, '2026-11-02')).toBe('2026-11-02');
+    expect(inicioDesdePastillaDeHoy(14, '2026-11-02')).toBe('2026-10-20');
+  });
+
+  test('si no lo sabe, queda sin configurar', () => {
+    expect(inicioDesdePastillaDeHoy(null, '2026-11-02')).toBeNull();
+    expect(inicioDesdePastillaDeHoy(0, '2026-11-02')).toBeNull();
   });
 });

@@ -21,6 +21,7 @@ const ETIQUETA: Record<EstadoDia, string> = {
   pendiente: 'pendiente',
   futura: 'por tomar',
   descanso: 'descanso',
+  previa: 'antes de usar Savia',
 };
 
 function Alveolo({ fecha, numero, estado, placebo, hoy, seleccionado, onPress }: {

@@ -150,7 +150,8 @@ export function BlisterAjustes() {
   const hoy = today();
 
   const guardar = (config: BlisterConfig, nombre: string) => {
-    guardarBlister(config);
+    // Un blíster nuevo empieza a seguirse hoy; uno que ya existía conserva su fecha
+    guardarBlister(b ? { ...config, desde: b.desde } : { ...config, desde: hoy });
     // Lo que todavía leen recordatorios, PDF y estadísticas queda en sincronía con el blíster nuevo.
     const [h, m] = config.hora.split(':').map(Number);
     updateSettings({

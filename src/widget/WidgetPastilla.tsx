@@ -4,6 +4,7 @@
 import { FlexWidget, TextWidget, type ColorProp, type WidgetRepresentation } from 'react-native-android-widget';
 import { t } from '../lib/region';
 import type { DiaWidget, ResumenWidget } from './datosWidget';
+import { estadoPastilla as estadoHoy, tituloPastilla as titulo } from './textos';
 
 export const WIDGET_CHICO = 'PastillaChico';
 export const WIDGET_SEMANA = 'PastillaSemana';
@@ -34,26 +35,6 @@ export const OSCURA: Paleta = {
   fondo: '#231A21', texto: '#F6EEF1', suave: '#B9A8B2', rosa: '#F0A3C4', rosaSuave: '#4A2A3A', lila: '#BDB3F5', lilaSuave: '#352F52',
   salvia: '#A8D4B4', salviaSuave: '#24382B', durazno: '#F6C58F', duraznoSuave: '#46331F', linea: '#3A2E36', boton: '#F0A3C4', botonTexto: '#231A21',
 };
-
-function titulo(r: Extract<ResumenWidget, { activo: true }>): string {
-  const quien = r.tipo === 'activa' ? 'Pastilla' : r.tipo === 'placebo' ? 'Placebo' : 'Descanso';
-  return `${t(quien)} ${r.n}/${r.de}`;
-}
-
-function estadoHoy(r: Extract<ResumenWidget, { activo: true }>): string {
-  switch (r.estadoHoy) {
-    case 'tomada':
-      return t(`Tomada a las ${r.horaToma ?? ''}`).trim();
-    case 'tarde':
-      return t(`Tomada tarde a las ${r.horaToma ?? ''}`).trim();
-    case 'olvidada':
-      return t('Marcada como olvidada');
-    case 'descanso':
-      return t('Hoy no te toca pastilla.');
-    default:
-      return t(`Hoy a las ${r.hora}`);
-  }
-}
 
 // Botón de check: solo si hoy toca y aún no se marcó. Si ya se marcó, un check verde fijo.
 function Check({ r, p, grande }: { r: Extract<ResumenWidget, { activo: true }>; p: Paleta; grande?: boolean }) {

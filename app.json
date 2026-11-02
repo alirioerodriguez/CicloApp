@@ -151,6 +151,27 @@
             "enableShrinkResourcesInReleaseBuilds": false
           }
         }
+      ],
+      [
+        "expo-widgets",
+        {
+          "widgets": [
+            {
+              "name": "SaviaPeriodo",
+              "displayName": "Tu próximo período",
+              "description": "Cuántos días faltan para tu período",
+              "ios": { "supportedFamilies": ["systemSmall", "systemMedium"], "initialLayout": "./src/widget/ios/SaviaPeriodo.tsx" },
+              "android": null
+            },
+            {
+              "name": "SaviaPastilla",
+              "displayName": "Tu pastilla de hoy",
+              "description": "Qué pastilla del blíster te toca y si ya la tomaste",
+              "ios": { "supportedFamilies": ["systemSmall"], "initialLayout": "./src/widget/ios/SaviaPastilla.tsx" },
+              "android": null
+            }
+          ]
+        }
       ]
     ],
     "experiments": {

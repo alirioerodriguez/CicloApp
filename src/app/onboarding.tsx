@@ -12,7 +12,8 @@ import { Body, Button, Card, Chip, Label, Muted, Row, Screen, Stepper, Toggle } 
 import { ETAPAS_MENO } from '../content/menopausia';
 import { SEMANA_MAX, SEMANA_MIN, bebe, fppDesdeSemanas, semanasEmbarazo } from '../content/embarazo';
 import { ALIMENTACIONES, PARTOS, nacimientoHace, semanasPosparto } from '../content/posparto';
-import { REGULARIDAD, conRegularidad, type Regularidad } from '../lib/regularidad';
+import { REGULARIDAD, type Regularidad } from '../lib/regularidad';
+import { anticonceptivoFinal, flujoOnboarding, modoInicial } from '../lib/onboarding';
 import { ANTICONCEPTIVOS, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOTA_HORMONAL, SENALES_TTC, SIN_OVULACION, TEXTO_TTC } from '../content/etapas';
 import { AVISO_ANTICONCEPTIVO } from '../content/textos';
 import { longDate, timeLabel, today } from '../lib/dates';
@@ -23,17 +24,6 @@ import { fonts, radius, serif, useColors } from '../lib/theme';
 import type { Anticonceptivo, Condicion, Etapa, EtapaMeno, ISODate, PillType, Posparto, SenalTtc } from '../lib/types';
 import { Icono } from '../components/Icono';
 import { t } from '../lib/region';
-
-type Paso = 'bienvenida' | 'cuenta' | 'periodo' | 'duracion' | 'pastilla' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno' | 'listo';
-
-const FLUJOS: Record<'ciclo' | 'especial' | 'ttc' | 'embarazo' | 'posparto' | 'meno', Paso[]> = {
-  ciclo: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'pastilla', 'listo'],
-  especial: ['bienvenida', 'cuenta', 'periodo', 'especial', 'listo'],
-  ttc: ['bienvenida', 'cuenta', 'periodo', 'duracion', 'ttc', 'listo'],
-  embarazo: ['bienvenida', 'cuenta', 'embarazo', 'listo'],
-  posparto: ['bienvenida', 'cuenta', 'posparto', 'listo'],
-  meno: ['bienvenida', 'cuenta', 'meno', 'listo'],
-};
 
 export default function Onboarding() {
   const c = useColors();
@@ -61,48 +51,29 @@ export default function Onboarding() {
   const [parto, setParto] = useState<Posparto['parto']>(s0.posparto.parto);
   const [alimentacion, setAlimentacion] = useState<Posparto['alimentacion']>(s0.posparto.alimentacion);
 
-  const flujo = FLUJOS[etapa];
+  // Con pastilla se saltan el último período y la duración del ciclo (ver lib/onboarding.ts)
+  const flujo = flujoOnboarding(etapa, anti);
   const meno = etapa === 'meno';
   const posparto = etapa === 'posparto';
   const embarazada = etapa === 'embarazo';
   const paso = flujo[Math.min(i, flujo.length - 1)];
-  // Buscando un embarazo no se usa anticonceptivo.
-  const antiFinal: Anticonceptivo = etapa === 'ttc' || embarazada || meno ? 'ninguno' : anti ?? 'ninguno';
-  const pastilla = antiFinal === 'pastilla';
+  const pastilla = anticonceptivoFinal(etapa, anti) === 'pastilla';
 
   const input = { borderRadius: radius.md, backgroundColor: c.bg, borderWidth: 1, borderColor: c.line, padding: 14, fontSize: 17, color: c.text, fontFamily: fonts.regular };
 
   const finish = async () => {
     const granted = notificationsSupported ? await ensurePermission().catch(() => false) : false;
-    const condFinal = etapa === 'especial' ? condiciones : conRegularidad(condiciones.filter((x) => !CONDICIONES_ESPECIAL.some((k) => k.id === x)), etapa === 'ciclo' || etapa === 'ttc' ? regularidad : null);
     replaceAll({
       ...data,
       // Con pastilla, el blíster digital se arma de nuevo desde estos ajustes al normalizar.
       blister: pastilla ? null : data.blister,
       settings: {
         ...s0,
-        onboarded: true,
-        name: name.trim(),
-        edad,
-        etapa,
-        anticonceptivo: antiFinal,
-        condiciones: condFinal,
+        ...modoInicial(s0, { name, edad, etapa, anti, condiciones, regularidad, cycleLength, periodLength, pillName, pillType, packStart, pillHour }, granted),
         ttcRegistro: ttc,
         posparto: posparto ? { nacimiento: nacimientoHace(ppSemanas), parto, alimentacion } : s0.posparto,
         embarazo: embarazada ? { fpp: fppDesdeSemanas(semanasEmb) } : s0.embarazo,
         meno: meno ? { ...s0.meno, etapa: menoEtapa, trh } : s0.meno,
-        cycleLength: etapa === 'especial' ? 35 : cycleLength,
-        periodLength,
-        pillMode: pastilla,
-        pillName: pillName.trim(),
-        pillType,
-        pillPackStart: pastilla ? packStart : null,
-        reminders: {
-          ...s0.reminders,
-          pill: { on: pastilla && granted, hour: pillHour, minute: 0 },
-          period: { ...s0.reminders.period, on: granted && etapa !== 'especial' && !posparto && !embarazada && !meno },
-          pack: { ...s0.reminders.pack, on: pastilla && granted },
-        },
       },
       logs: lastStart ? seedFirstPeriod(data.logs, lastStart, periodLength) : data.logs,
     });

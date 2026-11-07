@@ -50,13 +50,13 @@ describe('guía de batería', () => {
 describe('auditoría para las tiendas', () => {
   // Frases que presentan la app como anticonceptivo. El aviso «no sirve como método anticonceptivo» sí está permitido.
   const PROHIBIDAS = [/d[ií]as seguros/i, /anticonceptivo natural/i, /m[ée]todo anticonceptivo digital/i, /previene el embarazo/i];
-  const carpetas = ['src/content', 'src/app', 'src/lib'];
+  const carpetas = ['src/content', 'src/app', 'src/lib', 'public'];
 
   function archivos(dir: string): string[] {
     return fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => {
       const p = path.join(dir, e.name);
       if (e.isDirectory()) return e.name === 'i18n' ? [] : archivos(p);
-      return /\.tsx?$/.test(e.name) ? [p] : [];
+      return /\.(tsx?|html)$/.test(e.name) ? [p] : [];
     });
   }
 

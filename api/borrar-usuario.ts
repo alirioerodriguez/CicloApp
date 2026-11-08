@@ -2,7 +2,7 @@
 // Función de Vercel: POST /api/borrar-usuario con «Authorization: Bearer <token de la sesión>».
 // Borra el usuario de Neon Auth de la persona que llama. Ver api/_borrar-usuario.ts.
 // El token se verifica con node:crypto (Ed25519, la llave pública de Neon Auth), sin dependencias.
-import { createPublicKey, verify, type JsonWebKey, type KeyObject } from 'node:crypto';
+import { createPublicKey, verify, type KeyObject } from 'node:crypto';
 import { JWKS_URL, borrarUsuario } from './_borrar-usuario';
 
 let llaves: { cuando: number; porKid: Map<string, KeyObject> } | null = null;
@@ -11,8 +11,8 @@ async function llave(kid: string): Promise<KeyObject> {
   if (!llaves || Date.now() - llaves.cuando > 10 * 60 * 1000 || !llaves.porKid.has(kid)) {
     const r = await fetch(JWKS_URL);
     if (!r.ok) throw new Error('jwks');
-    const { keys } = (await r.json()) as { keys: (JsonWebKey & { kid?: string })[] };
-    llaves = { cuando: Date.now(), porKid: new Map(keys.filter((k) => k.kid).map((k) => [k.kid as string, createPublicKey({ key: k, format: 'jwk' })])) };
+    const { keys } = (await r.json()) as { keys: { kid?: string; [campo: string]: unknown }[] };
+    llaves = { cuando: Date.now(), porKid: new Map(keys.filter((k) => k.kid).map((k) => [k.kid as string, createPublicKey({ key: k, format: 'jwk' } as never)])) };
   }
   const k = llaves.porKid.get(kid);
   if (!k) throw new Error('kid');

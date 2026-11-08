@@ -54,7 +54,7 @@ No declarar «cifrado de extremo a extremo»: el respaldo con clave propia qued�
 
 ## 4. Antes de enviar
 
-- **Borrado de cuenta:** «Eliminar mi cuenta» tiene que borrar también el usuario de Neon Auth. Para eso hay que habilitar el borrado de usuarios en la consola de Neon; si no, la política promete algo que no pasa.
+- **Borrado de cuenta:** «Eliminar mi cuenta» borra los datos en el momento y prueba cerrar el usuario con `delete-user` de Neon Auth. Neon no tiene una opción para habilitarlo (revisado el 08/11/2026: el endpoint existe, pero solo se puede comprobar con una sesión real). Si falla, la app pide escribir por mail y el usuario se borra a mano desde Neon en menos de 5 días hábiles. Las páginas públicas ya lo dicen así. Para que sea automático siempre, haría falta una función del servidor con una clave de la API de Neon.
 - **Recompilar el paquete** con `compilar-savia.ps1` después de unir estos cambios. El paquete del 31/10 pide todavía el permiso que se sacó.
 - **Probar en un Android real** que «Reloj y apps de salud» pide los 8 permisos y muestra los datos.
 

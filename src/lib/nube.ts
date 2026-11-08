@@ -110,11 +110,22 @@ export async function pushRemote(userId: string, payload: unknown, updatedAt: st
   if (error) throw error;
 }
 
-// Cierra la cuenta (Neon Auth / Better Auth `delete-user`). Necesita estar habilitado en la consola de Neon
-// (Auth → borrar usuarios). Devuelve false si el servidor no lo permite: los datos ya se borraron antes y
-// la usuaria puede pedir el cierre por correo.
+// Cierra la cuenta. Primero con la función de la web (api/borrar-usuario), que borra el usuario con la API
+// de Neon; si no está configurada, prueba `delete-user` de Neon Auth. Devuelve false si ninguna pudo: los
+// datos ya se borraron antes y la usuaria puede pedir el cierre por correo.
 export async function borrarUsuario(): Promise<boolean> {
   if (!neon) return false;
+  try {
+    const { data } = await neon.auth.getSession();
+    const token = (data.session as { access_token?: string } | null)?.access_token;
+    if (token) {
+      const base = Platform.OS === 'web' ? '' : WEB;
+      const r = await fetch(`${base}/api/borrar-usuario`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      if (r.ok) return true;
+    }
+  } catch {
+    // Sin conexión o sin la función: se prueba lo de Neon Auth.
+  }
   try {
     const ba = (neon.auth as unknown as { getBetterAuthInstance(): { deleteUser(o?: object): Promise<{ error?: { message?: string } | null } | null> } }).getBetterAuthInstance();
     const r = await ba.deleteUser({});

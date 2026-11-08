@@ -53,6 +53,7 @@ export const DEFAULT_SETTINGS: Settings = {
   tono: 'rosa',
   modo: 'auto',
   signo: null,
+  metodo: null,
 };
 
 export const emptyData = (): AppData => ({

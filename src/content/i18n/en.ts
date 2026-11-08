@@ -3,6 +3,27 @@
 // Los patrones usan {0}, {1}… para las partes que cambian.
 
 export const EN: Record<string, string> = {
+  "Uso anillo, parche o inyección": "I use a ring, patch or shot",
+  "Te avisa cuándo sacar, poner o cambiar, y cuándo toca la inyección": "Reminds you when to remove, insert or change it, and when your shot is due",
+  "Inyección mensual": "Monthly shot",
+  "Inyección trimestral": "3-month shot",
+  "¿Hace cuántos días te pusiste el anillo actual?": "How many days ago did you insert your current ring?",
+  "¿Hace cuántos días te pusiste el primer parche de este ciclo?": "How many days ago did you put on this cycle's first patch?",
+  "¿Hace cuántos días fue tu última inyección?": "How many days ago was your last shot?",
+  "Hora del aviso": "Reminder time",
+  "Cuentas del esquema habitual del prospecto (NHS y OMS). Si tu médica te indicó otro, sigue el suyo.": "Based on the usual leaflet schedule (NHS and WHO). If your doctor gave you a different one, follow theirs.",
+  "Editar": "Edit",
+  "Sin permiso para avisarte": "No permission to remind you",
+  "Activa las notificaciones de Savia en los ajustes del teléfono para recibir el recordatorio.": "Turn on Savia notifications in your phone settings to get the reminder.",
+  "Tu método": "Your method",
+  "Toca la inyección": "Your shot is due",
+  "Sacar el anillo": "Remove the ring",
+  "Poner un anillo nuevo": "Insert a new ring",
+  "Cambiar el parche": "Change the patch",
+  "Sacar el parche (semana sin parche)": "Remove the patch (patch-free week)",
+  "Poner un parche nuevo": "Put on a new patch",
+  "Que el aviso de la pastilla suene a horario": "Make sure the pill reminder rings on time",
+  "Abrir los ajustes de Savia": "Open Savia settings",
   "Antiinflamatorio": "Anti-inflammatory",
   "Folicular": "Follicular",
   "Ovulatoria": "Ovulatory",
@@ -2452,6 +2473,9 @@ export const EN: Record<string, string> = {
 };
 
 export const EN_PATRONES: Record<string, string> = {
+  "El {0}": "On {0}",
+  "Aviso a las {0}:00.": "Reminder at {0}:00.",
+  "Algunos teléfonos cierran las apps para ahorrar batería y el aviso no suena. Para que no pase en tu {0}:": "Some phones close apps to save battery and the reminder doesn't ring. To prevent it on your {0}:",
   "{0} sueños": "{0} dreams",
   "{0} sueño": "{0} dream",
   "· {0} sin marcar": "· {0} not marked",

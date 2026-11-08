@@ -26,6 +26,7 @@ import { t } from '../../lib/region';
 import { SelectorRegion } from '../../components/ElegirPais';
 import { AnimoEnPdf } from '../../components/AnimoEnPdf';
 import { BlisterAjustes } from '../../components/BlisterAjustes';
+import { MetodoAjustes } from '../../components/MetodoAjustes';
 
 const WATER_HOURS = [8, 10, 12, 14, 16, 18, 20];
 
@@ -271,6 +272,8 @@ export default function Perfil() {
 
       <Card>
         <BlisterAjustes />
+        <Divider />
+        <MetodoAjustes />
       </Card>
           </>
         }

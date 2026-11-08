@@ -119,6 +119,14 @@ export type Anticonceptivo = 'ninguno' | 'pastilla' | 'diu_hormonal' | 'diu_cobr
 export type SenalTtc = 'moco' | 'temp' | 'lh' | 'relacion';
 export type Moco = 'seco' | 'pegajoso' | 'cremoso' | 'elastico';
 
+// Recordatorio de anillo, parche o inyección (ver lib/metodosCalendario).
+export interface MetodoAviso {
+  tipo: 'anillo' | 'parche' | 'inyeccion_mensual' | 'inyeccion_trimestral';
+  inicio: ISODate; // cuando se puso el anillo o el primer parche, o la última inyección
+  on: boolean;
+  hour: number;
+}
+
 export interface Settings {
   onboarded: boolean;
   tutorialVisto: boolean;
@@ -159,6 +167,7 @@ export interface Settings {
   tono: TonoId;
   modo: Modo;
   signo: string | null; // diario de sueños (solo por diversión)
+  metodo: MetodoAviso | null;
 }
 
 export interface Dream {

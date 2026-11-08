@@ -1,7 +1,7 @@
 // Ajustes del blíster digital (Perfil): al activar la pastilla se pide tipo de blíster, fecha de inicio y hora.
 // Si ya está activo, se ve un resumen y se puede editar. Con la pastilla apagada, el blíster no aparece en ningún lado.
 import { useState, type ReactNode } from 'react';
-import { TextInput, View } from 'react-native';
+import { Linking, Platform, TextInput, View } from 'react-native';
 import { MARCAS } from '../content/pastillas';
 import { ESQUEMAS, configDesdePillType, diaDelBlister, encabezado, esquema, pillTypeDesdeBlister } from '../lib/blister';
 import { PILL_PACKS } from '../lib/cycle';
@@ -11,6 +11,8 @@ import { useStore } from '../lib/store';
 import { radius, useColors } from '../lib/theme';
 import type { BlisterConfig, TipoBlister, TipoPastilla } from '../lib/types';
 import { MonthGrid } from './MonthGrid';
+import { guiaBateria, marcaAndroid } from '../lib/bateriaAndroid';
+import { pedirAlarmasExactas } from '../lib/notifications';
 import { Body, Button, Chip, Divider, Label, Muted, Row, Stepper, Toggle } from './ui';
 
 // Orden fijo: con Object.keys, "28" saldría primero por ser una clave numérica.
@@ -196,6 +198,7 @@ export function BlisterAjustes() {
               </Muted>
               <Muted>{t(PILL_PACKS[pillTypeDesdeBlister(b)].sangrado)}</Muted>
               <Button small kind="soft" label="Editar blíster" onPress={() => setEditando(true)} />
+              <GuiaBateriaAndroid />
             </>
           )}
       {s.pillMode && !b && !editando && (
@@ -213,4 +216,28 @@ function resumen(b: BlisterConfig, hoy: string): string {
   const h = encabezado(b, hoy);
   const quien = h.tipo === 'activa' ? 'Pastilla' : h.tipo === 'placebo' ? 'Placebo' : 'Descanso';
   return `${t(`${quien} ${h.n} de ${h.de}`)} · ${t(`el próximo blíster empieza el ${shortDate(diaDelBlister(b, hoy).siguienteInicio)}`)}`;
+}
+
+// Android: los fabricantes cierran apps para ahorrar batería y el aviso de la pastilla puede no sonar.
+// Pasos por marca (lib/bateriaAndroid, según dontkillmyapp.com) y acceso directo a los ajustes de Savia.
+function GuiaBateriaAndroid() {
+  const [abierta, setAbierta] = useState(false);
+  if (Platform.OS !== 'android') return null;
+  const fabricante = (Platform.constants as { Manufacturer?: string; Brand?: string }).Manufacturer ?? (Platform.constants as { Brand?: string }).Brand;
+  const guia = guiaBateria(marcaAndroid(fabricante));
+  return (
+    <>
+      <Divider />
+      <Toggle label="Que el aviso de la pastilla suene a horario" value={abierta} onChange={setAbierta} />
+      {abierta && (
+        <>
+          <Muted>{t(`Algunos teléfonos cierran las apps para ahorrar batería y el aviso no suena. Para que no pase en tu ${guia.nombre}:`)}</Muted>
+          {guia.pasos.map((paso, i) => (
+            <Body key={i}>{`${i + 1}. ${t(paso)}`}</Body>
+          ))}
+          <Button small kind="soft" label="Abrir los ajustes de Savia" onPress={() => { pedirAlarmasExactas(); Linking.openSettings().catch(() => {}); }} />
+        </>
+      )}
+    </>
+  );
 }

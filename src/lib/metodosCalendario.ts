@@ -58,3 +58,25 @@ export function proximoRecordatorio(metodo: MetodoCalendario, inicio: ISODate, h
   const fecha = addDays(base, paso);
   return { accion, fecha, enDias: diasEntre(hoy, fecha), texto };
 }
+
+/** El primer recordatorio en `desde` o después. */
+function primeroDesde(metodo: MetodoCalendario, inicio: ISODate, desde: ISODate): Recordatorio {
+  // La inyección ya cuenta el día mismo («hoy toca»); anillo y parche dan siempre el siguiente: se mira desde el día anterior.
+  const esInyeccion = metodo === 'inyeccion_mensual' || metodo === 'inyeccion_trimestral';
+  const r = proximoRecordatorio(metodo, inicio, esInyeccion ? desde : addDays(desde, -1));
+  return { ...r, enDias: diasEntre(desde, r.fecha) };
+}
+
+/** Los próximos `n` recordatorios desde `hoy` (incluido), para programar los avisos. */
+export function proximosRecordatorios(metodo: MetodoCalendario, inicio: ISODate, hoy: ISODate, n: number): Recordatorio[] {
+  const salida: Recordatorio[] = [];
+  // El día de inicio ya se hizo (se puso el anillo o la inyección): se avisa desde el siguiente
+  let desde = hoy <= inicio ? addDays(inicio, 1) : hoy;
+  while (salida.length < n) {
+    const r = primeroDesde(metodo, inicio, desde);
+    // El aviso suena ese mismo día: la inyección se nombra sin «en N días»
+    salida.push({ ...r, enDias: diasEntre(hoy, r.fecha), texto: r.accion === 'inyeccion' ? 'Toca la inyección' : r.texto });
+    desde = addDays(r.fecha, 1);
+  }
+  return salida;
+}

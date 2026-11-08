@@ -1,5 +1,6 @@
 // Recordatorios locales: se programan en el teléfono y suenan con la app cerrada.
 // Cada vez que se abre la app o cambia un ajuste, se borran y se vuelven a programar.
+import { proximosRecordatorios } from './metodosCalendario';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import { diaDelBlister, esquema, proximaPausa, tocaTomar } from './blister';
@@ -139,6 +140,13 @@ export async function rescheduleAll(data: AppData, summary: Summary): Promise<vo
     const pausa = proximaPausa(b, t);
     if (pausa && !pausa.ahora) {
       await once(...msg('Blíster', conDescanso ? NOTIF.descansoSinPastilla : NOTIF.descansoPlacebo), at(addDays(pausa.desde, -1), r.pack.hour));
+    }
+  }
+
+  // Anillo, parche o inyección: los próximos 4 cambios, a la hora elegida.
+  if (settings.metodo?.on) {
+    for (const rec of proximosRecordatorios(settings.metodo.tipo, settings.metodo.inicio, t, 4)) {
+      await once(...msg('Tu método', rec.texto), at(rec.fecha, settings.metodo.hour), { id: `metodo-${rec.fecha}` });
     }
   }
 

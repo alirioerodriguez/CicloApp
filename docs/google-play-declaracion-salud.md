@@ -54,7 +54,7 @@ No declarar «cifrado de extremo a extremo»: el respaldo con clave propia qued�
 
 ## 4. Antes de enviar
 
-- **Borrado de cuenta:** «Eliminar mi cuenta» borra los datos en el momento y prueba cerrar el usuario con `delete-user` de Neon Auth. Neon no tiene una opción para habilitarlo (revisado el 08/11/2026: el endpoint existe, pero solo se puede comprobar con una sesión real). Si falla, la app pide escribir por mail y el usuario se borra a mano desde Neon en menos de 5 días hábiles. Las páginas públicas ya lo dicen así. Para que sea automático siempre, haría falta una función del servidor con una clave de la API de Neon.
+- **Borrado de cuenta:** «Eliminar mi cuenta» borra los datos y después llama a `api/borrar-usuario` (función de Vercel), que verifica la sesión con la llave pública de Neon Auth y borra a esa usuaria con la API de Neon. Para que ande hace falta la variable `NEON_API_KEY` en el proyecto `cicloapp` de Vercel; sin ella responde «sin configurar» y la app sigue con el plan B (pedir el cierre por mail). Probado el 08/11/2026 en producción: sin clave responde 503, otra web 403, otro método 405.
 - **Recompilar el paquete** con `compilar-savia.ps1` después de unir estos cambios. El paquete del 31/10 pide todavía el permiso que se sacó.
 - **Probar en un Android real** que «Reloj y apps de salud» pide los 8 permisos y muestra los datos.
 

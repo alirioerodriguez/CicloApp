@@ -1,6 +1,6 @@
 # Google Play Console — qué responder para Savia
 
-Borrador para completar antes de mandar la app a revisión, actualizado el 07/11/2026. Todo tiene que coincidir con la política pública de privacidad y con lo que hace el código. Revisar con la abogada antes de enviar.
+Borrador para completar antes de mandar la app a revisión, actualizado el 08/11/2026. Todo tiene que coincidir con la política pública de privacidad y con lo que hace el código. Revisar con la abogada antes de enviar.
 
 ## Direcciones para la consola
 
@@ -49,6 +49,30 @@ Savia **solo lee**: nunca escribe en Health Connect. Pide 8 permisos (`app.json`
   1. **Información personal → correo electrónico y nombre:** para entrar a la cuenta. Es obligatorio si crea cuenta.
   2. **Salud y bienestar → información de salud:** salud reproductiva y síntomas. Sirve para el respaldo entre dispositivos de la propia usuaria y para el modo pareja, que comparte solo la etapa y las fechas.
   3. **Salud y bienestar → información de actividad física:** pasos, pulso, sueño y temperatura leídos de Health Connect, solo si los activó. Sirve para el respaldo.
+  4. **Actividad en la app → interacciones con la app y otro contenido generado por la usuaria:** las respuestas e ideas de «Ayúdanos a mejorar» (Perfil → pruebas), que viajan dentro del respaldo. Uso: funcionalidad de la app (respaldo). Si las manda por correo, lo hace ella desde su propia app de correo.
+
+En «información de salud» entran también lo que soñó, los controles médicos y autoexámenes, y los cuestionarios de ánimo (Edimburgo) y de menopausia (MRS): todo va en la misma copia (`ciclo_data`). El nombre o apodo que carga en Perfil también viaja en la copia y en el resumen del modo pareja: está cubierto por el punto 1.
+
+### Lo que no se declara como «compartir»
+- **Modo pareja:** lo inicia la usuaria y va a la persona que ella eligió con un código. Google no lo cuenta como compartir con terceros cuando es una transferencia que la usuaria pide y espera.
+- **Neon y Vercel:** son proveedores que procesan los datos por cuenta de Savia, no terceros que los usan para sí.
+- **Respaldo en archivo y PDF para la médica:** los arma el teléfono y los comparte la usuaria. El archivo de respaldo **no va cifrado** (lo dice la política).
+- **Google Fonts:** el PDF para la médica descarga las tipografías; no lleva datos de la usuaria. Si se quiere evitar del todo, hay que incluir las fuentes dentro de la app (`src/lib/informe.ts`).
+
+### Revisión punto por punto (08/11/2026)
+
+| Qué dice la política pública | Qué hace el código | ¿Coincide? |
+|---|---|---|
+| Sin cuenta, nada sale del teléfono | `nube.ts` solo sube con sesión iniciada | Sí |
+| Copia en Neon, Ohio (EE. UU.) | `ep-old-bar-b5e0wyej…us-east-2.aws.neon.tech` | Sí |
+| Modo pareja: nombre, etapa y fechas | `resumenPareja()` sube nombre, etapa, qué comparte, inicio y duración del ciclo, FPP o fecha de nacimiento | Sí |
+| Health Connect: solo lectura | 8 permisos `READ_*` en `app.json`, ninguno de escritura | Sí |
+| Sin herramientas de seguimiento ni análisis | No hay Sentry, Firebase, Analytics ni similares en `src/` ni en `app.json` | Sí |
+| Borrar datos y cuenta desde Perfil | «Borrar todos mis datos» y «Eliminar mi cuenta» en `perfil.tsx` | Sí |
+| Lista de lo que se guarda | Faltaban controles, autoexámenes, cuestionarios, posparto y el nombre | **Corregido el 08/11** |
+| Respaldo en archivo | Existía sin mencionarse, y no va cifrado | **Agregado el 08/11** |
+| Respuestas de «Ayúdanos a mejorar» | Viajaban en la copia sin mencionarse | **Agregado el 08/11** |
+| Proveedores | No se nombraban Vercel ni Google Fonts | **Agregado el 08/11** |
 
 No declarar «cifrado de extremo a extremo»: el respaldo con clave propia quedó para después del lanzamiento.
 

@@ -25,7 +25,7 @@ export default function PrivacidadDatos() {
   return (
     <Screen angosta title="Qué sale de tu teléfono" right={<Button small kind="soft" label="Volver" onPress={() => (router.canGoBack() ? router.back() : router.replace('/perfil'))} />}>
       <Bloque emoji="📱" titulo="En tu teléfono" tint={c.salviaSuave}>
-        <Body>Todo lo que registras: período, síntomas, ánimo, notas, sueños, pastillas, embarazo y menopausia. Los recordatorios también se programan aquí.</Body>
+        <Body>Todo lo que registras: período, síntomas, ánimo, notas, lo que soñaste, pastillas, controles médicos y autoexámenes, los cuestionarios de ánimo y de menopausia, embarazo, posparto y menopausia. Los recordatorios también se programan aquí.</Body>
       </Bloque>
 
       {nubeConfigurada && (
@@ -41,6 +41,11 @@ export default function PrivacidadDatos() {
           <Body>Nunca se comparten tus registros, síntomas, ánimo, notas, intimidad ni tu método anticonceptivo. Puedes dejar de compartir cuando quieras.</Body>
         </Bloque>
       )}
+
+      <Bloque emoji="🗂️" titulo="El archivo de respaldo">
+        <Body>Si bajas un respaldo en archivo desde Perfil, lo guardas y lo compartes tú. No va cifrado: guárdalo en un lugar seguro.</Body>
+        <Body>Tus respuestas de «Ayúdanos a mejorar» quedan en el teléfono; solo nos llegan si las mandas por correo.</Body>
+      </Bloque>
 
       <Bloque emoji="🚫" titulo="Lo que nunca hacemos" tint={c.rosaSuave}>
         <Body>No vendemos tus datos, no mostramos publicidad y no usamos herramientas de seguimiento ni de análisis de terceros.</Body>

@@ -6,20 +6,20 @@
 require('./src/polyfills'); // crypto en el teléfono, antes que cualquier librería
 const { Platform } = require('react-native');
 
-// Ingreso con Google desde la app del celular (ver signInGoogle en src/lib/nube.ts). La app abre esta web con
-// ?ingresoApp=google; la web entra con Google, vuelve con ?ingresoApp=volver&neon_auth_session_verifier=…
+// Ingreso con Google o Apple desde la app del celular (ver signInSocial en src/lib/nube.ts). La app abre esta web
+// con ?ingresoApp=google o apple; la web entra con el proveedor, vuelve con ?ingresoApp=volver&neon_auth_session_verifier=…
 // y le pasa ese código a la app sin usarlo (si la web lo canjeara primero, a la app ya no le serviría).
 const busqueda = Platform.OS === 'web' && typeof window !== 'undefined' ? window.location.search : '';
-const pasoApp = /[?&]ingresoApp=(google|volver)/.exec(busqueda)?.[1];
+const pasoApp = /[?&]ingresoApp=(google|apple|volver)/.exec(busqueda)?.[1];
 
 if (pasoApp === 'volver') {
   const codigo = /[?&]neon_auth_session_verifier=([^&#]+)/.exec(busqueda)?.[1];
   window.location.replace('ciclo://auth' + (codigo ? '?neon_auth_session_verifier=' + codigo : '?error=1'));
-} else if (pasoApp === 'google') {
+} else if (pasoApp === 'google' || pasoApp === 'apple') {
   document.body.style.cssText = 'font-family:system-ui;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;color:#7E2F52';
-  document.body.textContent = 'Abriendo Google…';
+  document.body.textContent = pasoApp === 'apple' ? 'Abriendo Apple…' : 'Abriendo Google…';
   require('./src/lib/nube')
-    .signInGoogle(window.location.origin + '/?ingresoApp=volver')
+    .signInSocial(pasoApp, window.location.origin + '/?ingresoApp=volver')
     .catch(() => window.location.replace('ciclo://auth?error=1'));
 } else {
   require('./src/lib/tareaPastilla');

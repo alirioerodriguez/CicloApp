@@ -23,10 +23,14 @@ function crear() {
 
 export const neon = nubeConfigurada ? crear() : null;
 
-// Google: en la web, Neon Auth redirige a Google y vuelve a la página. En el celular se abre la versión web
-// en una ventana segura del sistema; esa página entra con Google y vuelve a la app con un código de un
-// solo uso (neon_auth_session_verifier), que la app canjea por la sesión. Ver index.js.
+// Google y Apple: en la web, Neon Auth redirige al proveedor y vuelve a la página. En el celular se abre la
+// versión web en una ventana segura del sistema; esa página entra con el proveedor y vuelve a la app con un
+// código de un solo uso (neon_auth_session_verifier), que la app canjea por la sesión. Ver index.js.
+export type Proveedor = 'google' | 'apple';
 export const googleDisponible = nubeConfigurada;
+// Apple exige «Iniciar sesión con Apple» en iPhone si hay Google (regla 4.8). En la web y en Android se muestra
+// solo con EXPO_PUBLIC_APPLE_LOGIN=1, cuando las credenciales de Apple ya están cargadas en Neon Auth.
+export const appleDisponible = nubeConfigurada && (Platform.OS === 'ios' || process.env.EXPO_PUBLIC_APPLE_LOGIN === '1');
 
 // ---------- Cuenta ----------
 
@@ -44,26 +48,30 @@ export async function signUp(email: string, password: string): Promise<boolean> 
   return !!data.session;
 }
 
-// Devuelve false si la usuaria cerró la ventana de Google sin terminar.
-export async function signInGoogle(volverA?: string): Promise<boolean> {
+// Devuelve false si la usuaria cerró la ventana del proveedor sin terminar.
+export async function signInSocial(proveedor: Proveedor, volverA?: string): Promise<boolean> {
   if (!neon) throw new Error('Falta configurar la nube.');
+  const nombre = proveedor === 'apple' ? 'Apple' : 'Google';
   if (Platform.OS === 'web') {
-    const { error } = await neon.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: volverA ?? window.location.origin } });
+    const { error } = await neon.auth.signInWithOAuth({ provider: proveedor, options: { redirectTo: volverA ?? window.location.origin } });
     if (error) throw new Error(mensajeError(error.message));
     return true;
   }
-  const r = await WebBrowser.openAuthSessionAsync(`${WEB}/?ingresoApp=google`, 'ciclo://auth');
+  const r = await WebBrowser.openAuthSessionAsync(`${WEB}/?ingresoApp=${proveedor}`, 'ciclo://auth');
   if (r.type !== 'success') return false;
   const codigo = /[?&]neon_auth_session_verifier=([^&#]+)/.exec(r.url)?.[1];
-  if (!codigo) throw new Error('No se pudo entrar con Google. Prueba de nuevo.');
+  if (!codigo) throw new Error(`No se pudo entrar con ${nombre}. Prueba de nuevo.`);
   // El servidor de Neon Auth canjea el código por la sesión y la deja guardada en el teléfono (cookie)
   const res = await fetch(`${urlAuth}/get-session?neon_auth_session_verifier=${codigo}`, { credentials: 'include' });
-  if (!res.ok) throw new Error('No se pudo entrar con Google. Prueba de nuevo.');
+  if (!res.ok) throw new Error(`No se pudo entrar con ${nombre}. Prueba de nuevo.`);
   await refrescarSesion?.();
   return true;
 }
 
-// La pone AuthProvider (lib/auth.tsx) para avisar que hay sesión nueva después de Google en el celular
+export const signInGoogle = (volverA?: string) => signInSocial('google', volverA);
+export const signInApple = (volverA?: string) => signInSocial('apple', volverA);
+
+// La pone AuthProvider (lib/auth.tsx) para avisar que hay sesión nueva después de Google o Apple en el celular
 let refrescarSesion: (() => Promise<void>) | null = null;
 export function alCambiarSesion(f: (() => Promise<void>) | null) {
   refrescarSesion = f;

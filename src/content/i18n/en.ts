@@ -1195,6 +1195,7 @@ export const EN: Record<string, string> = {
   "¡Listo! Te enviamos un correo para confirmar tu cuenta. Ábrelo y después entra aquí.": "Done! We sent you an email to confirm your account. Open it and then sign in here.",
   "¿No tienes cuenta?": "Don't have an account?",
   "¿Olvidaste tu contraseña?": "Forgot your password?",
+  "Continuar con Apple": "Continue with Apple",
   "Continuar con Google": "Continue with Google",
   "Contraseña": "Password",
   "Correo": "Email",

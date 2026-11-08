@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { googleDisponible, resetPassword, signIn, signInGoogle, signUp } from '../lib/nube';
+import { appleDisponible, googleDisponible, resetPassword, signIn, signInSocial, signUp, type Proveedor } from '../lib/nube';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import Svg, { Path } from 'react-native-svg';
 import { Logo } from './Logo';
@@ -74,6 +74,15 @@ export function Login() {
     color: c.text,
     fontFamily: fonts.regular,
   };
+  const social = async (proveedor: Proveedor) => {
+    setError(null);
+    if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
+    try {
+      await signInSocial(proveedor);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
   const link = (label: string, m: Modo) => (
     <Pressable accessibilityRole="button" onPress={() => cambiar(m)} hitSlop={8}>
       <Text style={{ fontFamily: fonts.semibold, color: c.rosa, fontSize: 14.5 }}>{label}</Text>
@@ -95,19 +104,32 @@ export function Login() {
             </Text>
           </View>
 
-          {googleDisponible && modo !== 'olvide' && (
+          {(googleDisponible || appleDisponible) && modo !== 'olvide' && (
             <>
+              {appleDisponible && (
+                <Pressable
+                  accessibilityRole="button"
+                  onPress={() => social('apple')}
+                  style={({ pressed }) => ({
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 10,
+                    paddingVertical: 14,
+                    borderRadius: radius.pill,
+                    // Negro en modo claro y blanco en modo oscuro, los dos estilos que permite Apple
+                    backgroundColor: c.dark ? '#fff' : '#000',
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                >
+                  <LogoApple color={c.dark ? '#000' : '#fff'} />
+                  <Text style={{ fontFamily: fonts.bold, fontSize: 15.5, color: c.dark ? '#000' : '#fff' }}>Continuar con Apple</Text>
+                </Pressable>
+              )}
+              {googleDisponible && (
               <Pressable
                 accessibilityRole="button"
-                onPress={async () => {
-                  setError(null);
-                  if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
-                  try {
-                    await signInGoogle();
-                  } catch (e) {
-                    setError(e instanceof Error ? e.message : String(e));
-                  }
-                }}
+                onPress={() => social('google')}
                 style={({ pressed }) => ({
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -124,6 +146,7 @@ export function Login() {
                 <LogoGoogle />
                 <Text style={{ fontFamily: fonts.bold, fontSize: 15.5, color: c.text }}>Continuar con Google</Text>
               </Pressable>
+              )}
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                 <View style={{ flex: 1, height: 1, backgroundColor: c.line }} />
                 <Text style={{ fontFamily: fonts.medium, fontSize: 13, color: c.muted }}>o con tu correo</Text>
@@ -240,6 +263,18 @@ export function Login() {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
+  );
+}
+
+// La manzana de Apple, del color del texto del botón (guía de Apple para «Iniciar sesión con Apple»).
+function LogoApple({ color }: { color: string }) {
+  return (
+    <Svg width={18} height={20} viewBox="0 0 814 1000" accessibilityElementsHidden importantForAccessibility="no">
+      <Path
+        fill={color}
+        d="M788 341c-6 4-108 62-108 190 0 148 130 200 134 201-1 3-21 72-69 142-43 62-88 123-156 123s-86-40-164-40c-76 0-104 41-166 41s-106-57-156-127C45 789 0 667 0 551 0 365 121 266 240 266c63 0 116 42 156 42 38 0 97-44 169-44 27 0 126 2 223 77zM554 167c30-35 51-84 51-133 0-7-1-14-2-19-49 2-107 33-142 73-27 31-53 80-53 130 0 7 1 15 2 17 3 1 9 2 14 2 44 0 99-30 130-70z"
+      />
+    </Svg>
   );
 }
 

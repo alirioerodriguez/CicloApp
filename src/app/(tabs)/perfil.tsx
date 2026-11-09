@@ -437,7 +437,7 @@ export default function Perfil() {
       {/* Otra app del mismo creador: solo un link, no comparte ningún dato */}
       <Pressable
         accessibilityRole="link"
-        accessibilityLabel="¿Dónde la veo?: en qué plataforma está cada película o serie. Se abre en el navegador."
+        accessibilityLabel="VeoMás: en qué plataforma está cada película o serie. Se abre en el navegador."
         onPress={() => Linking.openURL('https://donde-la-veo-app.vercel.app/?ref=savia')}
         style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
       >
@@ -446,7 +446,7 @@ export default function Perfil() {
             <Image source={require('../../../assets/donde-la-veo.png')} style={{ width: 48, height: 48, borderRadius: 12 }} accessibilityIgnoresInvertColors />
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '600' }}>¿Qué mirar esta noche?</Body>
-              <Muted>¿Dónde la veo? te dice en qué plataforma está cada película o serie en tu país. Gratis y sin cuenta.</Muted>
+              <Muted>VeoMás te dice en qué plataforma está cada película o serie en tu país. Gratis y sin cuenta.</Muted>
             </View>
             <Text style={{ fontSize: 20 }}>›</Text>
           </View>

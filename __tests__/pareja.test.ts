@@ -96,6 +96,11 @@ describe('Lo que ve la pareja', () => {
   test('código de 8 caracteres sin letras confusas', () => {
     const c8 = nuevoCodigo();
     expect(c8).toMatch(/^[A-HJKMNP-Z2-9]{8}$/);
+    // Sale del azar seguro del sistema (crypto), no de Math.random.
+    const azar = jest.spyOn(Math, 'random');
+    expect(new Set(Array.from({ length: 200 }, () => nuevoCodigo())).size).toBe(200);
+    expect(azar).not.toHaveBeenCalled();
+    azar.mockRestore();
     expect(mostrarCodigo('ABCDEFGH')).toBe('ABCD-EFGH');
     expect(limpiarCodigo(' abcd-efgh ')).toBe('ABCDEFGH');
   });

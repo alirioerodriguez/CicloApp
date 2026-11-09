@@ -167,8 +167,15 @@ export async function guardarPareja(p: ParejaGuardada | null): Promise<void> {
 }
 
 // Código de 8 letras y números, sin los que se confunden (0/O, 1/I/L).
+// Con el azar seguro del sistema (crypto, también en el teléfono por src/polyfills): Math.random se puede adivinar,
+// y quien adivina un código vigente ve el resumen del ciclo.
 const LETRAS = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-export function nuevoCodigo(azar: () => number = Math.random): string {
+const azarSeguro = (): number => {
+  const c = (globalThis as { crypto?: { getRandomValues?: (a: Uint32Array) => Uint32Array } }).crypto;
+  if (!c?.getRandomValues) throw new Error('Este dispositivo no tiene azar seguro para crear el código.');
+  return c.getRandomValues(new Uint32Array(1))[0] / 2 ** 32;
+};
+export function nuevoCodigo(azar: () => number = azarSeguro): string {
   let c = '';
   for (let i = 0; i < 8; i++) c += LETRAS[Math.floor(azar() * LETRAS.length)];
   return c;

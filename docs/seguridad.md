@@ -13,6 +13,7 @@
 | Función de Vercel `api/borrar-usuario` | ✅ Verifica la firma del token con las llaves públicas de Neon Auth (EdDSA), su vencimiento, y borra solo a quien llama. La clave de Neon vive solo en Vercel. |
 | Claves secretas en la web publicada | ✅ No hay (se buscaron claves de Neon, cadenas de conexión y claves de Google/OpenAI en los archivos publicados). |
 | Inserción de código (XSS) | ✅ React Native escapa todo; no hay `innerHTML` ni `eval` propios. |
+| **Con una cuenta real** (sesión de Alirio, por el Data API publicado) | ✅ Leer todas las filas de `ciclo_data` y `pareja`: 0 ajenas (en la base hay filas de otras cuentas). Cambiar filas ajenas: 0 afectadas. Crear una fila a nombre de otra cuenta o pasarle la propia: rechazado (42501). Canjear un código falso o el propio: `null`. Sin sesión: rechazado. La fila de prueba de pareja se borró. |
 
 ## Qué se corrigió
 
@@ -33,7 +34,7 @@ Marca 21 avisos, pero **ninguno afecta a la app en uso**:
 - **Cargar `NEON_API_KEY` en Vercel** (proyecto `cicloapp`) para que «Eliminar mi cuenta» borre también el usuario de Neon Auth. Ver `docs/google-play-declaracion-salud.md`.
 - **Orden del borrado:** la app borra primero sus filas y después llama a `api/borrar-usuario`. Si se corta en el medio queda la cuenta sin datos o, al revés, datos sin cuenta; la pantalla avisa y se puede reintentar. Sería más firme que la función de Vercel borre también las filas, pero para eso necesita una conexión a la base (otra clave) y no vale la pena por ahora.
 - **El respaldo en la nube no está cifrado con una clave propia**: lo protege Neon (cifrado en disco y reglas por cuenta). La política de privacidad lo dice así.
-- **Probar en un teléfono real** el ingreso, el borrado y el modo pareja.
+- **Probar en un teléfono real** el ingreso, el borrado y el modo pareja con dos cuentas (el canje entre dos cuentas distintas todavía no se probó en vivo).
 
 ## Cómo repetir las pruebas
 

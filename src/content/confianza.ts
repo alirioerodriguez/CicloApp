@@ -24,7 +24,7 @@ export const OPCIONES_RED: { id: CompartirRed; label: string }[] = [
 ];
 
 export const INTRO_RED =
-  'Comparte solo lo que tú elijas con tu pareja o alguien de confianza. Tus síntomas y notas nunca se comparten.';
+  'Comparte solo lo que tú elijas con tu pareja o alguien de confianza. Tus síntomas, tus notas y los días en que tuviste relaciones nunca se comparten: eso es solo tuyo.';
 
 // Consejo para quien acompaña, según la etapa.
 export const AYUDA_RED: Partial<Record<Etapa, string>> & { general: string } = {

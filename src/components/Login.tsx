@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, TextInput, View } from 'react-native';
 import { Text } from './Texto';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '../lib/auth';
+import { guardarConsentimientoPendiente } from '../lib/consentimiento';
 import { appleDisponible, googleDisponible, resetPassword, signIn, signInSocial, signUp, type Proveedor } from '../lib/nube';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 import Svg, { Path } from 'react-native-svg';
@@ -15,6 +17,7 @@ type Modo = 'entrar' | 'crear' | 'olvide';
 const TITULOS: Record<Modo, string> = { entrar: 'Entrar', crear: 'Crear cuenta', olvide: 'Recuperar contraseña' };
 
 export function Login() {
+  const { usarSinCuenta } = useAuth();
   const c = useColors();
   const insets = useSafeAreaInsets();
   const [modo, setModo] = useState<Modo>('entrar');
@@ -27,6 +30,9 @@ export function Login() {
   const [aviso, setAviso] = useState<string | null>(null);
   // Consentimiento explícito para datos de salud (sensibles en MX, CO y AR): apagado hasta que ella lo prenda.
   const [acepto, setAcepto] = useState(false);
+  // Ley 1581 de Colombia (art. 7): la copia en la nube es solo para mayores de edad. Sin cuenta, Savia se usa igual.
+  const [mayor, setMayor] = useState(false);
+  const FALTA_MAYOR = 'Para crear una cuenta tienes que tener 18 años o más. Puedes usar Savia sin cuenta: abajo, «Usar Savia sin cuenta».';
   const FALTA_ACEPTAR = 'Para crear la cuenta necesitas aceptar cómo cuidamos tus datos de salud.';
 
   const cambiar = (m: Modo) => {
@@ -42,6 +48,8 @@ export function Login() {
     if (modo !== 'olvide' && password.length < 8) return setError('La contraseña debe tener al menos 8 caracteres.');
     if (modo === 'crear' && password !== password2) return setError('Las contraseñas no coinciden.');
     if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
+    if (modo === 'crear' && !mayor) return setError(FALTA_MAYOR);
+    if (modo === 'crear') await guardarConsentimientoPendiente();
     setBusy(true);
     try {
       if (modo === 'entrar') await signIn(email, password);
@@ -77,6 +85,8 @@ export function Login() {
   const social = async (proveedor: Proveedor) => {
     setError(null);
     if (modo === 'crear' && !acepto) return setError(FALTA_ACEPTAR);
+    if (modo === 'crear' && !mayor) return setError(FALTA_MAYOR);
+    if (modo === 'crear') await guardarConsentimientoPendiente();
     try {
       await signInSocial(proveedor);
     } catch (e) {
@@ -220,6 +230,12 @@ export function Login() {
               </Text>
             </View>
           )}
+          {modo === 'crear' && (
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: c.card, borderRadius: radius.md, padding: 12, borderWidth: 1, borderColor: c.line }}>
+              <Interruptor value={mayor} onValueChange={setMayor} accessibilityLabel={t('Tengo 18 años o más')} />
+              <Text style={{ flex: 1, fontFamily: fonts.regular, fontSize: 13.5, lineHeight: 19, color: c.text }}>Tengo 18 años o más.</Text>
+            </View>
+          )}
 
           {error ? <Text style={{ fontFamily: fonts.medium, color: c.duraznoTexto, fontSize: 14 }}>{error}</Text> : null}
           {aviso ? <Text style={{ fontFamily: fonts.medium, color: c.salviaTexto, fontSize: 14 }}>{aviso}</Text> : null}
@@ -254,6 +270,12 @@ export function Login() {
               </Text>
             ) : (
               link('Ya tengo cuenta: entrar', 'entrar')
+            )}
+            {modo !== 'olvide' && (
+              <Pressable accessibilityRole="button" onPress={() => usarSinCuenta(true)} hitSlop={8} style={{ alignItems: 'center', gap: 2 }}>
+                <Text style={{ fontFamily: fonts.semibold, color: c.text, fontSize: 14.5, textDecorationLine: 'underline' }}>Usar Savia sin cuenta</Text>
+                <Text style={{ fontFamily: fonts.regular, color: c.muted, fontSize: 12.5 }}>Todo queda solo en este teléfono</Text>
+              </Pressable>
             )}
           </View>
 

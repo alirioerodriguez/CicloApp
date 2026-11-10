@@ -50,7 +50,7 @@ function LinkRow({ emoji, label, hint, to }: { emoji: string; label: string; hin
 export default function Perfil() {
   const c = useColors();
   const { data, summary, updateSettings, replaceAll, resetAll, borrarCuenta, sync } = useStore();
-  const { session } = useAuth();
+  const { session, configured, usarSinCuenta } = useAuth();
   const s = data.settings;
   const r = s.reminders;
   const [cambio, setCambio] = useState<Transicion | null>(null);
@@ -288,6 +288,12 @@ export default function Perfil() {
           value={s.ocultarRetrasos}
           onChange={(ocultarRetrasos) => updateSettings({ ocultarRetrasos })}
         />
+        <Toggle
+          label="Ver las relaciones en el calendario"
+          hint="Apagado, solo las ves al abrir cada día. Nunca se comparten con tu pareja ni salen en el PDF"
+          value={s.verIntimidad}
+          onChange={(verIntimidad) => updateSettings({ verIntimidad })}
+        />
       </Card>
 
       <Card>
@@ -417,6 +423,14 @@ export default function Perfil() {
               if (await confirm('¿Cerrar sesión?', 'Tus datos quedan guardados en tu cuenta. Para verlos de nuevo, entra con tu correo y contraseña.', 'Cerrar sesión')) signOut();
             }}
           />
+        </Card>
+      )}
+
+      {configured && !session && (
+        <Card>
+          <Label>Sin cuenta</Label>
+          <Muted>Todo queda solo en este teléfono. Si creas una cuenta, guardamos una copia para que no pierdas nada si cambias o pierdes el teléfono (necesitas tener 18 años o más).</Muted>
+          <Button small kind="soft" label="Crear una cuenta o entrar" onPress={() => usarSinCuenta(false)} />
         </Card>
       )}
 

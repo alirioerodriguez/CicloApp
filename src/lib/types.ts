@@ -128,6 +128,12 @@ export interface MetodoAviso {
   hour: number;
 }
 
+export interface Consentimiento {
+  fecha: string; // ISO con hora: cuándo lo aceptó
+  version: string; // versión del texto aceptado (lib/consentimiento.ts)
+  mayorDeEdad: boolean; // declaró tener 18 años o más
+}
+
 export interface Settings {
   onboarded: boolean;
   tutorialVisto: boolean;
@@ -150,6 +156,8 @@ export interface Settings {
   pillPackStart: ISODate | null; // día 1 del blíster actual (o de cualquiera)
   condiciones: Condicion[];
   ocultarRetrasos: boolean; // sin avisos de retraso ni sugerencias de prueba de embarazo
+  verIntimidad: boolean; // mostrar las relaciones en el calendario (apagado: solo se ven al abrir el día)
+  consentimiento: Consentimiento | null; // lo aceptado al crear la cuenta; null si usa Savia sin cuenta
   pdfReloj: boolean; // incluir los datos del reloj o la app de salud en el PDF para la médica
   pdfAnimo: boolean; // la usuaria eligió incluir sus estados de ánimo en el PDF para la médica
   reminders: {

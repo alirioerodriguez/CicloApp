@@ -1,4 +1,5 @@
 // Sesión de la usuaria (correo y contraseña o Google, vía Neon Auth).
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { alCambiarSesion, neon, nubeConfigurada } from './nube';
 
@@ -11,13 +12,36 @@ interface Auth {
   loading: boolean;
   session: Sesion | null;
   configured: boolean;
+  // Eligió usar Savia sin cuenta: todo queda en el teléfono. Puede crear la cuenta después desde Perfil.
+  sinCuenta: boolean;
+  usarSinCuenta: (on: boolean) => void;
 }
 
-const Ctx = createContext<Auth>({ loading: true, session: null, configured: nubeConfigurada });
+const SIN_CUENTA = 'ciclo:sin-cuenta';
+const Ctx = createContext<Auth>({ loading: true, session: null, configured: nubeConfigurada, sinCuenta: false, usarSinCuenta: () => {} });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Sesion | null>(null);
   const [loading, setLoading] = useState(nubeConfigurada);
+  const [sinCuenta, setSinCuenta] = useState(false);
+  const [sinCuentaLeido, setSinCuentaLeido] = useState(false);
+
+  useEffect(() => {
+    AsyncStorage.getItem(SIN_CUENTA)
+      .then((v) => setSinCuenta(v === '1'))
+      .catch(() => {})
+      .finally(() => setSinCuentaLeido(true));
+  }, []);
+
+  // Si entra a una cuenta, deja de estar «sin cuenta» (al cerrar sesión vuelve a ver el login).
+  useEffect(() => {
+    if (session) AsyncStorage.removeItem(SIN_CUENTA).then(() => setSinCuenta(false)).catch(() => {});
+  }, [session]);
+
+  const usarSinCuenta = (on: boolean) => {
+    setSinCuenta(on);
+    (on ? AsyncStorage.setItem(SIN_CUENTA, '1') : AsyncStorage.removeItem(SIN_CUENTA)).catch(() => {});
+  };
 
   useEffect(() => {
     if (!neon) return;
@@ -35,7 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  return <Ctx.Provider value={{ loading, session, configured: nubeConfigurada }}>{children}</Ctx.Provider>;
+  return <Ctx.Provider value={{ loading: loading || !sinCuentaLeido, session, configured: nubeConfigurada, sinCuenta, usarSinCuenta }}>{children}</Ctx.Provider>;
 }
 
 export function useAuth(): Auth {

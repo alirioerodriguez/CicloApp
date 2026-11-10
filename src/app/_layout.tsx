@@ -202,7 +202,7 @@ export default function RootLayout() {
 
 // Sin sesión se muestra el inicio con correo y contraseña. Si Neon aún no está configurado, la app funciona solo en el teléfono.
 function AuthGate() {
-  const { loading, session, configured } = useAuth();
+  const { loading, session, configured, sinCuenta } = useAuth();
   const region = useRegion();
   if (loading || !region.listo) {
     return (
@@ -211,7 +211,7 @@ function AuthGate() {
       </View>
     );
   }
-  if (configured && !session) {
+  if (configured && !session && !sinCuenta) {
     return (
       <>
         <StatusBar style="auto" />

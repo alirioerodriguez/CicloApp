@@ -1399,7 +1399,7 @@ export const EN: Record<string, string> = {
   "Casi todos los días: corazón y huesos lo agradecen.": "Almost every day: your heart and bones will thank you.",
   "Ciclo especial": "Special cycle",
   "Cómo puede ayudarme": "How it can help me",
-  "Comparte solo lo que tú elijas con tu pareja o alguien de confianza. Tus síntomas y notas nunca se comparten.": "Share only what you choose with your partner or someone you trust. Your symptoms and notes are never shared.",
+  "Comparte solo lo que tú elijas con tu pareja o alguien de confianza. Tus síntomas, tus notas y los días en que tuviste relaciones nunca se comparten: eso es solo tuyo.": "Share only what you choose with your partner or someone you trust. Your symptoms, your notes and the days you had sex are never shared: that is yours alone.",
   "Con endometriosis, el movimiento suave y constante ayuda con el dolor.": "With endometriosis, gentle and steady movement helps with pain.",
   "Con endometriosis, úsalo en los días de dolor: suelta la zona baja de la espalda.": "With endometriosis, use it on painful days: it releases the lower back.",
   "Con SOP, caminar a diario ayuda a usar mejor la insulina.": "With PCOS, walking daily helps your body use insulin better.",
@@ -2525,6 +2525,16 @@ export const EN: Record<string, string> = {
   "Dormiste menos de 4 horas: pide relevo para una siesta.": "You slept less than 4 hours: ask someone to take over so you can nap.",
   "Tu ánimo está bajo hoy: cuéntaselo a alguien de confianza.": "Your mood is low today: tell someone you trust.",
   "Lo que anotaste hoy está dentro de lo esperado.": "What you logged today is within what's expected.",
+  "Ver las relaciones en el calendario": "Show sex on the calendar",
+  "Apagado, solo las ves al abrir cada día. Nunca se comparten con tu pareja ni salen en el PDF": "Off, you only see it when you open each day. It is never shared with your partner or included in the PDF",
+  "Tengo 18 años o más.": "I am 18 or older.",
+  "Tengo 18 años o más": "I am 18 or older",
+  "Para crear una cuenta tienes que tener 18 años o más. Puedes usar Savia sin cuenta: abajo, «Usar Savia sin cuenta».": "You must be 18 or older to create an account. You can use Savia without an account: below, “Use Savia without an account”.",
+  "Usar Savia sin cuenta": "Use Savia without an account",
+  "Todo queda solo en este teléfono": "Everything stays on this phone only",
+  "Sin cuenta": "No account",
+  "Todo queda solo en este teléfono. Si creas una cuenta, guardamos una copia para que no pierdas nada si cambias o pierdes el teléfono (necesitas tener 18 años o más).": "Everything stays on this phone only. If you create an account, we keep a copy so you don't lose anything if you change or lose your phone (you must be 18 or older).",
+  "Crear una cuenta o entrar": "Create an account or sign in",
 };
 
 export const EN_PATRONES: Record<string, string> = {

@@ -140,7 +140,7 @@ export function MonthGrid({ marks = {}, logged, selected, maxDate, onPress, init
 }
 
 // `pastilla`: en vez de "Estimado" (período) se explica el sangrado por deprivación.
-export function Legend({ showFertile, pastilla = false, esperada = false }: { showFertile: boolean; pastilla?: boolean; esperada?: boolean }) {
+export function Legend({ showFertile, pastilla = false, esperada = false, intimidad = false }: { showFertile: boolean; pastilla?: boolean; esperada?: boolean; intimidad?: boolean }) {
   const c = useColors();
   const item = (label: string, style: object) => (
     <View key={label} style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -158,10 +158,12 @@ export function Legend({ showFertile, pastilla = false, esperada = false }: { sh
       {showFertile && item('Fértil (est.)', { backgroundColor: c.lavandaSuave, borderWidth: 1, borderColor: c.lavanda })}
       {showFertile && item('Ovulación (est.)', { backgroundColor: c.durazno })}
       {item('Hoy', { borderWidth: 2, borderColor: c.text })}
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-        <Icono e="🔥" size={13} color={c.durazno} />
-        <Text style={{ fontSize: 12.5, color: c.muted, fontFamily: fonts.regular }}>Intimidad</Text>
-      </View>
+      {intimidad && (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+          <Icono e="🔥" size={13} color={c.durazno} />
+          <Text style={{ fontSize: 12.5, color: c.muted, fontFamily: fonts.regular }}>Intimidad</Text>
+        </View>
+      )}
     </View>
   );
 }

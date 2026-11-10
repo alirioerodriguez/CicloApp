@@ -183,7 +183,8 @@ export function calendarMarks(data: AppData, s: Summary, ref: ISODate = todayISO
   const b = data.settings.pillMode ? data.blister : null;
   for (const l of Object.values(data.logs)) {
     if (l.flow >= 1 && enPeriodo(l.date, s.periods)) mark(l.date, b && sinHormona(b, l.date) ? 'deprivacion' : 'period');
-    if (l.intimidad) mark(l.date, 'intimidad');
+    // Las relaciones solo se marcan si ella lo eligió: así no se ven si alguien mira su calendario.
+    if (l.intimidad && data.settings.verIntimidad) mark(l.date, 'intimidad');
   }
 
   // Con pastilla no se predicen períodos: se marcan los días sin hormona de los próximos blísteres

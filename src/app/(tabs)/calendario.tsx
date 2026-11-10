@@ -45,7 +45,7 @@ function CalendarioCiclo() {
           maxDate={editing ? t : undefined}
           onPress={(d) => (editing ? togglePeriodDay(d) : router.push(`/dia/${d}`))}
         />
-        <Legend showFertile={!sinOvulacion(data.settings)} pastilla={!!b} esperada={!!b && esperaDeprivacion(b)} />
+        <Legend showFertile={!sinOvulacion(data.settings)} pastilla={!!b} esperada={!!b && esperaDeprivacion(b)} intimidad={data.settings.verIntimidad} />
       </Card>
 
       <Button label={editing ? '✓ Listo' : b ? 'Marcar días de sangrado' : 'Marcar días de período'} kind={editing ? 'primary' : 'soft'} onPress={() => setEditing((e) => !e)} />

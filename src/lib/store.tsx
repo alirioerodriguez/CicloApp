@@ -7,6 +7,7 @@ import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './
 import { summarize, type Summary } from './cycle';
 import { actualizarWidgets } from '../widget/actualizarWidgets';
 import { borrarUsuario, dejarDeCompartir, deleteRemote, pullRemote, pushRemote, signOut, soltarPareja } from './nube';
+import { tomarConsentimientoPendiente } from './consentimiento';
 import { addDays, today } from './dates';
 import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
 
@@ -34,6 +35,8 @@ export const DEFAULT_SETTINGS: Settings = {
   pillPackStart: null,
   condiciones: [],
   ocultarRetrasos: false,
+  verIntimidad: false,
+  consentimiento: null,
   pdfAnimo: false,
   pdfReloj: true,
   reminders: {
@@ -235,6 +238,14 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
       cancel = true;
     };
   }, [key, stampKey, userId]);
+
+  // Con cuenta: el consentimiento aceptado en el login pasa a sus datos (y a su copia) la primera vez.
+  useEffect(() => {
+    if (!ready || !userId || data.settings.consentimiento) return;
+    tomarConsentimientoPendiente().then((consentimiento) => {
+      if (consentimiento) setData((d) => ({ ...d, settings: { ...d.settings, consentimiento } }));
+    });
+  }, [ready, userId, data.settings.consentimiento]);
 
   // Guardado con una pequeña espera para no escribir en cada toque; a la nube, un poco después.
   const latest = useRef(data);

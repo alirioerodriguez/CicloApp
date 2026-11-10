@@ -24,7 +24,8 @@ Savia te acompaña en cada etapa: tu ciclo, el embarazo, el posparto y la menopa
 
 **Embarazo, posparto y menopausia**
 • Embarazo semana a semana y preguntas para tu próxima consulta.
-• Posparto y menopausia con sus propios registros.
+• Posparto con un semáforo del día: sangrado, cicatriz, sueño y ánimo en una sola vista.
+• Menopausia: anota tus bochornos y descubre qué los acompaña (café, estrés, calor…).
 • Cambias de etapa sin perder tu historial.
 
 **Para tu médica**

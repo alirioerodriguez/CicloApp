@@ -69,5 +69,12 @@ Ingreso con Apple y con Google, Face ID, Apple Salud, notificaciones de la pasti
 - Link a `https://cicloapp.vercel.app/privacidad.html`.
 - Categoría Salud y forma física. Clasificación por edad: responder el cuestionario (tiene contenido médico y de sexualidad informativo).
 
+### Palabras clave de App Store (campo «Keywords», máximo 100 caracteres)
+`ciclo,menstrual,periodo,regla,embarazo,posparto,menopausia,pastillas,síntomas,privacidad`
+
+- Van separadas por comas, sin espacios, y sin repetir el nombre ni la categoría (Apple ya los indexa).
+- Dicen lo que hace la app (ciclo, embarazo, posparto, menopausia, pastillas) y nada más: no usar «anticonceptivo», «días seguros», «fertilidad» ni «evitar el embarazo» (ver `docs/google-play-declaracion-salud.md`, sección 5).
+- La prueba `__tests__/palabras-clave-appstore.test.ts` revisa el largo y las palabras prohibidas.
+
 ### Para cada versión nueva
 Subir `version` (o `ios.buildNumber`) en `app.json` antes de compilar: Apple no acepta dos builds con el mismo número.

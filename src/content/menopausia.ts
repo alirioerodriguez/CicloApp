@@ -21,6 +21,39 @@ export function diasSinPeriodo(data: AppData, ref: ISODate = today()): number | 
 
 // ---------- Bochornos ----------
 
+// Lo que suele disparar bochornos: picante, cafeína y bebidas calientes, cigarrillo, alcohol, estrés y calor
+// (NHS, «Menopause - Things you can do», consultado 10/11/2026: https://www.nhs.uk/conditions/menopause/things-you-can-do/).
+export const GATILLOS = [
+  { id: 'cafe', label: 'Café o mate', emoji: '☕' },
+  { id: 'alcohol', label: 'Alcohol', emoji: '🍷' },
+  { id: 'picante', label: 'Picante', emoji: '🌶️' },
+  { id: 'estres', label: 'Estrés o nervios', emoji: '😣' },
+  { id: 'calor', label: 'Calor o ropa abrigada', emoji: '🥵' },
+  { id: 'cigarrillo', label: 'Cigarrillo', emoji: '🚬' },
+];
+
+export interface GatilloNotado {
+  id: string;
+  label: string;
+  dias: number; // días con este gatillo y bochornos anotados
+  con: number; // promedio de bochornos esos días
+  sin: number; // promedio los otros días
+}
+
+/** Gatillos que acompañan días con más bochornos en los últimos `dias` días. Pide al menos 3 días con y 3 sin, y una diferencia clara. */
+export function gatillosNotados(data: AppData, ref: ISODate = today(), dias = 60): GatilloNotado[] {
+  const logs = Array.from({ length: dias }, (_, i) => data.logs[addDays(ref, -i)]).filter((l) => l && l.bochornos != null);
+  const prom = (xs: number[]) => xs.reduce((a, b) => a + b, 0) / xs.length;
+  return GATILLOS.map((g) => {
+    const con = logs.filter((l) => (l.gatillos ?? []).includes(g.id)).map((l) => l.bochornos as number);
+    const sin = logs.filter((l) => !(l.gatillos ?? []).includes(g.id)).map((l) => l.bochornos as number);
+    return { id: g.id, label: g.label, dias: con.length, con: con.length ? prom(con) : 0, sin: sin.length ? prom(sin) : 0, n: sin.length };
+  })
+    .filter((x) => x.dias >= 3 && x.n >= 3 && x.con - x.sin >= 1 && x.con >= x.sin * 1.3)
+    .sort((a, b) => b.con - b.sin - (a.con - a.sin))
+    .map(({ n: _n, ...x }) => x);
+}
+
 export const INTENSIDADES = ['Leve', 'Moderado', 'Fuerte', 'Muy fuerte'];
 export const DESPERTO_POR = [
   { id: 'calor', label: 'Calor o sudor' },

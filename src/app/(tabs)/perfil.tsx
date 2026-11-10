@@ -16,6 +16,7 @@ import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
 import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported, pedirAlarmasExactas } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
+import { elegirFoto, fotoParaMostrar, inicial } from '../../lib/foto';
 import { useStore } from '../../lib/store';
 import { ajustesDeEtapa, transicion, type Transicion } from '../../lib/transicion';
 import { signOut } from '../../lib/nube';
@@ -63,6 +64,18 @@ export default function Perfil() {
     setCambio(previa);
   };
 
+  // Foto de perfil: la elegida por ella o, si no eligió, la de su cuenta de Google
+  const fotoCuenta = session?.user.image ?? null;
+  const foto = fotoParaMostrar(s.foto, fotoCuenta);
+  const cambiarFoto = async () => {
+    try {
+      const nueva = await elegirFoto();
+      if (nueva) updateSettings({ foto: nueva });
+    } catch {
+      notify('No se pudo usar esa foto', 'Prueba con otra imagen.');
+    }
+  };
+
   const setReminders = (patch: Partial<Settings['reminders']>) => updateSettings({ reminders: { ...r, ...patch } });
 
   // Al prender cualquier recordatorio, se pide permiso si hace falta.
@@ -81,6 +94,22 @@ export default function Perfil() {
           <>
       <Card>
         <Label>Tú</Label>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 14 }}>
+          {foto ? (
+            <Image source={{ uri: foto }} accessibilityLabel="Tu foto de perfil" style={{ width: 72, height: 72, borderRadius: 36 }} />
+          ) : (
+            <View accessibilityLabel="Sin foto de perfil" style={{ width: 72, height: 72, borderRadius: 36, backgroundColor: c.rosaSuave, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ fontSize: 28, fontWeight: '700', color: c.rosa }}>{inicial(s.name, session?.user.email)}</Text>
+            </View>
+          )}
+          <View style={{ flex: 1, gap: 6, alignItems: 'flex-start' }}>
+            <Button small kind="ghost" label={s.foto ? 'Cambiar la foto' : 'Elegir una foto'} onPress={() => void cambiarFoto()} />
+            {s.foto ? (
+              <Button small kind="ghost" label={fotoCuenta ? 'Usar la de mi cuenta' : 'Quitar la foto'} onPress={() => updateSettings({ foto: null })} />
+            ) : null}
+          </View>
+        </View>
+        <Muted>{t('Elige una foto en la que te sientas linda, o usa la de tu cuenta. Queda solo en tu perfil.')}</Muted>
         <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder={t('Tu nombre')} placeholderTextColor={c.muted} style={input} />
         <Row label="Tu edad" hint="Para darte ideas acordes a ti">
           <Stepper value={s.edad ?? 29} onChange={(edad) => updateSettings({ edad })} min={10} max={80} />
@@ -234,6 +263,7 @@ export default function Perfil() {
         <LinkRow emoji="🧘‍♀️" label="Ejercicios y alivio" hint="Movimiento por fase y respiración" to="/ejercicios" />
         <LinkRow emoji="🌙" label="Diario de sueños" hint={`${data.dreams.length} ${data.dreams.length === 1 ? 'sueño' : 'sueños'}`} to="/suenos" />
         <LinkRow emoji="🧪" label="Ayúdanos a mejorar" hint="Pruebas cortas para mejorar la app" to="/pruebas" />
+        <LinkRow emoji="💌" label="Queremos escucharte" hint="Cuéntanos una idea o algo que no anda" to="/escucharte" />
         <LinkRow emoji="📖" label="Ver el tutorial" hint="Todo lo que puedes hacer en Savia" to="/tutorial" />
         <LinkRow emoji="ℹ️" label="Cuándo consultar · fuentes" hint="Señales de alerta y qué alivia" to="/info" />
       </Card>

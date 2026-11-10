@@ -148,6 +148,7 @@ function Gate() {
       <Stack.Screen name="patadas" options={{ presentation: 'modal' }} />
       <Stack.Screen name="contracciones" options={{ presentation: 'modal' }} />
       <Stack.Screen name="menopausia" />
+      <Stack.Screen name="escucharte" />
       <Stack.Screen name="quiz" options={{ presentation: 'modal' }} />
     </Stack>
     <MisionBanner />

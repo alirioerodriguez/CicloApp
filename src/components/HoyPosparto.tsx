@@ -13,6 +13,7 @@ import {
   CUIDADO_CICATRIZ,
   LOQUIOS,
   etapaPosparto,
+  semaforoPosparto,
   semanasPosparto,
 } from '../content/posparto';
 import { saludo } from '../content/textos';
@@ -57,6 +58,17 @@ export function HoyPosparto() {
 
   const cicatriz = CICATRIZ[pp.parto];
 
+  // Semáforo de hoy: lo registrado hoy más la última escala de ánimo (Edimburgo).
+  const semanasEdimburgo = Object.keys(data.edimburgo).sort();
+  const ultimaEdimburgo = semanasEdimburgo.length ? data.edimburgo[semanasEdimburgo[semanasEdimburgo.length - 1]] : null;
+  const semaforo = semaforoPosparto(log, semanas, ultimaEdimburgo);
+  const SEMAFORO = {
+    verde: { punto: c.salvia, fondo: c.salviaSuave, titulo: 'Hoy vas bien' },
+    amarillo: { punto: c.durazno, fondo: c.duraznoSuave, titulo: 'Hoy, a cuidarte un poco más' },
+    rojo: { punto: '#D0506A', fondo: c.rosaSuave, titulo: 'Comunícate hoy con tu médica' },
+    sin: { punto: c.line, fondo: c.card, titulo: 'Tu semáforo de hoy' },
+  }[semaforo.color];
+
   // "Notamos que…": días con poco sueño y ánimo bajo en las últimas 2 semanas.
   const notamos = useMemo(() => {
     let dias = 0;
@@ -90,6 +102,23 @@ export function HoyPosparto() {
                 <Text style={{ fontFamily: fonts.bold, fontSize: 16, color: c.text }}>{etapa.titulo}</Text>
                 <Muted style={{ color: c.text }}>{etapa.linea}</Muted>
               </View>
+            </Card>
+
+            <Card tint={SEMAFORO.fondo} style={{ gap: 8 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                <View accessibilityLabel={`Semáforo ${semaforo.color}`} style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: SEMAFORO.punto }} />
+                <Label style={{ flex: 1 }}>{SEMAFORO.titulo}</Label>
+              </View>
+              {semaforo.color === 'sin' ? (
+                <Muted>Anota abajo el sangrado, la cicatriz, el sueño o tu ánimo y aquí te decimos cómo vas.</Muted>
+              ) : (
+                semaforo.motivos.map((m) => <Body key={m}>• {m}</Body>)
+              )}
+              {semaforo.color === 'rojo' && (
+                <Pressable accessibilityRole="button" onPress={() => router.push('/cuidate')}>
+                  <Muted style={{ color: c.text, textDecorationLine: 'underline' }}>Ver las señales de alarma</Muted>
+                </Pressable>
+              )}
             </Card>
 
             <QuizEntrada />

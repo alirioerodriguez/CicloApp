@@ -1,6 +1,6 @@
 // Posparto · cuarto trimestre (diseño 8d, 8e y 8f). La protagonista también es ella.
 import { addDays, diffDays, fromISO, today } from '../lib/dates';
-import type { ISODate, Loquios, Posparto } from '../lib/types';
+import type { DayLog, ISODate, Loquios, Posparto } from '../lib/types';
 
 export function semanasPosparto(p: Posparto, ref: ISODate = today()): number {
   if (!p.nacimiento) return 0;
@@ -143,3 +143,32 @@ export const ALIMENTACIONES: { id: Posparto['alimentacion']; label: string }[] =
   { id: 'formula', label: 'Fórmula' },
   { id: 'mixta', label: 'Mixta' },
 ];
+
+// ---------- Semáforo de hoy ----------
+// Junta en una sola vista lo que ya se registra (loquios, cicatriz, sueño, ánimo y la última escala de Edimburgo).
+// Rojo: algo que pide comunicarse hoy con la médica. Amarillo: para cuidarse y contarlo en el control. Verde: vas bien.
+
+export type ColorSemaforo = 'verde' | 'amarillo' | 'rojo' | 'sin';
+
+const ANIMO_BAJO_PP = ['triste', 'abrumada', 'ansiosa', 'irritable'];
+
+export function semaforoPosparto(
+  log: Pick<DayLog, 'loquios' | 'cicatriz' | 'sleep' | 'moods'>,
+  semanas: number,
+  ultimaEdimburgo: number[] | null,
+): { color: ColorSemaforo; motivos: string[] } {
+  const rojo: string[] = [];
+  const amarillo: string[] = [];
+  if (log.loquios === 'rojo' && semanas >= 2) rojo.push('Volvió o sigue el sangrado rojo abundante después de la semana 2.');
+  if (log.cicatriz && CICATRIZ_ALERTA.includes(log.cicatriz)) rojo.push('La cicatriz pide atención: enrojecimiento, pus o mucho dolor.');
+  const nivel = ultimaEdimburgo ? nivelEdimburgo(ultimaEdimburgo.map((x) => Math.max(0, x))) : null;
+  if (nivel === 'urgente') rojo.push('En tu última escala de ánimo apareció la idea de hacerte daño.');
+  if (nivel === 'cargada') amarillo.push('Tu última escala de ánimo dice que estás cargando mucho.');
+  if (log.cicatriz && !CICATRIZ_ALERTA.includes(log.cicatriz) && log.cicatriz !== 'Bien') amarillo.push('La cicatriz molesta: obsérvala estos días.');
+  if (log.sleep != null && log.sleep < 4) amarillo.push('Dormiste menos de 4 horas: pide relevo para una siesta.');
+  if (log.moods.some((m) => ANIMO_BAJO_PP.includes(m))) amarillo.push('Tu ánimo está bajo hoy: cuéntaselo a alguien de confianza.');
+  if (rojo.length) return { color: 'rojo', motivos: rojo };
+  if (amarillo.length) return { color: 'amarillo', motivos: amarillo };
+  const algo = log.loquios != null || log.cicatriz != null || log.sleep != null || log.moods.length > 0;
+  return algo ? { color: 'verde', motivos: ['Lo que anotaste hoy está dentro de lo esperado.'] } : { color: 'sin', motivos: [] };
+}

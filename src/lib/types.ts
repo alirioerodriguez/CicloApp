@@ -32,6 +32,7 @@ export interface DayLog {
   despertoPor: string[];
   sentir: { sueno: number; animo: number; energia: number } | null; // 0 a 4
   menoExtra: string[]; // otros síntomas: niebla mental, mareos…
+  gatillos: string[]; // qué pasó antes de los bochornos: café, alcohol, picante… (content/menopausia GATILLOS)
 }
 
 export type Loquios = 'rojo' | 'rosado' | 'amarillento' | 'no';
@@ -168,6 +169,8 @@ export interface Settings {
   modo: Modo;
   signo: string | null; // diario de sueños (solo por diversión)
   metodo: MetodoAviso | null;
+  // Foto de perfil elegida por ella (JPEG de 256 px como data URI). Sin foto, se usa la de su cuenta o la inicial.
+  foto: string | null;
 }
 
 export interface Dream {

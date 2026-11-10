@@ -6,6 +6,7 @@ import { Text } from './Texto';
 import Svg, { Circle } from 'react-native-svg';
 import {
   CHEQUEOS_MENO,
+  GATILLOS,
   PLATOS_MENO,
   SENTIR,
   diasSinPeriodo,
@@ -21,9 +22,11 @@ import { fonts, radius, serif, useColors } from '../lib/theme';
 import { Logo } from './Logo';
 import { EtapaChip } from './EtapaChip';
 import { Platos } from './Platos';
-import { Body, Button, Card, Columnas, Label, Muted, Screen, tap } from './ui';
+import { Body, Button, Card, Chip, Columnas, Label, Muted, Screen, tap } from './ui';
 import { Icono } from './Icono';
 import { QuizEntrada } from './QuizEntrada';
+
+const toggle = (list: string[], id: string) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
 
 export function HoyMeno() {
   const c = useColors();
@@ -90,6 +93,16 @@ export function HoyMeno() {
                   <Button label="Tuve un bochorno" onPress={() => setLog(t, { bochornos: bochornos + 1 })} />
                 </View>
               </View>
+              {bochornos > 0 && (
+                <View style={{ alignSelf: 'stretch', gap: 8 }}>
+                  <Muted style={{ textAlign: 'center' }}>¿Qué pasó antes? (opcional)</Muted>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, justifyContent: 'center' }}>
+                    {GATILLOS.map((g) => (
+                      <Chip key={g.id} label={g.label} emoji={g.emoji} selected={(log.gatillos ?? []).includes(g.id)} onPress={() => setLog(t, { gatillos: toggle(log.gatillos ?? [], g.id) })} />
+                    ))}
+                  </View>
+                </View>
+              )}
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
                 <Text style={{ fontFamily: fonts.semibold, fontSize: 12.5, color: c.text, backgroundColor: c.bg, borderRadius: radius.pill, paddingHorizontal: 11, paddingVertical: 5, overflow: 'hidden' }}>{etapa.nombre}</Text>
                 {dias != null && (

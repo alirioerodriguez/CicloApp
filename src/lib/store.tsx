@@ -54,6 +54,7 @@ export const DEFAULT_SETTINGS: Settings = {
   modo: 'auto',
   signo: null,
   metodo: null,
+  foto: null,
 };
 
 export const emptyData = (): AppData => ({
@@ -76,14 +77,14 @@ export const emptyData = (): AppData => ({
 });
 
 export function emptyLog(date: ISODate): DayLog {
-  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null, loquios: null, tomas: [], cicatriz: null, bochornos: null, intensidad: null, despertares: null, despertoPor: [], sentir: null, menoExtra: [] };
+  return { date, flow: 0, pain: 0, moods: [], symptoms: [], note: '', water: 0, sleep: null, pillTaken: false, pillTime: null, ovario: null, senos: [], intimidad: false, moco: null, temp: null, lh: null, loquios: null, tomas: [], cicatriz: null, bochornos: null, intensidad: null, despertares: null, despertoPor: [], sentir: null, menoExtra: [], gatillos: [] };
 }
 
 function isEmptyLog(l: DayLog) {
   return (
     !l.flow && !l.pain && !l.moods.length && !l.symptoms.length && !l.note.trim() && !l.water && l.sleep == null && !l.pillTaken && !l.ovario && !l.senos.length && !l.intimidad &&
     !l.moco && l.temp == null && !l.lh && !l.loquios && !l.tomas.length && !l.cicatriz &&
-    l.bochornos == null && l.despertares == null && !l.despertoPor.length && !l.sentir && !l.menoExtra.length
+    l.bochornos == null && l.despertares == null && !l.despertoPor.length && !l.sentir && !l.menoExtra.length && !l.gatillos.length
   );
 }
 

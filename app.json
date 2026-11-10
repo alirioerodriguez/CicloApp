@@ -76,6 +76,14 @@
       "description": "Savia · la vida que eres y la vida que das. Tu ciclo, tu embarazo, tu posparto y tu menopausia."
     },
     "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Savia usa tus fotos solo si eliges una para tu perfil.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ],
       "expo-router",
       "expo-sharing",
       [

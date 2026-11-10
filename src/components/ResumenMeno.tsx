@@ -2,7 +2,7 @@
 import { router } from 'expo-router';
 import { View } from 'react-native';
 import { Text } from './Texto';
-import { MRS, NIVELES_MRS, bochornosRecientes, diasSinPeriodo, puntajeMrs } from '../content/menopausia';
+import { GATILLOS, MRS, NIVELES_MRS, bochornosRecientes, diasSinPeriodo, gatillosNotados, puntajeMrs } from '../content/menopausia';
 import { shortDate } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
@@ -19,6 +19,8 @@ export function ResumenMeno() {
   const ultima = semanas.length ? data.mrs[semanas[semanas.length - 1]] : null;
   const dias = diasSinPeriodo(data);
   const maxHf = Math.max(6, ...conDato);
+  const gatillos = gatillosNotados(data);
+  const coma = (n: number) => n.toFixed(1).replace('.', ',');
 
   // Lo que más registras: los síntomas con más puntaje en la última escala.
   const top = ultima
@@ -104,6 +106,25 @@ export function ResumenMeno() {
                   </View>
                 </View>
               ))}
+            </Card>
+            <Card>
+              <Label>Lo que acompaña tus bochornos</Label>
+              {gatillos.length === 0 ? (
+                <Muted>Cuando anotes en Hoy qué pasó antes de un bochorno (café, alcohol, estrés…), aquí te contamos qué se repite. Hacen falta unas semanas de registro.</Muted>
+              ) : (
+                <>
+                  {gatillos.map((g) => (
+                    <View key={g.id} style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                      <Text style={{ fontSize: 18 }}>{GATILLOS.find((x) => x.id === g.id)?.emoji}</Text>
+                      <Text style={{ flex: 1, fontFamily: fonts.semibold, fontSize: 14, color: c.text }}>{g.label}</Text>
+                      <Text style={{ fontFamily: fonts.regular, fontSize: 13, color: c.muted }}>
+                        {coma(g.con)} vs {coma(g.sin)} al día
+                      </Text>
+                    </View>
+                  ))}
+                  <Muted>Días con eso anotado frente a los demás. Es una pista para charlar con tu médica, no una certeza.</Muted>
+                </>
+              )}
             </Card>
             <Button kind="soft" label="Controles médicos y tratamiento" onPress={() => router.push('/menopausia')} />
             <Button label="Resumen para tu médica" onPress={() => router.push('/consulta')} />

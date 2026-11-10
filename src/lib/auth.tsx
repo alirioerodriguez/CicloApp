@@ -3,7 +3,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 import { alCambiarSesion, neon, nubeConfigurada } from './nube';
 
 export interface Sesion {
-  user: { id: string; email?: string | null };
+  // `image` y `name` llegan si entró con Google (la foto de su cuenta)
+  user: { id: string; email?: string | null; image?: string | null; name?: string | null };
 }
 
 interface Auth {

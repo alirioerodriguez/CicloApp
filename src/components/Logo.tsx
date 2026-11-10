@@ -66,12 +66,10 @@ export function Logo({ size = 48, variant, animated = false }: { size?: number; 
           150,
           abrir.map((v) => Animated.timing(v, { toValue: 1, duration: 700, easing: Easing.bezier(0.3, 1.4, 0.5, 1), useNativeDriver: true })),
         ).start();
-        loop = Animated.loop(
-          Animated.sequence([
-            Animated.timing(vaiven, { toValue: 1, duration: 4000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-            Animated.timing(vaiven, { toValue: -1, duration: 4000, easing: Easing.inOut(Easing.sin), useNativeDriver: true }),
-          ]),
-        );
+        // Vaivén de ida y vuelta (ping pong): de 0° a +4° una sola vez y después de +4° a −4° y de vuelta,
+        // así cada vuelta empieza donde terminó la anterior y no salta al centro.
+        const ir = (a: number, ms: number) => Animated.timing(vaiven, { toValue: a, duration: ms, easing: Easing.inOut(Easing.sin), useNativeDriver: true });
+        loop = Animated.sequence([ir(1, 2000), Animated.loop(Animated.sequence([ir(-1, 4000), ir(1, 4000)]))]);
         setTimeout(() => vivo && loop?.start(), 1600);
       });
     return () => {

@@ -214,7 +214,16 @@ function AuthGate() {
     return (
       <>
         <StatusBar style="auto" />
-        {region.elegido ? <Login /> : <ElegirPais />}
+        <Login />
+      </>
+    );
+  }
+  // País e idioma van después del login (o al abrir sin cuenta), no antes.
+  if (!region.elegido) {
+    return (
+      <>
+        <StatusBar style="auto" />
+        <ElegirPais />
       </>
     );
   }

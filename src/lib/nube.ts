@@ -5,6 +5,7 @@ import 'react-native-url-polyfill/auto';
 import { createClient, defaultDeriveNeonUrls, SupabaseAuthAdapter } from '@neondatabase/neon-js';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
+import { cifrarConLlave, descifrarConLlave, esSobre, type Llave, type Sobre } from './cifrado';
 
 // Por defecto, el proyecto "savia" en Neon (plan Free). Es pública: sin usuario ni contraseña.
 const url = process.env.EXPO_PUBLIC_NEON_URL ?? 'https://ep-old-bar-b5e0wyej.c-7.us-east-2.aws.neon.tech/neondb';
@@ -104,17 +105,42 @@ export async function signOut(): Promise<void> {
 // ---------- Respaldo en la nube ----------
 // Una fila por usuaria en la tabla ciclo_data (user_id, data jsonb, updated_at). RLS: cada una ve solo la suya.
 
-export async function pullRemote(userId: string): Promise<{ data: unknown; updatedAt: string } | null> {
+// Si la usuaria activó el cifrado, `data` es un «sobre» (AES-256-GCM, ver lib/cifrado.ts) y el servidor no puede leer nada.
+export interface Remoto {
+  /** null cuando hay un respaldo cifrado y todavía no se puso la frase. */
+  data: unknown;
+  updatedAt: string;
+  /** El respaldo de la nube está cifrado. */
+  cifrado: boolean;
+}
+
+// Con `llave` abre el sobre (si la frase no era la correcta, tira ErrorCifrado). Sin llave y con un respaldo
+// cifrado devuelve { data: null, cifrado: true }: quien llama no debe subir nada encima de eso.
+export async function pullRemote(userId: string, llave?: Llave | null): Promise<Remoto | null> {
   if (!neon) return null;
   const { data, error } = await neon.from('ciclo_data').select('data, updated_at').eq('user_id', userId).maybeSingle();
   if (error) throw error;
   const fila = data as { data: unknown; updated_at: string } | null;
-  return fila ? { data: fila.data, updatedAt: fila.updated_at } : null;
+  if (!fila) return null;
+  if (!esSobre(fila.data)) return { data: fila.data, updatedAt: fila.updated_at, cifrado: false };
+  if (!llave) return { data: null, updatedAt: fila.updated_at, cifrado: true };
+  return { data: descifrarConLlave(fila.data, llave, 'nube'), updatedAt: fila.updated_at, cifrado: true };
 }
 
-export async function pushRemote(userId: string, payload: unknown, updatedAt: string): Promise<void> {
+// El sobre cifrado tal cual está en la nube (sin abrirlo), para derivar la llave con su sal. null si no hay o no está cifrado.
+export async function leerSobreRemoto(userId: string): Promise<{ sobre: Sobre; updatedAt: string } | null> {
+  if (!neon) return null;
+  const { data, error } = await neon.from('ciclo_data').select('data, updated_at').eq('user_id', userId).maybeSingle();
+  if (error) throw error;
+  const fila = data as { data: unknown; updated_at: string } | null;
+  return fila && esSobre(fila.data) ? { sobre: fila.data, updatedAt: fila.updated_at } : null;
+}
+
+// Con `llave` lo que sube ya va cifrado desde el teléfono.
+export async function pushRemote(userId: string, payload: unknown, updatedAt: string, llave?: Llave | null): Promise<void> {
   if (!neon) return;
-  const { error } = await neon.from('ciclo_data').upsert({ user_id: userId, data: payload, updated_at: updatedAt });
+  const data = llave ? cifrarConLlave(payload, llave, 'nube') : payload;
+  const { error } = await neon.from('ciclo_data').upsert({ user_id: userId, data, updated_at: updatedAt });
   if (error) throw error;
 }
 

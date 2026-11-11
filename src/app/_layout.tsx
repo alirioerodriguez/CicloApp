@@ -13,7 +13,7 @@ import { Logo } from '../components/Logo';
 import { AuthProvider, useAuth } from '../lib/auth';
 import { MisionBanner } from '../components/MisionBanner';
 import { Button } from '../components/ui';
-import { rescheduleAll } from '../lib/notifications';
+import { alarmasExactasConcedidas, rescheduleAll } from '../lib/notifications';
 import { StoreProvider, useStore } from '../lib/store';
 import { ThemePrefs, serif, useColors } from '../lib/theme';
 import { RegionProvider, t, useRegion } from '../lib/region';
@@ -75,6 +75,23 @@ function Gate() {
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => rescheduleAll(data, summary).catch(() => {}), 1500);
   }, [ready, data, summary]);
+
+  // Android: si la usuaria cambia el permiso de alarmas exactas en los ajustes del teléfono, se reprograman los avisos al volver a la app.
+  const alarmas = useRef<boolean | null | undefined>(undefined);
+  const datosAlarmas = useRef({ data, summary });
+  datosAlarmas.current = { data, summary };
+  useEffect(() => {
+    if (!ready || Platform.OS !== 'android') return;
+    const mirar = async () => {
+      const ahora = await alarmasExactasConcedidas();
+      const antes = alarmas.current;
+      alarmas.current = ahora;
+      if (antes !== undefined && antes !== ahora) rescheduleAll(datosAlarmas.current.data, datosAlarmas.current.summary).catch(() => {});
+    };
+    mirar().catch(() => {});
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && mirar().catch(() => {}));
+    return () => sub.remove();
+  }, [ready]);
 
   // Modo pareja en vivo: cuando cambia lo que ella comparte, se sube el resumen (con una pausa y solo si cambió).
   const userId = session?.user.id ?? null;

@@ -12,7 +12,10 @@ import { ANTICONCEPTIVOS, CAMBIO_ETAPA, CONDICIONES_ESPECIAL, NOTA_ESPECIAL, NOT
 import { Body, Button, Card, Chip, Columnas, Divider, Label, Muted, Row, Screen, Stepper, Toggle, confirm, notify } from '../../components/ui';
 import { NO_DISPOSITIVO } from '../../content/info';
 import { CORREO_RESULTADOS } from '../../content/pruebas';
-import { exportBackup, pickBackup, shareReport } from '../../lib/backup';
+import { abrirRespaldoCifrado, exportBackup, exportBackupCifrado, leerRespaldo, shareReport } from '../../lib/backup';
+import type { Sobre } from '../../lib/cifrado';
+import { CifradoRespaldo } from '../../components/CifradoRespaldo';
+import { FraseModal } from '../../components/FraseModal';
 import { diffDays, longDate, timeLabel, today } from '../../lib/dates';
 import { ensurePermission, notificationsSupported, pedirAlarmasExactas } from '../../lib/notifications';
 import { useAuth } from '../../lib/auth';
@@ -21,7 +24,7 @@ import { useStore } from '../../lib/store';
 import { ajustesDeEtapa, transicion, type Transicion } from '../../lib/transicion';
 import { signOut } from '../../lib/nube';
 import { radius, useColors } from '../../lib/theme';
-import type { Settings } from '../../lib/types';
+import type { AppData, Settings } from '../../lib/types';
 import { IconoBurbuja } from '../../components/Icono';
 import { t } from '../../lib/region';
 import { SelectorRegion } from '../../components/ElegirPais';
@@ -86,6 +89,14 @@ export default function Perfil() {
 
   const input = { borderRadius: radius.md, backgroundColor: c.bg, padding: 12, fontSize: 16, color: c.text };
   const backupAge = s.lastBackup ? diffDays(today(), s.lastBackup) : null;
+  const restaurarDesde = async (backup: AppData) => {
+    const n = Object.keys(backup.logs).length;
+    if (await confirm('¿Restaurar este respaldo?', `Tiene ${n} días registrados. Reemplazará lo que hay ahora en la app.`, 'Restaurar')) {
+      replaceAll({ ...backup, settings: { ...backup.settings, onboarded: true } });
+      notify('Listo', 'Tus datos se restauraron.');
+    }
+  };
+  const [frasePara, setFrasePara] = useState<'respaldar' | { restaurar: Sobre } | null>(null);
 
   return (
     <Screen title="Perfil">
@@ -413,8 +424,9 @@ export default function Perfil() {
           <Label>Tu cuenta</Label>
           <Body>{session.user.email}</Body>
           <Muted>
-            {{ local: 'Solo en este teléfono', sincronizando: 'Guardando en tu cuenta…', 'al-dia': '✓ Respaldado en tu cuenta', 'sin-conexion': 'Sin conexión: se respalda cuando vuelva internet' }[sync]}
+            {{ local: 'Solo en este teléfono', sincronizando: 'Guardando en tu cuenta…', 'al-dia': '✓ Respaldado en tu cuenta', 'sin-conexion': 'Sin conexión: se respalda cuando vuelva internet', bloqueada: 'Respaldo cifrado: pon tu frase para seguir respaldando' }[sync]}
           </Muted>
+          <CifradoRespaldo />
           <Button
             small
             kind="ghost"
@@ -451,21 +463,48 @@ export default function Perfil() {
             }
           }}
         />
+        <Button kind="soft" label="Respaldar con clave (cifrado)" onPress={() => setFrasePara('respaldar')} />
         <Button
           kind="ghost"
           label="Restaurar un respaldo"
           onPress={async () => {
             try {
-              const backup = await pickBackup();
-              if (!backup) return;
-              const n = Object.keys(backup.logs).length;
-              if (await confirm('¿Restaurar este respaldo?', `Tiene ${n} días registrados. Reemplazará lo que hay ahora en la app.`, 'Restaurar')) {
-                replaceAll({ ...backup, settings: { ...backup.settings, onboarded: true } });
-                notify('Listo', 'Tus datos se restauraron.');
+              const leido = await leerRespaldo();
+              if (!leido) return;
+              if (leido.tipo === 'cifrado') {
+                setFrasePara({ restaurar: leido.sobre });
+                return;
               }
+              await restaurarDesde(leido.data);
             } catch (e) {
               notify('Ese archivo no sirve', e instanceof Error ? e.message : String(e));
             }
+          }}
+        />
+        <FraseModal
+          visible={frasePara === 'respaldar'}
+          crear
+          titulo="Respaldar con clave"
+          mensaje="Se guarda un archivo cifrado: solo se abre con tu frase, en cualquier teléfono, sin necesitar cuenta."
+          okLabel="Cifrar y guardar"
+          onCancel={() => setFrasePara(null)}
+          onOk={async (frase) => {
+            await exportBackupCifrado(data, frase);
+            updateSettings({ lastBackup: today() });
+            setFrasePara(null);
+          }}
+        />
+        <FraseModal
+          visible={typeof frasePara === 'object' && frasePara !== null}
+          titulo="Respaldo cifrado"
+          mensaje="Este archivo está cifrado. Pon la frase con la que lo guardaste."
+          okLabel="Abrir"
+          onCancel={() => setFrasePara(null)}
+          onOk={async (frase) => {
+            if (typeof frasePara !== 'object' || frasePara === null) return;
+            const backup = await abrirRespaldoCifrado(frasePara.restaurar, frase);
+            setFrasePara(null);
+            await restaurarDesde(backup);
           }}
         />
         <Divider />

@@ -44,6 +44,7 @@ Savia **solo lee**: nunca escribe en Health Connect. Pide 8 permisos (`app.json`
 - **¿Recopila o comparte datos?** Recopila solo si la usuaria crea una cuenta para el respaldo en la nube o el modo pareja. Sin cuenta, todo queda en el teléfono y no se declara como recopilado.
 - **¿Comparte datos con terceros?** No. Ningún dato se vende ni va a redes de publicidad.
 - **¿Cifrado en tránsito?** Sí (HTTPS hacia Neon y Vercel).
+- **Cifrado con clave propia (opcional, 11/11/2026):** la usuaria puede cifrar su respaldo en la nube y el archivo con una frase (AES-256-GCM, scrypt; `src/lib/cifrado.ts`). Es **opcional**: por defecto la copia no va cifrada con clave propia. Por eso no se declara «cifrado de extremo a extremo» para todos los datos; en el formulario, el cifrado en tránsito se marca «Sí» y lo opcional se explica en la política.
 - **¿Se pueden borrar los datos?** Sí: en la app, Perfil → «Eliminar mi cuenta»; por web, la dirección de eliminación de cuenta.
 - **Tipos de datos** (todos opcionales, solo con cuenta):
   1. **Información personal → correo electrónico y nombre:** para entrar a la cuenta. Es obligatorio si crea cuenta.
@@ -56,7 +57,7 @@ En «información de salud» entran también lo que soñó, los controles médic
 ### Lo que no se declara como «compartir»
 - **Modo pareja:** lo inicia la usuaria y va a la persona que ella eligió con un código. Google no lo cuenta como compartir con terceros cuando es una transferencia que la usuaria pide y espera.
 - **Neon y Vercel:** son proveedores que procesan los datos por cuenta de Savia, no terceros que los usan para sí.
-- **Respaldo en archivo y PDF para la médica:** los arma el teléfono y los comparte la usuaria. El archivo de respaldo **no va cifrado** (lo dice la política).
+- **Respaldo en archivo y PDF para la médica:** los arma el teléfono y los comparte la usuaria. El archivo de respaldo **no va cifrado por defecto**; la usuaria puede elegir «Respaldar con clave (cifrado)» (lo dice la política).
 - **Google Fonts:** el PDF para la médica descarga las tipografías; no lleva datos de la usuaria. Si se quiere evitar del todo, hay que incluir las fuentes dentro de la app (`src/lib/informe.ts`).
 
 ### Revisión punto por punto (08/11/2026)
@@ -74,7 +75,7 @@ En «información de salud» entran también lo que soñó, los controles médic
 | Respuestas de «Ayúdanos a mejorar» | Viajaban en la copia sin mencionarse | **Agregado el 08/11** |
 | Proveedores | No se nombraban Vercel ni Google Fonts | **Agregado el 08/11** |
 
-No declarar «cifrado de extremo a extremo»: el respaldo con clave propia quedó para después del lanzamiento.
+No declarar «cifrado de extremo a extremo» como regla general: el cifrado con clave propia existe desde el 11/11/2026 pero es opcional (rama `claude/cifrado-cliente`; vale cuando se una a main).
 
 ## 4. Antes de enviar
 

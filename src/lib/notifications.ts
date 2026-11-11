@@ -75,6 +75,21 @@ export async function pedirAlarmasExactas(): Promise<void> {
   }
 }
 
+/**
+ * ¿Tiene Savia el permiso de alarmas exactas? `null` si no aplica (iOS, web, o Android sin ese permiso).
+ * Se mira cada vez que la app vuelve al frente: si la usuaria lo cambió en los ajustes del teléfono, los avisos que ya estaban
+ * programados quedaron con la forma vieja (aproximada o exacta) y hay que reprogramarlos (rescheduleAll).
+ * Si el permiso falta, expo-notifications programa `alarmClock` como `bestEffort` por su cuenta (no da error): no hace falta otra vía.
+ */
+export async function alarmasExactasConcedidas(): Promise<boolean | null> {
+  if (Platform.OS !== 'android') return null;
+  try {
+    return (await Notifications.getExactAlarmPermissionsAsync()).granted;
+  } catch {
+    return null;
+  }
+}
+
 async function daily(title: string, body: string, hour: number, minute: number) {
   await Notifications.scheduleNotificationAsync({
     content: { title: tr(title), body: tr(body) },

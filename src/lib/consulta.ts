@@ -4,7 +4,7 @@ import { NOMBRE_ETAPA } from '../content/confianza';
 import { ANTICONCEPTIVOS, etapaById } from '../content/etapas';
 import { CICATRIZ_ALERTA, EDIMBURGO, lunes, nivelEdimburgo, semanasPosparto } from '../content/posparto';
 import { EXAMENES, presionAlta, semanasEmbarazo } from '../content/embarazo';
-import { CHEQUEOS_MENO, MRS, NIVELES_MRS, diasSinPeriodo, etapaMeno, puntajeMrs } from '../content/menopausia';
+import { CHEQUEOS_MENO, MRS, NIVELES_MRS, diasSinPeriodo, etapaMeno, gatillosNotados, puntajeMrs } from '../content/menopausia';
 import { detectAlertas } from './alertas';
 import { lineaPregunta, pendientes } from './preguntasConsulta';
 import type { Summary } from './cycle';
@@ -72,6 +72,8 @@ export function consulta(data: AppData, s: Summary, meses: 3 | 6): Consulta {
       frecuentes.splice(0, frecuentes.length, ...top);
     }
     conversar.push(st.meno.trh ? `Usa TRH (${st.meno.trhTipo.toLowerCase()}): revisar dosis y efecto en los bochornos.` : 'Sin TRH: conversar opciones.');
+    const gat = gatillosNotados(data, today(), meses * 30);
+    if (gat.length) conversar.push(`Los bochornos fueron más seguidos los días con: ${gat.slice(0, 3).map((g) => `${g.label.toLowerCase()} (${coma(g.con)} vs. ${coma(g.sin)} por día)`).join(', ')}.`);
     if (mrs && mrs.total > 16) conversar.push('Síntomas fuertes en la escala MRS.');
     if (st.meno.etapa === 'post' && logs.some((l) => l.flow > 0)) conversar.push('Registró un sangrado después de la menopausia: evaluar.');
     const pend = CHEQUEOS_MENO.filter((x) => !data.chequeosMeno.includes(x.id)).map((x) => x.titulo.toLowerCase());

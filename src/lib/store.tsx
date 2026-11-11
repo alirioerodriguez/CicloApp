@@ -6,7 +6,9 @@ import { ANIMO_A_SINTOMA, ID_RENOMBRADOS } from '../content/catalogo';
 import { CLAVE_ACTIVA, clasificarToma, migrarBlister, normalizarTomas } from './blister';
 import { summarize, type Summary } from './cycle';
 import { actualizarWidgets } from '../widget/actualizarWidgets';
-import { borrarUsuario, dejarDeCompartir, deleteRemote, pullRemote, pushRemote, signOut, soltarPareja } from './nube';
+import { crearLlave, abrirLlave, descifrarConLlave, ErrorCifrado, esSobre } from './cifrado';
+import { getLlave, setLlave } from './llaveNube';
+import { borrarUsuario, dejarDeCompartir, deleteRemote, leerSobreRemoto, pullRemote, pushRemote, signOut, soltarPareja } from './nube';
 import { tomarConsentimientoPendiente } from './consentimiento';
 import { addDays, today } from './dates';
 import type { AppData, BlisterConfig, DayLog, EstadoToma, ISODate, Settings } from './types';
@@ -175,9 +177,17 @@ interface Store {
   resetAll: () => void;
   borrarCuenta: () => Promise<'completo' | 'falta-usuario'>;
   sync: SyncState;
+  /** Respaldo en la nube: 'no' (sin cifrar), 'activo' (cifrado y con la frase puesta) o 'bloqueado' (cifrado y falta la frase). */
+  cifradoNube: 'no' | 'activo' | 'bloqueado';
+  /** Cifra el respaldo de la nube con una frase nueva y lo sube de nuevo ya cifrado. Tira ErrorCifrado si la frase es corta. */
+  activarCifradoNube: (frase: string) => Promise<void>;
+  /** Pone la frase para abrir el respaldo cifrado de la nube. Tira ErrorCifrado('frase') si no es la correcta. */
+  desbloquearNube: (frase: string) => Promise<void>;
+  /** Vuelve a guardar el respaldo de la nube sin cifrar (lo pide la usuaria; necesita la frase puesta). */
+  desactivarCifradoNube: () => Promise<void>;
 }
 
-export type SyncState = 'local' | 'sincronizando' | 'al-dia' | 'sin-conexion';
+export type SyncState = 'local' | 'sincronizando' | 'al-dia' | 'sin-conexion' | 'bloqueada';
 
 const Ctx = createContext<Store | null>(null);
 
@@ -192,6 +202,9 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
   // Mientras se elimina la cuenta no se guarda nada (si no, la copia vacía volvería a subirse a la nube)
   const borrando = useRef(false);
   const fromLoad = useRef(true); // el primer cambio viene de cargar, no de la usuaria
+  // El respaldo de la nube está cifrado y falta la frase: no se sube nada encima (se pisaría con datos sin cifrar).
+  const bloqueado = useRef(false);
+  const [cifradoNube, setCifradoNube] = useState<'no' | 'activo' | 'bloqueado'>('no');
   const key = userId ? `${KEY}:${userId}` : KEY;
   const stampKey = `${key}:updatedAt`;
 
@@ -215,17 +228,31 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
       if (userId) {
         try {
           setSync('sincronizando');
-          const remote = await pullRemote(userId);
-          if (remote && (!localStamp || remote.updatedAt > localStamp)) {
-            chosen = normalize(remote.data);
-            await AsyncStorage.setItem(stampKey, remote.updatedAt);
-          } else if (local) {
-            const stamp = localStamp ?? new Date().toISOString();
-            await pushRemote(userId, local, stamp);
+          const remote = await pullRemote(userId, getLlave());
+          if (remote?.cifrado && remote.data === null) {
+            // Respaldo cifrado y sin frase: se sigue con lo del teléfono y no se sube nada hasta desbloquear.
+            bloqueado.current = true;
+            setCifradoNube('bloqueado');
+            setSync('bloqueada');
+          } else {
+            bloqueado.current = false;
+            setCifradoNube(remote?.cifrado || getLlave() ? 'activo' : 'no');
+            if (remote && (!localStamp || remote.updatedAt > localStamp)) {
+              chosen = normalize(remote.data);
+              await AsyncStorage.setItem(stampKey, remote.updatedAt);
+            } else if (local) {
+              const stamp = localStamp ?? new Date().toISOString();
+              await pushRemote(userId, local, stamp, getLlave());
+            }
+            setSync('al-dia');
           }
-          setSync('al-dia');
-        } catch {
-          setSync('sin-conexion');
+        } catch (e) {
+          if (e instanceof ErrorCifrado) {
+            // La frase que había puesta ya no abre el respaldo: queda bloqueado hasta que la ponga de nuevo.
+            bloqueado.current = true;
+            setCifradoNube('bloqueado');
+            setSync('bloqueada');
+          } else setSync('sin-conexion');
         }
       }
       if (cancel) return;
@@ -267,11 +294,11 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
         .then(() => actualizarWidgets())
         .catch(() => {});
     }, 300);
-    if (!userId) return;
+    if (!userId || bloqueado.current) return;
     if (pushTimer.current) clearTimeout(pushTimer.current);
     setSync('sincronizando');
     pushTimer.current = setTimeout(() => {
-      pushRemote(userId, data, stamp)
+      pushRemote(userId, data, stamp, getLlave())
         .then(() => setSync('al-dia'))
         .catch(() => setSync('sin-conexion'));
     }, 2000);
@@ -410,12 +437,61 @@ export function StoreProvider({ children, userId }: { children: ReactNode; userI
     if (__DEV__ && Platform.OS === 'web') (window as unknown as Record<string, unknown>).__cicloReplace = replaceAll;
   }, [replaceAll]);
 
+  // ---------- Cifrado del respaldo en la nube ----------
+  const activarCifradoNube = useCallback(
+    async (frase: string) => {
+      if (!userId) throw new Error('Necesitas una cuenta para respaldar en la nube.');
+      const llave = await crearLlave(frase); // tira ErrorCifrado si la frase es corta
+      if (pushTimer.current) clearTimeout(pushTimer.current);
+      // Primero se sube cifrado y recién después se guarda la llave: si falla la subida, nada cambia.
+      await pushRemote(userId, latest.current, new Date().toISOString(), llave);
+      setLlave(llave);
+      bloqueado.current = false;
+      setCifradoNube('activo');
+      setSync('al-dia');
+    },
+    [userId],
+  );
+
+  const desbloquearNube = useCallback(
+    async (frase: string) => {
+      if (!userId) throw new Error('Necesitas una cuenta para respaldar en la nube.');
+      const sobre = await leerSobreRemoto(userId);
+      if (!sobre) throw new Error('Tu respaldo en la nube no está cifrado.');
+      const llave = await abrirLlave(frase, sobre.sobre);
+      const abierto = descifrarConLlave(sobre.sobre, llave, 'nube'); // tira ErrorCifrado('frase') si no es la correcta
+      setLlave(llave);
+      bloqueado.current = false;
+      setCifradoNube('activo');
+      // Gana lo más nuevo, igual que al abrir la app.
+      const stamp = await AsyncStorage.getItem(stampKey);
+      if (!stamp || sobre.updatedAt > stamp) {
+        setData(normalize(abierto));
+        await AsyncStorage.setItem(stampKey, sobre.updatedAt);
+      } else {
+        await pushRemote(userId, latest.current, stamp, llave);
+      }
+      setSync('al-dia');
+    },
+    [userId, stampKey],
+  );
+
+  const desactivarCifradoNube = useCallback(async () => {
+    if (!userId) return;
+    if (!getLlave()) throw new ErrorCifrado('frase', 'Pon primero tu frase para poder desactivarlo.');
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    await pushRemote(userId, latest.current, new Date().toISOString(), null);
+    setLlave(null);
+    setCifradoNube('no');
+    setSync('al-dia');
+  }, [userId]);
+
   const summary = useMemo(() => summarize(data), [data]);
   const getLog = useCallback((date: ISODate) => data.logs[date] ?? emptyLog(date), [data.logs]);
 
   const value = useMemo(
-    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, setMision, replaceAll, resetAll, borrarCuenta, sync }),
-    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, replaceAll, resetAll, borrarCuenta, sync],
+    () => ({ ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, setMision, replaceAll, resetAll, borrarCuenta, sync, cifradoNube, activarCifradoNube, desbloquearNube, desactivarCifradoNube }),
+    [ready, data, summary, getLog, setLog, togglePeriodDay, startPeriodToday, updateSettings, update, guardarBlister, marcarToma, quitarToma, mision, replaceAll, resetAll, borrarCuenta, sync, cifradoNube, activarCifradoNube, desbloquearNube, desactivarCifradoNube],
   );
   return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }

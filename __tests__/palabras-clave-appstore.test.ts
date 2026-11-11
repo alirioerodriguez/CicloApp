@@ -1,4 +1,5 @@
 // Las palabras clave de App Store viven en docs/app-store-iphone.md: máximo 100 caracteres y sin frases de anticoncepción.
+import { describe, expect, it } from '@jest/globals';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 

@@ -8,6 +8,7 @@ import { addDays, diffDays, longDate, shortDate, today } from './dates';
 import { region, t as tr } from './region';
 import { formatoSueno, formatoTemp, resumenReloj } from './reloj';
 import { ovarioHistorial } from './salud';
+import { gatillosNotados, resumenBochornos } from '../content/menopausia';
 import type { AppData, DayLog, ISODate } from './types';
 
 const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -185,6 +186,27 @@ export function reportHtml(data: AppData, s: Summary): string {
     }</div>`;
   };
 
+  // En modo menopausia: bochornos y lo que los acompaña (últimos 90 días). Sale en la página 2, debajo de los síntomas.
+  const rb = st.etapa === 'meno' ? resumenBochornos(data, hoy, 90) : null;
+  const tarjetaBochornos = () => {
+    if (!rb) return '';
+    const fila = (a: string, b: string) => `<div class="b-fila" style="grid-template-columns:1fr auto"><span>${tr(a)}</span><b>${b}</b></div>`;
+    const gat = gatillosNotados(data, hoy, 90);
+    return `<div class="tarjeta" style="margin-top:14px"><h3>${tr('Bochornos (últimos 90 días)')}</h3>
+      ${fila('Días con dato anotado', String(rb.registrados))}
+      ${fila('Días con bochornos', `${rb.conBochornos} (${Math.round((rb.conBochornos / rb.registrados) * 100)}%)`)}
+      ${fila('Promedio por día', decimal(rb.promedio))}
+      ${fila('Máximo en un día', String(rb.maximo))}
+      ${rb.fuertes ? fila('Días con bochorno fuerte o muy fuerte', String(rb.fuertes)) : ''}
+      ${
+        gat.length
+          ? `<p style="margin:10px 0 2px;font-weight:600">${tr('Lo que acompañó los días con más bochornos')}</p>${gat
+              .map((g) => fila(g.label, `${decimal(g.con)} ${tr('vs.')} ${decimal(g.sin)} ${tr('por día')} · ${dias(g.dias)}`))
+              .join('')}<p style="margin:6px 0 0;font-size:10px;color:#5B4A55">${tr('Es una coincidencia en sus registros, no prueba que sea la causa.')}</p>`
+          : `<p style="margin:8px 0 0;font-size:10.5px;color:#5B4A55">${tr('Todavía no se nota un gatillo claro en sus registros.')}</p>`
+      }</div>`;
+  };
+
   // ---------- Página 3 (opcional): reloj o app de salud ----------
   const rel = st.pdfReloj ? resumenReloj(data, s, hoy, desde) : null;
   const conReloj = !!rel && rel.noches >= 7;
@@ -341,6 +363,7 @@ export function reportHtml(data: AppData, s: Summary): string {
     ${barras('Síntomas más frecuentes', symptoms, (id) => symptomById(id).label)}
     ${moods.length ? barras('Ánimos más frecuentes', moods, (id) => moodById(id).label) : ''}
   </div>
+  ${tarjetaBochornos()}
   <div class="aviso">${tr(conAnimo ? 'No incluye intimidad, notas personales ni diario de sueños.' : 'No incluye intimidad, notas personales, estado de ánimo ni diario de sueños.')} ${tr('Datos registrados por la usuaria en una app de registro personal; no es un dispositivo médico.')} ${tr('Las fechas futuras y las fases son estimaciones.')}</div>
   ${pie(2)}
 </section>

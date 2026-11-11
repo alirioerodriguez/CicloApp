@@ -54,6 +54,28 @@ export function gatillosNotados(data: AppData, ref: ISODate = today(), dias = 60
     .map(({ n: _n, ...x }) => x);
 }
 
+export interface ResumenBochornos {
+  registrados: number; // días con el dato anotado (0 también cuenta)
+  conBochornos: number; // días con al menos uno
+  promedio: number; // por día registrado
+  maximo: number;
+  fuertes: number; // días cuyo bochorno más fuerte fue «Fuerte» o «Muy fuerte»
+}
+
+/** Bochornos de los últimos `dias` días, para el PDF de la médica. null si no anotó ninguno. */
+export function resumenBochornos(data: AppData, ref: ISODate = today(), dias = 90): ResumenBochornos | null {
+  const ls = Array.from({ length: dias }, (_, i) => data.logs[addDays(ref, -i)]).filter((l) => l && l.bochornos != null);
+  if (!ls.length) return null;
+  const n = ls.map((l) => l.bochornos as number);
+  return {
+    registrados: n.length,
+    conBochornos: n.filter((x) => x > 0).length,
+    promedio: n.reduce((a, b) => a + b, 0) / n.length,
+    maximo: Math.max(...n),
+    fuertes: ls.filter((l) => (l.bochornos as number) > 0 && (l.intensidad === 'Fuerte' || l.intensidad === 'Muy fuerte')).length,
+  };
+}
+
 export const INTENSIDADES = ['Leve', 'Moderado', 'Fuerte', 'Muy fuerte'];
 export const DESPERTO_POR = [
   { id: 'calor', label: 'Calor o sudor' },

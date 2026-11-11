@@ -16,3 +16,14 @@ describe('Palabras clave de App Store', () => {
     expect(linea.toLowerCase()).not.toMatch(/anticonce|seguro|evitar|fertil|savia/);
   });
 });
+
+describe('Ficha de Google Play', () => {
+  const ficha = readFileSync(join(__dirname, '..', 'docs', 'ficha-google-play.md'), 'utf-8');
+  it('no usa «anticonceptivo», «días seguros» ni «evitar el embarazo» fuera de la línea que lo prohíbe', () => {
+    const fuera = ficha.split('
+').filter((l) => !/No agregar «anticonceptivo»/.test(l)).join('
+');
+    expect(fuera).not.toMatch(/anticonceptiv|días seguros|evitar el embarazo/i);
+  });
+});
+

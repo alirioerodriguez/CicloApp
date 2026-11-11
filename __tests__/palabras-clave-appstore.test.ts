@@ -18,11 +18,10 @@ describe('Palabras clave de App Store', () => {
 });
 
 describe('Ficha de Google Play', () => {
+  const NL = String.fromCharCode(10);
   const ficha = readFileSync(join(__dirname, '..', 'docs', 'ficha-google-play.md'), 'utf-8');
   it('no usa «anticonceptivo», «días seguros» ni «evitar el embarazo» fuera de la línea que lo prohíbe', () => {
-    const fuera = ficha.split('
-').filter((l) => !/No agregar «anticonceptivo»/.test(l)).join('
-');
+    const fuera = ficha.split(NL).filter((l) => !/No agregar «anticonceptivo»/.test(l)).join(NL);
     expect(fuera).not.toMatch(/anticonceptiv|días seguros|evitar el embarazo/i);
   });
 });

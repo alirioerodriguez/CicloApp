@@ -2867,4 +2867,9 @@ export const EN_PATRONES: Record<string, string> = {
   "por día": "per day",
   "Es una coincidencia en sus registros, no prueba que sea la causa.": "This is a pattern in her own logs; it does not prove the cause.",
   "Todavía no se nota un gatillo claro en sus registros.": "No clear trigger shows up in her logs yet.",
+  "Toca cada paso cuando lo hagas.": "Tap each step as you do it.",
+  "¿Notaste algo distinto?": "Did you notice anything different?",
+  "No, todo igual": "No, everything looks the same",
+  "Sí, algo cambió": "Yes, something changed",
+  "Puedes agendar el control arriba, en «Tus controles», y anotar qué notaste.": "You can schedule the checkup above, in “Your checkups”, and write down what you noticed.",
 };

@@ -1,10 +1,10 @@
 // "Salud ginecológica": controles, autoexamen de mamas, dolor de ovarios y registro de quistes.
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { TextInput, View } from 'react-native';
+import { Pressable, TextInput, View } from 'react-native';
 import { Text } from '../components/Texto';
 import { MonthGrid } from '../components/MonthGrid';
-import { Body, Button, Card, Chip, Divider, Label, Muted, Row, Screen, Stepper, confirm, notify } from '../components/ui';
+import { Body, Button, Card, Chip, Divider, Label, Muted, Row, Screen, Stepper, confirm, notify, tap } from '../components/ui';
 import { AUTOEXAMEN, TIPOS_CONTROL, TIPOS_QUISTE, URGENTE_QUISTE } from '../content/salud';
 import { shareReport } from '../lib/backup';
 import { meses, addDays, fromISO, inDays, shortDate, today } from '../lib/dates';
@@ -117,18 +117,52 @@ function Autoexamen() {
   const next = proximoAutoexamen(data, summary);
   const last = [...data.autoexamenes].sort().pop();
   const hoyHecho = last === today();
+  // Guiado: cada paso se toca cuando lo hiciste; al terminar, «¿notaste algo distinto?». No se guarda nada de esto (solo el día, con «Lo hice hoy»).
+  const [hechos, setHechos] = useState<number[]>([]);
+  const [distinto, setDistinto] = useState<boolean | null>(null);
+  const todos = hechos.length === AUTOEXAMEN.pasos.length;
+  const alternar = (i: number) => {
+    tap();
+    setHechos((h) => (h.includes(i) ? h.filter((x) => x !== i) : [...h, i]));
+  };
   return (
     <Card tint={c.lavandaSuave}>
       <Label>Autoexamen de mamas</Label>
       <Muted>{AUTOEXAMEN.resumen}</Muted>
-      {AUTOEXAMEN.pasos.map((p, i) => (
-        <View key={p} style={{ flexDirection: 'row', gap: 10, alignItems: 'flex-start' }}>
-          <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: c.rosa, alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color: c.onAccent, fontFamily: fonts.bold, fontSize: 12 }}>{i + 1}</Text>
+      <Muted>Toca cada paso cuando lo hagas.</Muted>
+      {AUTOEXAMEN.pasos.map((p, i) => {
+        const on = hechos.includes(i);
+        return (
+          <Pressable
+            key={p}
+            accessibilityRole="checkbox"
+            accessibilityState={{ checked: on }}
+            aria-checked={on}
+            onPress={() => alternar(i)}
+            style={({ pressed }) => ({ flexDirection: 'row', gap: 10, alignItems: 'flex-start', paddingVertical: 4, opacity: pressed ? 0.7 : 1 })}
+          >
+            <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: on ? c.salvia : c.rosa, alignItems: 'center', justifyContent: 'center' }}>
+              <Text style={{ color: c.onAccent, fontFamily: fonts.bold, fontSize: 12 }}>{on ? '✓' : i + 1}</Text>
+            </View>
+            <Body style={{ flex: 1, textDecorationLine: on ? 'line-through' : 'none', color: on ? c.muted : c.text }}>{p}</Body>
+          </Pressable>
+        );
+      })}
+      {todos && (
+        <View style={{ gap: 8 }}>
+          <Body style={{ fontWeight: '700' }}>¿Notaste algo distinto?</Body>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <Chip label="No, todo igual" selected={distinto === false} onPress={() => setDistinto(false)} />
+            <Chip label="Sí, algo cambió" selected={distinto === true} onPress={() => setDistinto(true)} />
           </View>
-          <Body style={{ flex: 1 }}>{p}</Body>
+          {distinto === true && (
+            <Card tint={c.duraznoSuave}>
+              <Body>{AUTOEXAMEN.aviso}</Body>
+              <Muted>Puedes agendar el control arriba, en «Tus controles», y anotar qué notaste.</Muted>
+            </Card>
+          )}
         </View>
-      ))}
+      )}
       <Button
         label={hoyHecho ? 'Hecho hoy ✓' : 'Lo hice hoy'}
         kind={hoyHecho ? 'soft' : 'primary'}
@@ -138,7 +172,7 @@ function Autoexamen() {
       <Muted style={{ textAlign: 'center' }}>
         {last ? `Último: ${shortDate(last)} · ` : ''}Próximo: {shortDate(next)} ({inDays(diasHasta(next))})
       </Muted>
-      <Muted style={{ color: c.text }}>{AUTOEXAMEN.aviso}</Muted>
+      {distinto !== true && <Muted style={{ color: c.text }}>{AUTOEXAMEN.aviso}</Muted>}
     </Card>
   );
 }

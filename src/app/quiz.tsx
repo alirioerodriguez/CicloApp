@@ -9,6 +9,7 @@ import { Icono } from '../components/Icono';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui';
 import { COLOR_NIVEL, RESULTADOS, alternar, areas, elegidas, idea, nivel, preguntas, type Pregunta, type Respuesta } from '../content/quiz';
 import { today } from '../lib/dates';
+import { fraseDelDia, lecturas } from '../content/quizLecturas';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 
@@ -65,6 +66,7 @@ export default function Quiz() {
   if (paso === 'flor') {
     const R = RESULTADOS[res.nivel];
     const [ic, tip] = idea(data.settings.etapa, r.pide, res.peor);
+    const leidas = lecturas(qs, r);
     return (
       <Screen angosta right={<Button small kind="soft" label="Cerrar" onPress={salir} />}>
         <View style={{ alignItems: 'center', gap: 10 }}>
@@ -81,6 +83,17 @@ export default function Quiz() {
             ))}
           </View>
         </View>
+        {leidas.length > 0 && (
+          <Card>
+            <Label>Lo que nos cuentas</Label>
+            {leidas.map((x) => (
+              <View key={x} style={{ flexDirection: 'row', gap: 10 }}>
+                <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: c.rosa, marginTop: 9 }} />
+                <Body style={{ flex: 1 }}>{x}</Body>
+              </View>
+            ))}
+          </Card>
+        )}
         <Card tint={c.rosaSuave} style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Icono e={ic} size={26} />
           <View style={{ flex: 1 }}>
@@ -88,7 +101,7 @@ export default function Quiz() {
             <Body>{tip}</Body>
           </View>
         </Card>
-        <Text style={{ fontFamily: 'Fraunces_400Regular_Italic', fontSize: 19, color: c.text, textAlign: 'center' }}>"{R.frase}"</Text>
+        <Text style={{ fontFamily: 'Fraunces_400Regular_Italic', fontSize: 19, color: c.text, textAlign: 'center' }}>"{fraseDelDia(res.nivel, today())}"</Text>
         <Button label="Guardar en mi día" onPress={guardar} />
         {res.nivel === 'cuidado' && <Muted style={{ textAlign: 'center' }}>Si sientes que no puedes con esto o piensas en hacerte daño, busca ayuda hoy: habla con tu médica o llama al 911.</Muted>}
       </Screen>

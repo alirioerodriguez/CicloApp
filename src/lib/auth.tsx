@@ -1,7 +1,7 @@
 // Sesión de la usuaria (correo y contraseña o Google, vía Neon Auth).
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { alCambiarSesion, neon, nubeConfigurada } from './nube';
+import { alCambiarSesion, neon, nubeConfigurada, nubeLista } from './nube';
 
 export interface Sesion {
   // `image` y `name` llegan si entró con Google (la foto de su cuenta)
@@ -87,16 +87,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (vivo && v) setSession((actual) => actual ?? (JSON.parse(v) as Sesion));
       })
       .catch(() => {});
-    inicio.then(leer).then((ok) => {
+    inicio.then(() => nubeLista).then(leer).then((ok) => {
       if (!ok) setTimeout(() => void leer(), 5000);
     }).finally(() => vivo && setLoading(false));
     alCambiarSesion(async () => {
       await leer();
     });
-    const { data } = neon.auth.onAuthStateChange((evento, s) => {
-      // INITIAL_SESSION sin sesión puede ser una falla de red: lo confirma «leer»
-      const r = trasEvento(evento, s);
-      if (r !== MANTENER) aplicar(r);
+    let desuscribir = () => {};
+    nubeLista.then(() => {
+      if (!vivo || !neon) return;
+      const { data } = neon.auth.onAuthStateChange((evento, s) => {
+        // INITIAL_SESSION sin sesión puede ser una falla de red: lo confirma «leer»
+        const r = trasEvento(evento, s);
+        if (r !== MANTENER) aplicar(r);
+      });
+      desuscribir = () => data.subscription.unsubscribe();
     });
     // En la web: al volver a la pestaña o recuperar la señal, se revisa la sesión sin sacarla de su cuenta
     const revisar = () => void leer();
@@ -109,7 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       vivo = false;
       alCambiarSesion(null);
-      data.subscription.unsubscribe();
+      desuscribir();
       if (web) {
         window.removeEventListener('online', revisar);
         document.removeEventListener('visibilitychange', alVolver);

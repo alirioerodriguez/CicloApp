@@ -100,6 +100,10 @@ function mensajeError(m: string): string {
 
 export async function signOut(): Promise<void> {
   await neon?.auth.signOut();
+  // Se borra la última sesión recordada (lib/auth.tsx) y se vuelve a leer: el servidor ya dice que no hay
+  const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+  await AsyncStorage.removeItem('ciclo:ultima-sesion').catch(() => {});
+  await refrescarSesion?.();
 }
 
 // ---------- Respaldo en la nube ----------

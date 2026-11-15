@@ -92,7 +92,8 @@ export const VACIOS = {
   },
   primerDia: {
     titulo: 'Bienvenida',
-    texto: `Aquí llevas tu ciclo a tu manera. ${nubeConfigurada ? 'Tus datos son privados y quedan respaldados en tu cuenta.' : 'Todo queda solo en tu teléfono.'} ¿Empezamos con cómo te sientes hoy?`,
+    // «conCuenta»: hay sesión iniciada. Quien usa Savia sin cuenta no tiene respaldo, aunque la nube exista.
+    texto: (conCuenta: boolean) => `Aquí llevas tu ciclo a tu manera. ${nubeConfigurada && conCuenta ? 'Tus datos son privados y quedan respaldados en tu cuenta.' : 'Todo queda solo en tu teléfono.'} ¿Empezamos con cómo te sientes hoy?`,
   },
 };
 

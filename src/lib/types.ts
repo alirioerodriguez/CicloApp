@@ -228,7 +228,7 @@ export interface AppData {
   mrs: Record<ISODate, number[]>;
   chequeosMeno: string[];
   // Quiz "¿Cómo estás de verdad?": un resultado por día.
-  quiz: Record<ISODate, { nivel: 'calma' | 'ajuste' | 'cuidado' | 'nose'; respuestas: Record<string, number | 'x'> }>;
+  quiz: Record<ISODate, { nivel: 'calma' | 'ajuste' | 'cuidado' | 'nose'; respuestas: Record<string, number | number[] | 'x'> }>; // varias respuestas desde 15/11/2026
   pruebas: {
     misiones: Record<string, PruebaResultado>;
     sus: number[]; // 10 respuestas 1–5

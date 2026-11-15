@@ -1,5 +1,5 @@
-// "¿Cómo estás de verdad?" (diseño 7b y 7c): bienvenida, 4 preguntas con "No sé", una carga respirando
-// y tu flor de hoy con los colores de tus respuestas.
+// "¿Cómo estás de verdad?" (diseño 7b y 7c): bienvenida, 7 preguntas con "No sé" y respuesta múltiple,
+// una carga respirando y tu flor de hoy con los colores de tus respuestas.
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, View } from 'react-native';
@@ -7,12 +7,12 @@ import { Text } from '../components/Texto';
 import { Flor } from '../components/Flor';
 import { Icono } from '../components/Icono';
 import { Body, Button, Card, Label, Muted, Screen, tap } from '../components/ui';
-import { COLOR_NIVEL, RESULTADOS, idea, nivel, preguntas, type Pregunta, type Respuesta } from '../content/quiz';
+import { COLOR_NIVEL, RESULTADOS, alternar, areas, elegidas, idea, nivel, preguntas, type Pregunta, type Respuesta } from '../content/quiz';
 import { today } from '../lib/dates';
 import { useStore } from '../lib/store';
 import { fonts, radius, serif, useColors } from '../lib/theme';
 
-type Paso = 'inicio' | 0 | 1 | 2 | 3 | 'cargando' | 'flor';
+type Paso = 'inicio' | number | 'cargando' | 'flor';
 
 export default function Quiz() {
   const c = useColors();
@@ -43,7 +43,7 @@ export default function Quiz() {
         <View style={{ alignItems: 'center', gap: 14, marginTop: 12 }}>
           <Flor colores={[]} abierta={false} size={210} />
           <Text style={{ fontFamily: serif, fontSize: 30, color: c.text, textAlign: 'center' }}>¿Cómo estás de verdad?</Text>
-          <Body style={{ textAlign: 'center' }}>4 preguntas, 1 minuto. No hay respuestas buenas ni malas, y siempre puedes decir "No sé".</Body>
+          <Body style={{ textAlign: 'center' }}>7 preguntas, 2 minutos. Puedes elegir más de una respuesta. No hay respuestas buenas ni malas, y siempre puedes decir "No sé".</Body>
         </View>
         <Button label="Empezar" onPress={() => setPaso(0)} />
       </Screen>
@@ -73,7 +73,7 @@ export default function Quiz() {
           <Text style={{ fontFamily: serif, fontSize: 28, color: c.text, textAlign: 'center' }}>{R.titulo}</Text>
           <Body style={{ textAlign: 'center' }}>{R.texto}</Body>
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-            {qs.slice(0, 3).map((q, i) => (
+            {areas(qs).map((q, i) => (
               <View key={q.k} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.card, borderRadius: radius.pill, paddingHorizontal: 11, paddingVertical: 5 }}>
                 <View style={{ width: 10, height: 10, borderRadius: 5, backgroundColor: colores[i] }} />
                 <Text style={{ fontFamily: fonts.semibold, fontSize: 12.5, color: c.text }}>{q.area}</Text>
@@ -95,35 +95,42 @@ export default function Quiz() {
     );
   }
 
+  const total = qs.length;
   const q = qs[paso];
   const actual = r[q.k];
-  const elegir = (v: Respuesta) => {
+  const sel = elegidas(actual);
+  // Varias respuestas: tocar una la marca o la desmarca; las que la contradicen se desmarcan solas
+  const elegir = (i: number) => {
     tap();
-    setR({ ...r, [q.k]: v });
+    setR({ ...r, [q.k]: alternar(q, actual, i) });
   };
-  const siguiente = () => setPaso(paso < 3 ? ((paso + 1) as Paso) : 'cargando');
+  const noSe = () => {
+    tap();
+    setR({ ...r, [q.k]: actual === 'x' ? undefined : 'x' });
+  };
+  const siguiente = () => setPaso(paso < total - 1 ? paso + 1 : 'cargando');
 
   return (
     <Screen angosta right={<Button small kind="soft" label="Cerrar" onPress={salir} />}>
-      <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={`Pregunta ${paso + 1} de 4`}>
+      <View style={{ flexDirection: 'row', gap: 6 }} accessibilityLabel={`Pregunta ${paso + 1} de ${total}`}>
         {qs.map((_, j) => (
           <View key={j} style={{ flex: 1, height: 5, borderRadius: 3, backgroundColor: j <= paso ? c.rosa : c.line }} />
         ))}
       </View>
       <Text style={{ fontFamily: fonts.bold, fontSize: 11.5, letterSpacing: 1.5, color: c.rosa, textTransform: 'uppercase' }}>
-        Pregunta {paso + 1} de 4 · {q.kicker}
+        Pregunta {paso + 1} de {total} · {q.kicker}
       </Text>
       <Text style={{ fontFamily: serif, fontSize: 28, lineHeight: 34, color: c.text }}>{q.titulo}</Text>
-      <Muted>{q.ayuda}</Muted>
+      <Muted>{q.ayuda}{/más de una/.test(q.ayuda) ? '' : ' Puedes elegir más de una.'}</Muted>
 
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10 }}>
         {q.opciones.map(([e, titulo, sub], i) => {
-          const on = actual === i;
+          const on = sel.includes(i);
           return (
             <Pressable
               key={titulo}
-              accessibilityRole="radio"
-              accessibilityState={{ selected: on }}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked: on }}
               onPress={() => elegir(i)}
               style={({ pressed }) => ({
                 flexBasis: '47%',
@@ -147,15 +154,15 @@ export default function Quiz() {
       </View>
 
       <Pressable
-        accessibilityRole="radio"
-        accessibilityState={{ selected: actual === 'x' }}
-        onPress={() => elegir('x')}
+        accessibilityRole="checkbox"
+        accessibilityState={{ checked: actual === 'x' }}
+        onPress={noSe}
         style={{ alignItems: 'center', paddingVertical: 12, borderRadius: radius.pill, borderWidth: 1, borderStyle: 'dashed', borderColor: actual === 'x' ? c.rosa : c.line }}
       >
         <Text style={{ fontFamily: fonts.semibold, color: actual === 'x' ? c.text : c.muted }}>No sé o prefiero no decir</Text>
       </Pressable>
 
-      {actual != null && actual !== 'x' && (
+      {sel.length > 0 && (
         <Card tint={c.lavandaSuave}>
           <Body>{q.nota}</Body>
         </Card>
@@ -166,7 +173,7 @@ export default function Quiz() {
           <Button kind="soft" label="Atrás" onPress={() => setPaso(paso === 0 ? 'inicio' : ((paso - 1) as Paso))} />
         </View>
         <View style={{ flex: 2 }}>
-          <Button label={paso === 3 ? 'Ver mi flor' : 'Siguiente'} onPress={siguiente} disabled={actual == null} />
+          <Button label={paso === total - 1 ? 'Ver mi flor' : 'Siguiente'} onPress={siguiente} disabled={actual == null} />
         </View>
       </View>
     </Screen>

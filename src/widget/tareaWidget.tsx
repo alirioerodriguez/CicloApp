@@ -14,11 +14,11 @@ export async function tareaWidget({ widgetInfo, widgetAction, clickAction, rende
   if (widgetAction === 'WIDGET_CLICK' && clickAction === ACCION_MARCAR) {
     // Mismo camino que el botón "Ya la tomé" de la notificación: guarda y cancela el segundo aviso.
     await guardarTomaSinApp(today());
-    renderWidget(await dibujar(widgetInfo.widgetName));
+    renderWidget(await dibujar(widgetInfo.widgetName, widgetInfo.height));
     await actualizarWidgets(); // los demás widgets, si también están en la pantalla
     return;
   }
-  renderWidget(await dibujar(widgetInfo.widgetName));
+  renderWidget(await dibujar(widgetInfo.widgetName, widgetInfo.height));
 }
 
 registerWidgetTaskHandler(tareaWidget);

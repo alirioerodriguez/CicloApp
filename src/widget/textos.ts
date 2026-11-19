@@ -58,6 +58,6 @@ export function estadoPastilla(r: Extract<ResumenWidget, { activo: true }>): str
     case 'descanso':
       return t('Hoy no te toca pastilla.');
     default:
-      return t(`Hoy a las ${r.hora}`);
+      return r.atrasada ? t('Aún no tomaste tu pastilla') : t(`Hoy a las ${r.hora}`);
   }
 }

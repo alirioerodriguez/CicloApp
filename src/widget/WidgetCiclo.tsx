@@ -98,7 +98,19 @@ function Ciclo({ r, p }: { r: ResumenCiclo; p: Paleta }) {
   );
 }
 
-function Pareja({ v, p }: { v: VistaPareja | null; p: Paleta }) {
+// Alto (en dp) desde el que el widget de pareja muestra los consejos: cómo se siente, plan y comida.
+export const ALTO_CONSEJOS = 170;
+
+function Consejo({ titulo, texto, p }: { titulo: string; texto: string; p: Paleta }) {
+  return (
+    <FlexWidget style={{ flexDirection: 'column', width: 'match_parent' }}>
+      <TextWidget text={titulo} style={{ fontSize: 10.5, color: p.suave, fontWeight: 'bold', letterSpacing: 0.08 }} />
+      <TextWidget text={texto} maxLines={2} truncate="END" style={{ fontSize: 12.5, color: p.texto }} />
+    </FlexWidget>
+  );
+}
+
+function Pareja({ v, p, alto }: { v: VistaPareja | null; p: Paleta; alto: number }) {
   if (!v) {
     return (
       <Marco p={p} uri="ciclo://acompanar">
@@ -110,15 +122,35 @@ function Pareja({ v, p }: { v: VistaPareja | null; p: Paleta }) {
   }
   const pe = v.periodo;
   const linea = v.enPeriodo ? t('Está con su período') : pe ? (pe.enDias === 0 ? t('Su período: en cualquier momento') : pe.enDias === 1 ? t('Su período: mañana') : t(`Su período: en ${pe.enDias} días`)) : null;
+  const encabezado = (
+    <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8, width: 'match_parent' }}>
+      <TextWidget text={v.contenido.emoji} style={{ fontSize: 20 }} />
+      <FlexWidget style={{ flexDirection: 'column', flex: 1 }}>
+        <TextWidget text={t(v.titulo)} maxLines={2} truncate="END" style={{ fontSize: 14, color: p.texto, fontWeight: 'bold' }} />
+        {linea ? <TextWidget text={linea} maxLines={1} style={{ fontSize: 11.5, color: p.rosa }} /> : <TextWidget text=" " style={{ fontSize: 2 }} />}
+      </FlexWidget>
+    </FlexWidget>
+  );
+  // Agrandado hacia abajo: los consejos del día.
+  const como = v.fase !== 'general' ? v.contenido.como : null;
+  if (alto >= ALTO_CONSEJOS && (como || v.mision || v.plan || v.plato)) {
+    return (
+      <FlexWidget
+        clickAction="OPEN_URI"
+        clickActionData={{ uri: 'ciclo://acompanar' }}
+        style={{ height: 'match_parent', width: 'match_parent', backgroundColor: p.fondo, borderRadius: 22, padding: 14, flexGap: 8 }}
+      >
+        {encabezado}
+        {como ? <Consejo titulo={t('CÓMO SE SIENTE')} texto={t(como)} p={p} /> : null}
+        {v.mision ? <Consejo titulo={t('TU MISIÓN DE HOY')} texto={t(v.mision)} p={p} /> : null}
+        {v.plan ? <Consejo titulo={t('UN PLAN')} texto={t(v.plan)} p={p} /> : null}
+        {v.plato ? <Consejo titulo={t('PARA COMER')} texto={t(v.plato)} p={p} /> : null}
+      </FlexWidget>
+    );
+  }
   return (
     <Marco p={p} uri="ciclo://acompanar">
-      <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8, width: 'match_parent' }}>
-        <TextWidget text={v.contenido.emoji} style={{ fontSize: 20 }} />
-        <FlexWidget style={{ flexDirection: 'column', flex: 1 }}>
-          <TextWidget text={t(v.titulo)} maxLines={2} truncate="END" style={{ fontSize: 14, color: p.texto, fontWeight: 'bold' }} />
-          {linea ? <TextWidget text={linea} maxLines={1} style={{ fontSize: 11.5, color: p.rosa }} /> : <TextWidget text=" " style={{ fontSize: 2 }} />}
-        </FlexWidget>
-      </FlexWidget>
+      {encabezado}
       <TextWidget text={v.mision ? `${t('Hoy')}: ${t(v.mision)}` : t('Ábrela para ver cómo acompañarla hoy.')} maxLines={3} truncate="END" style={{ fontSize: 12.5, color: p.texto }} />
     </Marco>
   );
@@ -129,6 +161,7 @@ export function widgetCiclo(nombre: string, r: ResumenCiclo): WidgetRepresentati
   return { light: <Vista r={r} p={CLARA} />, dark: <Vista r={r} p={OSCURA} /> };
 }
 
-export function widgetPareja(v: VistaPareja | null): WidgetRepresentation {
-  return { light: <Pareja v={v} p={CLARA} />, dark: <Pareja v={v} p={OSCURA} /> };
+/** `alto`: el alto del widget en dp (Android lo informa al dibujar). Sin dato, la versión de 4×2. */
+export function widgetPareja(v: VistaPareja | null, alto = 0): WidgetRepresentation {
+  return { light: <Pareja v={v} p={CLARA} alto={alto} />, dark: <Pareja v={v} p={OSCURA} alto={alto} /> };
 }

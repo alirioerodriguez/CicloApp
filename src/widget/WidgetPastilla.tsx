@@ -94,7 +94,7 @@ function Chico({ r, p }: { r: ResumenWidget; p: Paleta }) {
     <FlexWidget clickAction="OPEN_APP" style={{ height: 'match_parent', width: 'match_parent', backgroundColor: p.fondo, borderRadius: 22, padding: 14, justifyContent: 'space-between' }}>
       <FlexWidget style={{ flexDirection: 'column', flexGap: 2 }}>
         <TextWidget text={titulo(r)} style={{ fontSize: 18, color: p.texto, fontWeight: 'bold' }} />
-        <TextWidget text={estadoHoy(r)} maxLines={2} style={{ fontSize: 12, color: p.suave }} />
+        <TextWidget text={estadoHoy(r)} maxLines={2} style={{ fontSize: 12, color: r.atrasada ? p.rosa : p.suave, fontWeight: r.atrasada ? 'bold' : 'normal' }} />
       </FlexWidget>
       <FlexWidget style={{ flexDirection: 'row', width: 'match_parent', justifyContent: 'space-between', alignItems: 'center' }}>
         <TextWidget text={`⏰ ${r.hora}`} style={{ fontSize: 12, color: p.suave }} />
@@ -111,7 +111,7 @@ function Semana({ r, p }: { r: ResumenWidget; p: Paleta }) {
       <FlexWidget style={{ flexDirection: 'row', width: 'match_parent', alignItems: 'center', justifyContent: 'space-between' }}>
         <FlexWidget style={{ flexDirection: 'column', flexGap: 2 }}>
           <TextWidget text={titulo(r)} style={{ fontSize: 18, color: p.texto, fontWeight: 'bold' }} />
-          <TextWidget text={`${estadoHoy(r)} · ⏰ ${r.hora}`} maxLines={1} truncate="END" style={{ fontSize: 12, color: p.suave }} />
+          <TextWidget text={r.atrasada ? estadoHoy(r) : `${estadoHoy(r)} · ⏰ ${r.hora}`} maxLines={1} truncate="END" style={{ fontSize: 12, color: r.atrasada ? p.rosa : p.suave, fontWeight: r.atrasada ? 'bold' : 'normal' }} />
         </FlexWidget>
         <Check r={r} p={p} grande />
       </FlexWidget>

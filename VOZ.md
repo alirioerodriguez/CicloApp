@@ -19,7 +19,7 @@ El beneficio de Savia nunca es «verse bien» ni «ser perfecta». Es **tranquil
 
 - **Según su país, tú o vos**, siempre en singular y a una sola persona:
   - **Tú** por defecto (Venezuela, México, Colombia, Chile, Perú, la diáspora y el resto): «tienes», «puedes», «registra», «fíjate».
-  - **Vos** cuando elige Argentina, Uruguay o Paraguay: «tenés», «podés», «registrá», «fijate». Es el mismo texto con el verbo en voseo; no cambia nada más.
+  - **Vos** cuando elige Argentina o Uruguay: «tenés», «podés», «registrá», «fijate». Es el mismo texto con el verbo en voseo; no cambia nada más.
   - Nunca mezclar las dos en una misma pantalla, ni usar «ustedes».
   - Los textos se escriben primero en tú. La versión en vos sale de ahí (en la app, desde la tabla de voseo, como la del inglés).
 - Español neutro de Latinoamérica: evitamos palabras de un solo país cuando hay una que se entiende en todos lados.

@@ -238,6 +238,12 @@
     ],
     "experiments": {
       "typedRoutes": false
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "de17694e-104e-477c-9949-1edf433baa31"
+      }
+    },
+    "owner": "alirior"
   }
 }

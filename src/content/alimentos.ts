@@ -3,7 +3,7 @@
 // Fuentes (numeración del bloque de fuentes): [5] [8] [14]–[28].
 // Cada alimento lleva su nombre en Venezuela; `nombres` da el nombre local en otros países y `paises`
 // limita los que solo se consiguen o se usan en algunos. Los textos se traducen solos (lib/region).
-import type { Pais } from '../lib/region';
+import { paisDeContenido, type Pais } from '../lib/region';
 import type { Phase } from '../lib/types';
 
 export const CATEGORIAS = [
@@ -102,7 +102,8 @@ export const ALIMENTOS: Alimento[] = [
 ];
 
 // Lista para el país elegido, con el nombre local de cada alimento.
-export function alimentosPara(pais: Pais): Alimento[] {
+export function alimentosPara(paisElegido: Pais): Alimento[] {
+  const pais = paisDeContenido(paisElegido);
   return ALIMENTOS.filter((a) => !a.paises || a.paises.includes(pais)).map((a) => ({ ...a, nombre: a.nombres?.[pais] ?? a.nombre }));
 }
 

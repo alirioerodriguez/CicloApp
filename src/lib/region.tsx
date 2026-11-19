@@ -6,8 +6,9 @@ import { getLocales } from 'expo-localization';
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { EN, EN_PATRONES } from '../content/i18n/en';
 import { NEUTRO, NEUTRO_PATRONES } from '../content/i18n/neutro';
+import { VOS, VOS_PATRONES } from '../content/i18n/vos';
 
-export type Pais = 'VE' | 'MX' | 'CO' | 'AR' | 'CL' | 'PE' | 'US';
+export type Pais = 'VE' | 'MX' | 'CO' | 'AR' | 'UY' | 'CL' | 'PE' | 'US';
 export type Idioma = 'es' | 'en';
 
 // Venezuela primero (jerga venezolana); luego los 5 países hispanohablantes con más uso de apps de
@@ -17,6 +18,7 @@ export const PAISES: { id: Pais; nombre: string }[] = [
   { id: 'MX', nombre: 'México' },
   { id: 'CO', nombre: 'Colombia' },
   { id: 'AR', nombre: 'Argentina' },
+  { id: 'UY', nombre: 'Uruguay' },
   { id: 'CL', nombre: 'Chile' },
   { id: 'PE', nombre: 'Perú' },
   { id: 'US', nombre: 'Estados Unidos' },
@@ -76,7 +78,13 @@ const compilar = (p: Record<string, string>): Patron[] =>
 const tablas = {
   en: { dic: EN, patrones: compilar(EN_PATRONES), cache: new Map<string, string>() },
   neutro: { dic: NEUTRO, patrones: compilar(NEUTRO_PATRONES), cache: new Map<string, string>() },
+  vos: { dic: VOS, patrones: compilar(VOS_PATRONES), cache: new Map<string, string>() },
 };
+
+// Argentina y Uruguay: el mismo texto neutro, pero con vos («tenés», «registrá»). Ver VOZ.md.
+export const PAISES_VOS: Pais[] = ['AR', 'UY'];
+// Para la comida y otras listas por país, Uruguay usa los nombres de Argentina.
+export const paisDeContenido = (p: Pais): Pais => (p === 'UY' ? 'AR' : p);
 
 function traducirCon(tabla: (typeof tablas)['en'], s: string): string {
   const exacta = tabla.dic[s];
@@ -107,6 +115,7 @@ function traducirCon(tabla: (typeof tablas)['en'], s: string): string {
 export function t(s: string): string {
   if (!s) return s;
   if (actual.idioma === 'en') return traducirCon(tablas.en, s);
+  if (PAISES_VOS.includes(actual.pais)) return traducirCon(tablas.vos, traducirCon(tablas.neutro, s));
   if (actual.pais !== 'VE') return traducirCon(tablas.neutro, s);
   return s;
 }

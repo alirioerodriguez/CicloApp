@@ -69,7 +69,7 @@ export default function Respirar() {
           <View style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: c.rosa, opacity: 0.85 }} />
         </Animated.View>
         <View style={{ position: 'absolute', alignItems: 'center' }}>
-          <Text style={{ fontFamily: serif, fontSize: 30, color: c.dark ? c.bg : c.text }}>{fin ? '¡Muy bien!' : activo ? FASES[fase].label : 'Lista'}</Text>
+          <Text style={{ fontFamily: serif, fontSize: 30, color: c.dark ? c.bg : c.text }}>{fin ? 'Terminaste' : activo ? FASES[fase].label : 'Lista'}</Text>
           {activo && (
             <Text accessibilityLiveRegion="polite" accessibilityLabel={`${restan} segundos`} style={{ fontFamily: fonts.bold, fontSize: 40, lineHeight: 46, color: c.dark ? c.bg : c.text, fontVariant: ['tabular-nums'] }}>
               {restan}

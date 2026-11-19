@@ -212,7 +212,7 @@ export function DayEditor({ date }: { date: ISODate }) {
       </Card>
 
       <Card tint={log.intimidad ? c.rosaSuave : undefined}>
-        <Row label="Intimidad" hint="Se marca con un fueguito en tu calendario. Nunca va en el PDF.">
+        <Row label="Intimidad" hint="Se marca con un ícono de fuego en tu calendario. Nunca va en el PDF.">
           <Chip label={log.intimidad ? 'Marcado' : 'Marcar'} selected={log.intimidad} onPress={() => set({ intimidad: !log.intimidad })} />
         </Row>
       </Card>

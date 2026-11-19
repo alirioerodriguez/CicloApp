@@ -125,7 +125,7 @@ export default function Pruebas() {
       <Screen angosta subtitle="Prueba terminada" title={m?.titulo ?? 'Prueba'}>
         <Card tint={calificar.ok ? c.salviaSuave : c.duraznoSuave}>
           <Body>
-            {calificar.ok ? '¡Bien! ' : 'Gracias por intentarlo. '}
+            {calificar.ok ? 'Bien. ' : 'Gracias por intentarlo. '}
             Tardaste {Math.floor(calificar.segundos / 60)}:{String(calificar.segundos % 60).padStart(2, '0')} min.
           </Body>
           {!calificar.ok && <Muted>Que no lo encontraras es justo lo que necesitamos saber para mejorar.</Muted>}

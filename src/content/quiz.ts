@@ -43,7 +43,7 @@ export function preguntas(etapa: Etapa): Pregunta[] {
     },
     {
       k: 'animo', kicker: 'Ánimo y calma', titulo: '¿Cómo está tu ánimo estos días?', ayuda: 'Elige lo que más se parezca, aunque no sea exacto.',
-      opciones: [['😊', 'En calma', 'Tranquila y bien conmigo', 0], ['🌊', 'Con altibajos', 'Subo y bajo rápido', 1], ['😤', 'Irritable', 'Todo me molesta un poquito', 2], ['🫧', 'Ansiosa o triste', 'Con un nudo o ganas de llorar', 3]],
+      opciones: [['😊', 'En calma', 'Tranquila y bien conmigo', 0], ['🌊', 'Con altibajos', 'Subo y bajo rápido', 1], ['😤', 'Irritable', 'Me molesta casi todo', 2], ['🫧', 'Ansiosa o triste', 'Con un nudo o ganas de llorar', 3]],
       nota: 'Es súper normal. Sentir más no es sentir de más, y no tienes que poder con todo.', area: 'Ánimo',
       incompatibles: primeraSola(4),
     },
@@ -64,7 +64,7 @@ export function preguntas(etapa: Etapa): Pregunta[] {
       // Lo básico: comer, tomar agua, moverse y un rato para una misma
       k: 'cuidado', kicker: 'Cómo te tratas', titulo: '¿Cómo te estás cuidando estos días?', ayuda: 'Puedes elegir más de una.',
       opciones: [['🥗', 'Como a mis horas', 'Y tomo agua', 0], ['⏰', 'Me salteo comidas', 'O como a las apuradas', 2], ['🛋', 'Casi no me muevo', 'Paso mucho tiempo sentada', 1], ['🌸', 'Me di un rato para mí', 'Algo que disfruté', 0]],
-      nota: 'Cuidarte no es un premio: es lo que te sostiene. Un paso chiquito ya suma.', area: 'Cuidado',
+      nota: 'Cuidarte no es un premio: es lo que te sostiene. Un paso chico ya suma.', area: 'Cuidado',
       incompatibles: [[0, 1]],
     },
     {
@@ -76,7 +76,7 @@ export function preguntas(etapa: Etapa): Pregunta[] {
     },
     {
       k: 'pide', kicker: 'Lo que necesitas', titulo: '¿Qué te provoca hoy?', ayuda: 'Te daremos una idea a tu medida.',
-      opciones: [['🛁', 'Descansar', 'Bajar el ritmo', 0], ['🫖', 'Un mimo rico', 'Algo calentico o dulce', 0], ['🚶', 'Moverme', 'Soltar el cuerpo', 0], ['💬', 'Hablar con alguien', 'Sentirme acompañada', 0]],
+      opciones: [['🛁', 'Descansar', 'Bajar el ritmo', 0], ['🫖', 'Un mimo rico', 'Algo caliente o dulce', 0], ['🚶', 'Moverme', 'Soltar el cuerpo', 0], ['💬', 'Hablar con alguien', 'Sentirme acompañada', 0]],
       nota: 'Pedir lo que necesitas también es amor propio.', area: '',
       incompatibles: [[0, 2]], // descansar y moverme
     },
@@ -121,7 +121,7 @@ export function nivel(qs: Pregunta[], r: Partial<Record<Pregunta['k'], Respuesta
 
 export const RESULTADOS: Record<Nivel, { titulo: string; texto: string; frase: string }> = {
   calma: { titulo: 'Hoy floreces en calma', texto: 'Tu cuerpo y tu ánimo están en sintonía. Disfrútalo y guarda este día como referencia de cómo te sientes bien.', frase: 'Así se ve cuando te escuchas.' },
-  ajuste: { titulo: 'Estás floreciendo a tu ritmo', texto: 'Hay cosas que pesan un poquito, y es normal. Lo estás notando, y eso ya es cuidarte. Vamos un día a la vez.', frase: 'Lento también cuenta.' },
+  ajuste: { titulo: 'Estás floreciendo a tu ritmo', texto: 'Hay cosas que pesan, y es normal. Lo estás notando, y eso ya es cuidarte. Vamos un día a la vez.', frase: 'Lento también cuenta.' },
   cuidado: {
     titulo: 'Hoy tu flor pide cariño',
     texto: 'Ha sido un tiempo intenso y no estás sola: nos pasa a muchas, y hay formas de sentirte mejor. Si se repite varios días, cuéntaselo a tu médica.',
@@ -134,16 +134,16 @@ export const RESULTADOS: Record<Nivel, { titulo: string; texto: string; frase: s
 export function idea(etapa: Etapa, pide: Respuesta | undefined, peor: number): [string, string] {
   const pedido = elegidas(pide)[0]; // si pidió varias cosas, la primera de la lista
   const segunArea: [string, string][] = [
-    ['😴', 'Esta noche apaga pantallas 30 minutos antes y deja el cuarto fresquito.'],
+    ['😴', 'Esta noche apaga pantallas 30 minutos antes y deja el cuarto fresco.'],
     ['🫁', 'Respira conmigo: inhala 4, exhala 6, cinco veces. Tu cuerpo entiende que está a salvo.'],
-    ['🔥', etapa === 'meno' ? 'Ten un abanico y agua fría a mano, y viste en capas que puedas quitarte.' : etapa === 'embarazo' ? 'Come poquito y seguido, y evita acostarte justo después de comer.' : 'Una bolsa tibia en el vientre o la espalda baja alivia bastante.'],
+    ['🔥', etapa === 'meno' ? 'Ten un abanico y agua fría a mano, y viste en capas que puedas quitarte.' : etapa === 'embarazo' ? 'Come poco y seguido, y evita acostarte justo después de comer.' : 'Una bolsa tibia en el vientre o la espalda baja alivia bastante.'],
     ['📋', 'Escribe en un papel todo lo que tienes pendiente y elige solo una cosa para hoy. El resto puede esperar.'],
     ['🥗', 'Deja agua a la vista y ponte una alarma para comer algo a media tarde.'],
     ['💬', 'Escríbele a alguien que te quiera, aunque sea un "pensé en ti".'],
   ];
   const segunPedido: [string, string][] = [
     ['🛁', 'Date permiso de no hacer nada por 20 minutos. Descansar también es avanzar.'],
-    ['🫖', etapa === 'embarazo' || etapa === 'posparto' ? 'Algo rico y calentico que te guste; si es un té, pregúntale a tu médica cuáles puedes tomar.' : 'Un té de jengibre con papelón y un cuadrito de chocolate oscuro, sin culpa.'],
+    ['🫖', etapa === 'embarazo' || etapa === 'posparto' ? 'Algo rico y caliente que te guste; si es un té, pregúntale a tu médica cuáles puedes tomar.' : 'Un té de jengibre con papelón y un cuadrado de chocolate oscuro, sin culpa.'],
     ['🚶', 'Cinco minutos de movimiento suave sueltan el cuerpo y la mente.'],
     ['💬', 'Escríbele a alguien que te quiera, aunque sea un "pensé en ti".'],
   ];

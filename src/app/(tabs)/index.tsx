@@ -136,7 +136,7 @@ function HoyCiclo() {
         <Card key={l.id} tint={c.duraznoSuave}>
           <Label>{l.titulo}</Label>
           <Body>{l.texto}</Body>
-          <Button small kind="soft" label="¡Gracias!" onPress={() => updateSettings({ logrosVistos: [...data.settings.logrosVistos, l.id] })} />
+          <Button small kind="soft" label="Gracias" onPress={() => updateSettings({ logrosVistos: [...data.settings.logrosVistos, l.id] })} />
         </Card>
       ))}
 

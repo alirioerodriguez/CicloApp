@@ -22,7 +22,7 @@ export function trimestre(semana: number): 1 | 2 | 3 {
 }
 
 export const TRIMESTRES = [
-  { n: 1, nombre: '1er trimestre', rango: 'Semanas 4 a 13', desde: 4, hasta: 13, linea: 'Primer trimestre: descansa, toma ácido fólico y come poquito y seguido si hay náuseas.' },
+  { n: 1, nombre: '1er trimestre', rango: 'Semanas 4 a 13', desde: 4, hasta: 13, linea: 'Primer trimestre: descansa, toma ácido fólico y come poco y seguido si hay náuseas.' },
   { n: 2, nombre: '2do trimestre', rango: 'Semanas 14 a 27', desde: 14, hasta: 27, linea: 'Segundo trimestre: suele ser la etapa con más energía. Muévete y cuida tu alimentación.' },
   { n: 3, nombre: '3er trimestre', rango: 'Semanas 28 a 40', desde: 28, hasta: 40, linea: 'Tercer trimestre: escucha a tu cuerpo, cuenta las patadas y prepárate para el parto.' },
 ] as const;
@@ -49,11 +49,11 @@ export function bebe(semana: number) {
 // Desarrollo: [desde, hasta, tu bebé, tú].
 const DESARROLLO: [number, number, string, string][] = [
   [4, 7, 'Se forma el tubo neural, que será su cerebro y médula. Su corazón empieza a latir.', 'Puedes notar cansancio, náuseas y pechos sensibles.'],
-  [8, 10, 'Ya se notan brazos, piernas y deditos. Todos sus órganos empiezan a formarse.', 'Las náuseas suelen estar en su punto más fuerte. Come poquito y seguido.'],
+  [8, 10, 'Ya se notan brazos, piernas y dedos. Todos sus órganos empiezan a formarse.', 'Las náuseas suelen estar en su punto más fuerte. Come poco y seguido.'],
   [11, 13, 'Se mueve aunque aún no lo sientas y ya tiene huellas en los dedos.', 'Al final del trimestre muchas sienten más energía.'],
   [14, 17, 'Hace muecas, se chupa el dedo y empieza a oír.', 'Tu barriga empieza a notarse.'],
   [18, 22, 'Puedes sentir sus primeros movimientos. En la ecografía se ven sus órganos con detalle.', 'Puede aparecer dolor de espalda o calambres en las piernas.'],
-  [23, 27, 'Abre los ojos, reacciona a tu voz y gana grasita.', 'Puede haber hinchazón en los pies y acidez.'],
+  [23, 27, 'Abre los ojos, reacciona a tu voz y gana grasa.', 'Puede haber hinchazón en los pies y acidez.'],
   [28, 31, 'Abre y cierra los ojos, sueña y patea con fuerza.', 'Te puede faltar el aire y orinar más seguido.'],
   [32, 35, 'Practica respirar y suele acomodarse de cabeza.', 'Las contracciones de práctica son normales: van y vienen sin ritmo.'],
   [36, 42, 'Sus pulmones maduran. Desde la semana 37 se considera a término.', 'Descansa, ten tu bolso listo y atenta a las señales de parto.'],
@@ -106,7 +106,7 @@ export const EXAMENES: { id: string; titulo: string; cuando: string }[] = [
   { id: 'hb', titulo: 'Hemoglobina y orina', cuando: 'En cada trimestre' },
 ];
 
-export const BOLSO = ['Documentos e informe médico', 'Ropa cómoda y bata', 'Toallas de posparto', 'Pañales de recién nacido', 'Ropita y gorrito', 'Cargador del teléfono'];
+export const BOLSO = ['Documentos e informe médico', 'Ropa cómoda y bata', 'Toallas de posparto', 'Pañales de recién nacido', 'Ropa y gorro', 'Cargador del teléfono'];
 
 // Presión de 140/90 o más: consultar el mismo día.
 export const presionAlta = (sys: number | null, dia: number | null) => (sys ?? 0) >= 140 || (dia ?? 0) >= 90;
@@ -123,13 +123,13 @@ export const PLATOS_EMBARAZO = [
   },
   {
     emoji: '🍲', nombre: 'Sopa de pollo con verduras', tiempo: '40 min', etiqueta: 'Para las náuseas',
-    porque: 'Suave, calentica y fácil de digerir en los días de náuseas.',
+    porque: 'Suave, caliente y fácil de digerir en los días de náuseas.',
     ingredientes: ['1 pechuga', 'Auyama, zanahoria y apio', 'Cilantro', 'Sal al gusto'],
     pasos: ['Cocina el pollo en agua con sal.', 'Agrega las verduras en trozos.', 'Termina con cilantro picado.'],
   },
   {
     emoji: '🥣', nombre: 'Yogur con lechosa y avena', tiempo: '5 min', etiqueta: 'Calcio',
-    porque: 'Calcio para sus huesitos y fibra para el estreñimiento.',
+    porque: 'Calcio para sus huesos y fibra para el estreñimiento.',
     ingredientes: ['1 taza de yogur pasteurizado', '1 taza de lechosa', '3 cdas de avena'],
     pasos: ['Corta la lechosa.', 'Mezcla con el yogur.', 'Agrega la avena.'],
   },

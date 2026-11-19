@@ -185,7 +185,7 @@ export const CUIDADOS_MENO = [
 ];
 
 export const ALIMENTOS_MENO = [
-  { emoji: '🥛', titulo: 'Calcio', texto: 'Leche, yogur, queso blanco y sardinas con espinitas.' },
+  { emoji: '🥛', titulo: 'Calcio', texto: 'Leche, yogur, queso blanco y sardinas con espinas.' },
   { emoji: '☀️', titulo: 'Vitamina D', texto: 'Un poco de sol, huevo y pescado; tu médica puede indicar suplemento.' },
   { emoji: '🍗', titulo: 'Proteína en cada comida', texto: 'Ayuda a mantener tus músculos: huevo, pollo, caraotas, pescado.' },
   { emoji: '🌱', titulo: 'Soya y linaza', texto: 'Tienen fitoestrógenos; la evidencia sobre los bochornos es limitada.' },
@@ -197,9 +197,9 @@ export const MODERACION_MENO = 'Sal, alcohol, café y picante: suben la presión
 export const PLATOS_MENO = [
   {
     emoji: '🐟', nombre: 'Sardinas al horno con ensalada', tiempo: '25 min', etiqueta: 'Calcio y omega-3',
-    porque: 'Las sardinas con espinitas aportan calcio para tus huesos y omega-3 para tu corazón.',
+    porque: 'Las sardinas con espinas aportan calcio para tus huesos y omega-3 para tu corazón.',
     ingredientes: ['4 sardinas', 'Tomate, pepino y lechuga', 'Limón y aceite de oliva', 'Orégano'],
-    pasos: ['Hornea las sardinas 15 minutos con orégano.', 'Prepara la ensalada.', 'Aliña con limón y poquita sal.'],
+    pasos: ['Hornea las sardinas 15 minutos con orégano.', 'Prepara la ensalada.', 'Aliña con limón y poca sal.'],
   },
   {
     emoji: '🎃', nombre: 'Crema de auyama con queso blanco', tiempo: '30 min', etiqueta: 'Suave y con calcio',

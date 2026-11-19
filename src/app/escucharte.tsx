@@ -25,7 +25,7 @@ export default function Escucharte() {
 
   const mandar = async () => {
     const r = armarSugerencia({ tipo, texto, mail, version: versionApp() });
-    if ('error' in r) return notify('Falta un poquito', r.error);
+    if ('error' in r) return notify('Falta un dato', r.error);
     setMandando(true);
     const ok = await mandarSugerencia(r.cuerpo);
     setMandando(false);
@@ -38,7 +38,7 @@ export default function Escucharte() {
     <Screen angosta title="Queremos escucharte" subtitle="Savia la armamos con lo que nos cuentas" right={<Button small kind="soft" label="Volver" onPress={volver} />}>
       {listo ? (
         <Card>
-          <Label>¡Gracias! 🌸</Label>
+          <Label>Gracias</Label>
           <Body>Lo leemos todo. Si dejaste tu mail y hace falta, te escribimos.</Body>
           <Button label="Contar otra cosa" kind="soft" onPress={() => setListo(false)} />
         </Card>

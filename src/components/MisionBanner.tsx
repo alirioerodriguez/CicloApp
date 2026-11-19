@@ -35,7 +35,7 @@ export function MisionBanner() {
         <Text style={{ color: c.bg, fontFamily: fonts.regular, fontSize: 13.5 }}>{m?.tarea}</Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>
           <Pressable onPress={() => finish(true)} style={{ flex: 1, backgroundColor: c.rosa, borderRadius: radius.pill, paddingVertical: 8, alignItems: 'center' }}>
-            <Text style={{ color: c.onAccent, fontFamily: fonts.bold }}>¡Lo logré!</Text>
+            <Text style={{ color: c.onAccent, fontFamily: fonts.bold }}>Lo hice</Text>
           </Pressable>
           <Pressable onPress={() => finish(false)} style={{ flex: 1, borderWidth: 1.5, borderColor: c.bg, borderRadius: radius.pill, paddingVertical: 8, alignItems: 'center' }}>
             <Text style={{ color: c.bg, fontFamily: fonts.bold }}>No pude</Text>

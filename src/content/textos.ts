@@ -12,7 +12,7 @@ export const NOTIF = {
   pastilla: [
     'Hora de tu pastilla. Un gesto pequeño, todos los días.',
     'Tu pastilla te espera. ¿Ya la tomaste?',
-    'Recordatorio cariñoso: tu pastilla de hoy',
+    'Recordatorio: tu pastilla de hoy',
     'Es la hora de siempre: pastilla y listo',
     'No te olvides de tu pastilla. Márcala cuando la tomes.',
   ],
@@ -27,13 +27,13 @@ export const NOTIF = {
     'Faltan unos {dias} días. Tu bolsa de agua tibia ya te espera',
     'Se viene tu período. Es una estimación: tu cuerpo tiene la última palabra',
   ],
-  periodoManana: 'Tu período podría llegar mañana. Hoy date un ratito para ti',
+  periodoManana: 'Tu período podría llegar mañana. Hoy reserva un momento para ti',
   agua: [
-    'Un vasito de agua, ¿te parece?',
-    'Pausa de hidratación: tu cuerpo te lo agradece',
+    'Un vaso de agua, ¿te parece?',
+    'Pausa para tomar agua',
     'Hora de rellenar tu botella',
-    '¿Cuánta agua llevas hoy? Un traguito más no cae mal',
-    'Agua y un respiro de un minuto. Te lo mereces',
+    '¿Cuánta agua llevas hoy? Un vaso más te hace bien',
+    'Agua y un respiro de un minuto',
   ],
   registro: '¿Cómo estuvo tu día? Regístralo en un minuto',
   autoexamen: 'Hoy es un buen día para tu autoexamen de mamas. Toma 2 minutos.',
@@ -101,8 +101,8 @@ export type LogroId = 'racha7' | 'ciclo1' | 'pastilla30' | 'meses3' | 'respaldo1
 
 export const LOGROS: { id: LogroId; titulo: string; texto: string }[] = [
   { id: 'racha7', titulo: 'Una semana contigo', texto: 'Siete días seguidos registrando. Conocerte también es cuidarte.' },
-  { id: 'ciclo1', titulo: '¡Primer ciclo completo!', texto: 'Ya tienes tu primer ciclo registrado. Desde ahora las predicciones se irán ajustando a ti.' },
-  { id: 'pastilla30', titulo: '30 de 30', texto: 'Un mes entero sin olvidar tu pastilla. ¡Qué constancia!' },
+  { id: 'ciclo1', titulo: 'Primer ciclo completo', texto: 'Ya tienes tu primer ciclo registrado. Desde ahora las predicciones se irán ajustando a ti.' },
+  { id: 'pastilla30', titulo: '30 de 30', texto: 'Un mes entero con tu pastilla al día. Ya es un hábito.' },
   { id: 'meses3', titulo: 'Tres meses de ti', texto: 'Tus estadísticas tienen cada vez más sentido.' },
   { id: 'respaldo1', titulo: 'Copia guardada', texto: 'Hiciste tu primer respaldo. Tus datos están a salvo.' },
   { id: 'suenos3', titulo: 'Soñadora', texto: 'Anotaste 3 sueños en tu diario.' },

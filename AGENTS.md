@@ -1,5 +1,9 @@
 This is an Expo/React Native mobile application. Prioritize mobile-first patterns, performance, and cross-platform compatibility.
 
+## Textos de la app
+
+Todo texto para usuarias (pantallas, avisos, tienda, redes) sigue `VOZ.md`: tú neutro (vos en Argentina, Uruguay y Paraguay), de igual a igual, sin culpa, sin diminutivos ni clichés, y datos de salud con fuente. Si cambias un texto, cambia también su clave en `src/content/i18n/en.ts` y `neutro.ts`.
+
 ## Expo has changed — do not trust your training data
 
 Expo ships breaking changes every SDK release. APIs you remember are likely renamed, moved, or removed. Before writing any code that touches an Expo, EAS, or React Native API:

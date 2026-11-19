@@ -26,7 +26,7 @@ export const LECTURAS: Record<string, string> = {
   'cuerpo:Sudores de noche': 'Si los sudores te despiertan, tu descanso se resiente: es lógico que estés más cansada.',
   'cuerpo:Me duele el cuerpo': 'El dolor en las articulaciones es frecuente en esta etapa y vale la pena contárselo a tu médica.',
   // Cuerpo: embarazo
-  'cuerpo:Náuseas': 'Las náuseas desgastan mucho. Comer poquito y seguido es cuidarte, no rendirte.',
+  'cuerpo:Náuseas': 'Las náuseas desgastan mucho. Comer poco y seguido es cuidarte, no rendirte.',
   'cuerpo:Pies hinchados': 'Tus pies cargan con mucho. Elevarlos un rato al día es un regalo para tu cuerpo.',
   'cuerpo:Acidez': 'La acidez es común en el embarazo. Comer despacio y no acostarte enseguida ayuda.',
   // Cuerpo: posparto
@@ -169,7 +169,7 @@ export const FRASES: Record<Nivel, string[]> = {
     'Pedir ayuda es una forma de fuerza.',
     'No estás sola, aunque hoy lo parezca.',
     'Lo que sientes es real y tiene salida.',
-    'Hoy alcanza con cuidarte un poquito.',
+    'Hoy alcanza con cuidarte un poco.',
     'Tu bienestar también es prioridad.',
   ],
   nose: [

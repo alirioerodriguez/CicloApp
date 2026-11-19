@@ -56,7 +56,7 @@ export function Login() {
       else if (modo === 'crear') {
         const lista = await signUp(email, password);
         if (!lista) {
-          setAviso('¡Listo! Te enviamos un correo para confirmar tu cuenta. Ábrelo y después entra aquí.');
+          setAviso('Listo: te enviamos un correo para confirmar tu cuenta. Ábrelo y después entra aquí.');
           setModo('entrar');
         }
       } else {

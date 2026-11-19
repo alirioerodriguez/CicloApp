@@ -120,7 +120,7 @@ export default function Perfil() {
             ) : null}
           </View>
         </View>
-        <Muted>{t('Elige una foto en la que te sientas linda, o usa la de tu cuenta. Queda solo en tu perfil.')}</Muted>
+        <Muted>{t('Elige una foto que te guste, o usa la de tu cuenta. Queda solo en tu perfil.')}</Muted>
         <TextInput value={s.name} onChangeText={(name) => updateSettings({ name })} placeholder={t('Tu nombre')} placeholderTextColor={c.muted} style={input} />
         <Row label="Tu edad" hint="Para darte ideas acordes a ti">
           <Stepper value={s.edad ?? 29} onChange={(edad) => updateSettings({ edad })} min={10} max={80} />
@@ -359,7 +359,7 @@ export default function Perfil() {
               </Row>
             )}
             <Divider />
-            <Toggle label="Registrar mi día" hint="Un empujoncito suave cada noche" value={r.registro.on} onChange={(on) => (on ? withPermission(() => setReminders({ registro: { ...r.registro, on } })) : setReminders({ registro: { ...r.registro, on } }))} />
+            <Toggle label="Registrar mi día" hint="Un recordatorio suave cada noche" value={r.registro.on} onChange={(on) => (on ? withPermission(() => setReminders({ registro: { ...r.registro, on } })) : setReminders({ registro: { ...r.registro, on } }))} />
             {r.registro.on && (
               <Row label="Hora">
                 <Stepper

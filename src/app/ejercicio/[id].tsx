@@ -101,7 +101,7 @@ export default function EjercicioScreen() {
   const fmt = (s: number) => (larga ? `${Math.ceil(s / 60)} min` : `${Math.max(0, s)} s`);
   const contador =
     estado === 'fin'
-      ? '¡Lo lograste!'
+      ? 'Terminaste'
       : estado === 'descanso'
         ? `Descansa · ${descanso} s`
         : porTiempo

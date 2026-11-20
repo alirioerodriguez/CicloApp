@@ -544,9 +544,7 @@ export default function Perfil() {
       >
         <Card tint={c.salviaSuave}>
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-            <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 26 }}>🌱</Text>
-            </View>
+            <Image source={require('../../../assets/un-nuevo-comienzo.png')} style={{ width: 48, height: 48, borderRadius: 12 }} accessibilityIgnoresInvertColors />
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '600' }}>¿Estás buscando trabajo?</Body>
               <Muted>Un nuevo comienzo te ayuda a ordenar el envío de CVs con una rutina semanal, llevar tus entrevistas, encontrar eventos de tu rubro y prepararte con tips para entrevistas y para mejorar tu CV. Gratis y sin cuenta.</Muted>
@@ -564,9 +562,7 @@ export default function Perfil() {
       >
         <Card>
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-            <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: c.salviaSuave, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 26 }}>🧾</Text>
-            </View>
+            <Image source={require('../../../assets/mis-cuentas.png')} style={{ width: 48, height: 48, borderRadius: 12 }} accessibilityIgnoresInvertColors />
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '600' }}>¿En qué se te va el mes?</Body>
               <Muted>Mis Cuentas te ayuda a anotar tus gastos e ingresos y ver de un vistazo cuánto te queda.</Muted>

@@ -1,4 +1,5 @@
 // Las promos de otras apps del mismo creador en Perfil: solo links https con ?ref=savia (no mandan datos).
+import { expect, test } from '@jest/globals';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 

@@ -1,7 +1,8 @@
 // Widgets de inicio de la pastilla (Android, react-native-android-widget).
 // Chico: "Pastilla 14/21", estado de hoy y botón de check. Mediano: además, la fila de la semana del blíster.
 // No usan el tema de la app (corren sin ella): llevan su paleta clara y oscura.
-import { FlexWidget, TextWidget, type ColorProp, type WidgetRepresentation } from 'react-native-android-widget';
+import { FlexWidget, SvgWidget, TextWidget, type ColorProp, type WidgetRepresentation } from 'react-native-android-widget';
+import { svgIcono } from './iconos';
 import { t } from '../lib/region';
 import type { DiaWidget, ResumenWidget } from './datosWidget';
 import { estadoPastilla as estadoHoy, tituloPastilla as titulo } from './textos';
@@ -46,14 +47,14 @@ function Check({ r, p, grande }: { r: Extract<ResumenWidget, { activo: true }>; 
         accessibilityLabel={t('Ya la tomé')}
         style={{ width: tam, height: tam, borderRadius: tam / 2, backgroundColor: p.boton, alignItems: 'center', justifyContent: 'center' }}
       >
-        <TextWidget text="✓" style={{ fontSize: grande ? 24 : 21, color: p.botonTexto, fontWeight: 'bold' }} />
+        <SvgWidget svg={svgIcono('Check', String(p.botonTexto), grande ? 24 : 21, 2.6)} style={{ width: grande ? 24 : 21, height: grande ? 24 : 21 }} />
       </FlexWidget>
     );
   }
   const hecho = r.estadoHoy === 'tomada' || r.estadoHoy === 'tarde';
   return (
     <FlexWidget style={{ width: tam, height: tam, borderRadius: tam / 2, backgroundColor: hecho ? p.salviaSuave : p.linea, alignItems: 'center', justifyContent: 'center' }}>
-      <TextWidget text={hecho ? '✓' : '–'} style={{ fontSize: grande ? 22 : 20, color: hecho ? (r.estadoHoy === 'tarde' ? p.durazno : p.salvia) : p.suave, fontWeight: 'bold' }} />
+      <SvgWidget svg={svgIcono(hecho ? 'Check' : 'Minus', String(hecho ? (r.estadoHoy === 'tarde' ? p.durazno : p.salvia) : p.suave), grande ? 22 : 20, 2.6)} style={{ width: grande ? 22 : 20, height: grande ? 22 : 20 }} />
     </FlexWidget>
   );
 }
@@ -70,7 +71,7 @@ function Alveolo({ d, p }: { d: DiaWidget; p: Paleta }) {
         style={{ width: 26, height: 26, borderRadius: 13, backgroundColor: fondo, borderWidth: d.hoy ? 2 : 1, borderColor: borde, borderStyle: d.estado === 'descanso' ? 'dashed' : 'solid', alignItems: 'center', justifyContent: 'center' }}
       >
         {tomado ? (
-          <TextWidget text="✓" style={{ fontSize: 13, color: d.estado === 'tarde' ? p.durazno : p.salvia, fontWeight: 'bold' }} />
+          <SvgWidget svg={svgIcono('Check', String(d.estado === 'tarde' ? p.durazno : p.salvia), 14, 2.6)} style={{ width: 14, height: 14 }} />
         ) : d.estado !== 'descanso' ? (
           <FlexWidget style={{ width: 16, height: 16, borderRadius: 8, backgroundColor: d.estado === 'olvidada' ? p.durazno : d.placebo ? p.lila : p.rosa }} />
         ) : null}
@@ -94,10 +95,13 @@ function Chico({ r, p }: { r: ResumenWidget; p: Paleta }) {
     <FlexWidget clickAction="OPEN_APP" style={{ height: 'match_parent', width: 'match_parent', backgroundColor: p.fondo, borderRadius: 22, padding: 14, justifyContent: 'space-between' }}>
       <FlexWidget style={{ flexDirection: 'column', flexGap: 2 }}>
         <TextWidget text={titulo(r)} style={{ fontSize: 18, color: p.texto, fontWeight: 'bold' }} />
-        <TextWidget text={estadoHoy(r)} maxLines={2} style={{ fontSize: 12, color: p.suave }} />
+        <TextWidget text={estadoHoy(r)} maxLines={2} style={{ fontSize: 12, color: r.atrasada ? p.rosa : p.suave, fontWeight: r.atrasada ? 'bold' : 'normal' }} />
       </FlexWidget>
       <FlexWidget style={{ flexDirection: 'row', width: 'match_parent', justifyContent: 'space-between', alignItems: 'center' }}>
-        <TextWidget text={`⏰ ${r.hora}`} style={{ fontSize: 12, color: p.suave }} />
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 4 }}>
+          <SvgWidget svg={svgIcono('AlarmClock', String(p.suave), 13)} style={{ width: 13, height: 13 }} />
+          <TextWidget text={r.hora} style={{ fontSize: 12, color: p.suave }} />
+        </FlexWidget>
         <Check r={r} p={p} />
       </FlexWidget>
     </FlexWidget>
@@ -111,7 +115,7 @@ function Semana({ r, p }: { r: ResumenWidget; p: Paleta }) {
       <FlexWidget style={{ flexDirection: 'row', width: 'match_parent', alignItems: 'center', justifyContent: 'space-between' }}>
         <FlexWidget style={{ flexDirection: 'column', flexGap: 2 }}>
           <TextWidget text={titulo(r)} style={{ fontSize: 18, color: p.texto, fontWeight: 'bold' }} />
-          <TextWidget text={`${estadoHoy(r)} · ⏰ ${r.hora}`} maxLines={1} truncate="END" style={{ fontSize: 12, color: p.suave }} />
+          <TextWidget text={r.atrasada || r.estadoHoy === 'pendiente' ? estadoHoy(r) : `${estadoHoy(r)} · ${t('Hora')}: ${r.hora}`} maxLines={1} truncate="END" style={{ fontSize: 12, color: r.atrasada ? p.rosa : p.suave, fontWeight: r.atrasada ? 'bold' : 'normal' }} />
         </FlexWidget>
         <Check r={r} p={p} grande />
       </FlexWidget>

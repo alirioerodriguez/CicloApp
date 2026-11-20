@@ -21,6 +21,7 @@ export const OPCIONES_RED: { id: CompartirRed; label: string }[] = [
   { id: 'energia', label: 'Mi energía' },
   { id: 'periodo', label: 'Cuándo viene el período' },
   { id: 'ayuda', label: 'Cómo puede ayudarme' },
+  { id: 'cercania', label: 'Cuándo suelo tener más ganas de cercanía' },
 ];
 
 export const INTRO_RED =

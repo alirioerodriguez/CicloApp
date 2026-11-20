@@ -16,7 +16,7 @@ export const NOTIF = {
     'Es la hora de siempre: pastilla y listo',
     'No te olvides de tu pastilla. Márcala cuando la tomes.',
   ],
-  pastillaAtrasada: 'Pasó tu hora de la pastilla. Si aún no la tomaste, revisa el prospecto.',
+  pastillaAtrasada: 'Aún no tomaste tu pastilla de hoy. Si ya la tomaste, toca «Ya la tomé». Si se te pasó, revisa el prospecto.',
   descansoSinPastilla: 'Mañana empiezan tus días de descanso. Anota cuándo retomas',
   descansoPlacebo: 'Mañana empiezan las pastillas sin hormona. Sigue tomándolas como siempre',
   blisterNuevo: 'Mañana empieza tu blíster nuevo. ¿Ya lo tienes a mano?',

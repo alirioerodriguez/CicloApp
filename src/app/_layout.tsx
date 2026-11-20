@@ -21,6 +21,7 @@ import { ElegirPais } from '../components/ElegirPais';
 import * as Notifications from 'expo-notifications';
 import { nowTime } from '../lib/dates';
 import { ACCION_TOMADA, fechaDeRespuesta, idSegundoAviso } from '../lib/tareaPastilla';
+import { alTocarWidget, tomasMarcadasEnWidget } from '../widget/actualizarWidgets';
 import { subirResumenPareja } from '../lib/nube';
 import { resumenPareja } from '../lib/pareja';
 import { sincronizarReloj } from '../lib/sincronizarReloj';
@@ -66,6 +67,25 @@ function Gate() {
     Notifications.getLastNotificationResponseAsync().then(atender).catch(() => {});
     const sub = Notifications.addNotificationResponseReceivedListener(atender);
     return () => sub.remove();
+  }, [ready, marcarToma]);
+
+  // iPhone: pastillas marcadas con el botón «Ya la tomé» del widget. Se pasan al blíster al abrir la app, al volver
+  // a ella y al instante si la app estaba abierta. Después se redibuja el widget con lo guardado.
+  useEffect(() => {
+    if (!ready || Platform.OS !== 'ios') return;
+    const importar = async () => {
+      for (const { fecha, hora } of await tomasMarcadasEnWidget()) {
+        if (!tomas.current[fecha]) marcarToma(fecha, hora);
+        Notifications.cancelScheduledNotificationAsync(idSegundoAviso(fecha)).catch(() => {});
+      }
+    };
+    importar().catch(() => {});
+    const sub = AppState.addEventListener('change', (s) => s === 'active' && importar().catch(() => {}));
+    const soltar = alTocarWidget(() => importar().catch(() => {}));
+    return () => {
+      sub.remove();
+      soltar();
+    };
   }, [ready, marcarToma]);
 
   // Reprogramar recordatorios cuando cambian los datos (con una pausa).

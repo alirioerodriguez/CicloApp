@@ -1,6 +1,8 @@
-// Lo que ve la pareja: en qué etapa está ella y qué hacer hoy (misión, plan de cita y comida).
+// Lo que ve la pareja: en qué etapa está ella y qué hacer hoy (misión, plan de cita, comida, un mimo y, si ella lo
+// comparte, una pista de cercanía). Sin emojis: los íconos de la app.
 // Se usa en "Acompañar a mi pareja" y como vista previa en "Tu red de apoyo".
 import { View } from 'react-native';
+import { Icono } from './Icono';
 import { Text } from './Texto';
 import { Body, Card, Label, Muted } from './ui';
 import { PRIVACIDAD_PAREJA } from '../content/pareja';
@@ -25,6 +27,16 @@ function Lista({ items }: { items: string[] }) {
   );
 }
 
+function Titulo({ e, children }: { e: string; children: string }) {
+  const c = useColors();
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+      <Icono e={e} size={18} color={c.rosa} />
+      <Label>{children}</Label>
+    </View>
+  );
+}
+
 export function TarjetaPareja({ v, previa }: { v: VistaPareja; previa?: boolean }) {
   const c = useColors();
   const p = v.periodo;
@@ -43,7 +55,7 @@ export function TarjetaPareja({ v, previa }: { v: VistaPareja; previa?: boolean 
   return (
     <View style={{ gap: 14 }}>
       <Card tint={c.rosaSuave}>
-        <Text style={{ fontSize: 30 }}>{v.contenido.emoji}</Text>
+        <Icono e={v.contenido.emoji} size={30} color={c.rosa} />
         <Text style={{ fontFamily: serif, fontSize: 24, lineHeight: 30, color: c.text }}>{v.titulo}</Text>
         {v.dia != null && <Muted>{`Día ${v.dia} de su ciclo`}</Muted>}
         {v.contenido.como && v.fase !== 'general' && <Body>{v.contenido.como}</Body>}
@@ -64,28 +76,43 @@ export function TarjetaPareja({ v, previa }: { v: VistaPareja; previa?: boolean 
 
       {v.citas.length > 0 && (
         <Card>
-          <Label>💞 Ideas de plan</Label>
+          <Titulo e="💞">Ideas de cita</Titulo>
           <Lista items={v.citas} />
         </Card>
       )}
 
       {v.platos.length > 0 && (
         <Card>
-          <Label>🍽️ Para comer hoy</Label>
+          <Titulo e="🍽️">Para comer hoy</Titulo>
           <Lista items={v.platos} />
           {v.ingredientes.length > 0 && (
             <>
               <Muted>Le caen bien estos días:</Muted>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
                 {v.ingredientes.map((a) => (
-                  <View key={a.nombre} style={{ backgroundColor: c.bg, borderRadius: 999, paddingHorizontal: 11, paddingVertical: 6 }}>
-                    <Text style={{ fontSize: 13.5, color: c.text }}>{`${a.emoji} ${t(a.nombre)}`}</Text>
+                  <View key={a.nombre} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: c.bg, borderRadius: 999, paddingHorizontal: 11, paddingVertical: 6 }}>
+                    <Icono e={a.emoji} size={15} color={c.text} />
+                    <Text style={{ fontSize: 13.5, color: c.text }}>{t(a.nombre)}</Text>
                   </View>
                 ))}
               </View>
             </>
           )}
           {v.evitar && <Muted>{v.evitar}</Muted>}
+        </Card>
+      )}
+
+      {v.mimo && (
+        <Card>
+          <Titulo e="🤲">Un mimo para hoy</Titulo>
+          <Body>{v.mimo}</Body>
+        </Card>
+      )}
+
+      {v.cercania && (
+        <Card tint={c.rosaSuave}>
+          <Titulo e="✨">Entre ustedes</Titulo>
+          <Body>{v.cercania}</Body>
         </Card>
       )}
 

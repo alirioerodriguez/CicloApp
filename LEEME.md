@@ -125,6 +125,10 @@ Antes de iniciar sesión, la app pregunta el país (Venezuela, México, Colombia
 - El PDF para la médica, el CSV y las notificaciones también se traducen (`t as tr` en `lib/backup.ts` y `lib/notifications.ts`). En las notificaciones con `{dias}`, la frase se traduce antes de poner el número (`fill` en `content/textos.ts`).
 - `npm test` incluye `__tests__/ingles.test.ts`, que arma el PDF y una notificación con el teléfono en inglés.
 
+## Prueba de punta a punta del modo pareja
+
+`npm run test:e2e` exporta la web y corre `e2e/pareja.spec.ts` con Playwright: dos usuarias en dos navegadores (una crea el código, la otra lo canjea), con un Neon falso en memoria (`e2e/neon-falso.ts`) que copia las reglas de `neon/pareja.sql`. No usa claves ni cuentas reales. Si cambias `neon/pareja.sql`, cambia también el Neon falso. Si el navegador de Playwright no está instalado, apunta `CHROME_PATH` a un Chromium. `npm run test:e2e:rapido` salta la exportación y usa la última de `dist-e2e/`.
+
 ## Versión web (Vercel)
 
 `vercel.json` ya está configurado: Vercel ejecuta `npx expo export -p web` y publica la carpeta `dist`. En la web no hay recordatorios ni bloqueo con huella.

@@ -7,7 +7,8 @@ import type { ResumenCiclo } from './datosCiclo';
 import type { ResumenWidget } from './datosWidget';
 
 export interface Cuenta {
-  grande: string; // número o palabra grande
+  grande: string; // número o palabra grande (vacío si va la flor)
+  flor?: boolean; // sin cuenta todavía: la flor de Savia (ícono, no emoji)
   unidad: string;
   pie: string | null;
   color: 'rosa' | 'lila' | 'salvia' | 'texto';
@@ -36,9 +37,9 @@ export function cuenta(r: ResumenCiclo): Cuenta {
       return { grande: String(r.diasPara), unidad: dias(r.diasPara, r.discreto ? 'día para tu día 1' : 'día para tu período', r.discreto ? 'días para tu día 1' : 'días para tu período'), pie: fechaCorta(r), color: 'rosa' };
     }
     case 'meno':
-      return { grande: '🌸', unidad: t('Toca para registrar tu día'), pie: null, color: 'texto' };
+      return { grande: '', flor: true, unidad: t('Toca para registrar tu día'), pie: null, color: 'rosa' };
     default:
-      return { grande: '🌸', unidad: t('Registra tu período para ver la cuenta'), pie: null, color: 'texto' };
+      return { grande: '', flor: true, unidad: t('Registra tu período para ver la cuenta'), pie: null, color: 'rosa' };
   }
 }
 
@@ -58,6 +59,6 @@ export function estadoPastilla(r: Extract<ResumenWidget, { activo: true }>): str
     case 'descanso':
       return t('Hoy no te toca pastilla.');
     default:
-      return t(`Hoy a las ${r.hora}`);
+      return r.atrasada ? t('Aún no tomaste tu pastilla') : t(`Hoy a las ${r.hora}`);
   }
 }

@@ -8,11 +8,12 @@ import { WIDGET_CHICO, WIDGET_SEMANA, widgetPastilla } from './WidgetPastilla';
 
 export const WIDGETS = [WIDGET_CHICO, WIDGET_SEMANA, WIDGET_CUENTA, WIDGET_CICLO, WIDGET_PAREJA];
 
-export async function dibujar(nombre: string) {
+// `alto`: el alto del widget en dp, para que el de pareja muestre los consejos si lo agrandaron.
+export async function dibujar(nombre: string, alto = 0) {
   if (nombre === WIDGET_CUENTA || nombre === WIDGET_CICLO) return widgetCiclo(nombre, await leerDatosCiclo());
   if (nombre === WIDGET_PAREJA) {
     const g = await leerParejaGuardada();
-    return widgetPareja(g ? vistaPareja(g.resumen, region().pais) : null);
+    return widgetPareja(g ? vistaPareja(g.resumen, region().pais) : null, alto);
   }
   return widgetPastilla(nombre, await leerDatosWidget());
 }

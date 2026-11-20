@@ -1,5 +1,6 @@
 // Modo pareja: lo que ve quien la acompaña. Acciones concretas para hoy, planes y comida según su fase.
-// Habla a la pareja de "tú" y sin suponer su género. Nunca menciona intimidad, síntomas ni anticoncepción.
+// Habla a la pareja de "tú" y sin suponer su género. Nunca menciona síntomas ni anticoncepción, ni nada de lo que ella registra.
+// `cercania` es una pista sutil y general de la fase (no un dato de ella): solo se muestra si ella la elige compartir.
 // Información de bienestar general, no consejo médico. Fuentes de alimentación: ver content/alimentos.
 
 export type FasePareja = 'menstrual' | 'folicular' | 'ovulatoria' | 'lutea' | 'spm' | 'general' | 'embarazo' | 'posparto' | 'meno';
@@ -12,6 +13,8 @@ export interface ContenidoPareja {
   misiones: string[]; // una por día, rotan
   citas: string[];
   platos: string[];
+  mimos: string[]; // masajes y cuidados, uno por día
+  cercania: string | null; // pista sutil de cercanía; solo si ella elige compartirla
   evitar: string | null;
 }
 
@@ -30,6 +33,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Noche de manta, película y comida pedida.', 'Un desayuno tranquilo en casa, sin apuro.', 'Un paseo corto y lento, si a ella le provoca.'],
     platos: ['Sopa caliente de pollo y verduras', 'Lentejas guisadas con arroz', 'Carne magra a la plancha con espinaca', 'Un chocolate caliente'],
+    mimos: ['Un masaje suave en la parte baja de la espalda, con una bolsa de agua tibia.', 'Masajéale los pies con crema mientras ven algo.', 'Un abrazo largo y una manta: a veces es todo lo que hace falta.'],
+    cercania: null,
     evitar: 'Mejor sin café ni té junto a la comida: le quitan el hierro que más necesita estos días.',
   },
   folicular: {
@@ -45,6 +50,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Probar un restaurante nuevo.', 'Una clase juntos: baile, cocina o cerámica.', 'Un paseo de día: playa, montaña o parque.'],
     platos: ['Ensalada con pollo a la plancha y aguacate', 'Ceviche o pescado fresco', 'Arroz con verduras y huevo', 'Frutas frescas con yogur'],
+    mimos: ['Un masaje de hombros después de un día largo.', 'Prepárale una ducha caliente con su música favorita.', 'Un masaje de cuello y cabeza, sin apuro.'],
+    cercania: 'Con la energía de vuelta suelen volver las ganas de cercanía. Buen momento para coquetear, si ella también quiere.',
     evitar: null,
   },
   ovulatoria: {
@@ -60,6 +67,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Cena fuera y algo de música en vivo.', 'Plan con amigos: parrilla, karaoke o juegos.', 'Una escapada de un día.'],
     platos: ['Pescado al horno con verduras', 'Ensalada de espinaca, frutos rojos y nueces', 'Brócoli o coliflor salteados con pollo', 'Agua de frutas fresca'],
+    mimos: ['Un masaje relajante con aceite, música suave y sin apuro.', 'Un masaje de espalda completo, con las luces bajas.', 'Acaríciale el pelo mientras charlan.'],
+    cercania: 'Suelen ser sus días de más ganas de cercanía. Si la vienes cuidando, la noche puede terminar muy bien… si ella también quiere.',
     evitar: null,
   },
   lutea: {
@@ -75,6 +84,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Cocinar juntos en casa.', 'Una caminata tranquila al atardecer.', 'Juegos de mesa o una serie juntos.'],
     platos: ['Batata o papa al horno con pollo', 'Pasta integral con salsa de tomate y verduras', 'Avena con fruta y canela', 'Pescado con arroz integral'],
+    mimos: ['Un masaje de pies al final del día.', 'Un masaje en la espalda baja con aceite tibio.', 'Una infusión caliente y un rato abrazados en el sofá.'],
+    cercania: null,
     evitar: 'Mejor poca sal y poco alcohol: aumentan la hinchazón.',
   },
   spm: {
@@ -91,6 +102,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Plan en casa: su comida favorita y una película.', 'Un baño tibio preparado por ti.', 'Una salida corta y sin presión.'],
     platos: ['Chocolate oscuro con frutos secos', 'Crema de calabaza o de zanahoria', 'Avena caliente con canela y fruta', 'Arroz con pollo'],
+    mimos: ['Un masaje suave en la espalda o la cabeza, sin que tenga que pedirlo.', 'Masajéale los pies mientras ven su serie favorita.', 'Prepárale un baño tibio con sales o aceite.'],
+    cercania: null,
     evitar: 'Mejor poco café y poca sal: pueden empeorar la irritabilidad y la hinchazón.',
   },
   general: {
@@ -106,6 +119,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Cocinar juntos en casa.', 'Probar un sitio nuevo.', 'Un paseo al aire libre.'],
     platos: ['Pollo o pescado con verduras', 'Lentejas guisadas con arroz', 'Frutas frescas con yogur'],
+    mimos: ['Un masaje de hombros sin que te lo pida.', 'Un abrazo largo al llegar a casa.'],
+    cercania: null,
     evitar: null,
   },
   embarazo: {
@@ -121,6 +136,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Una cena tranquila en casa.', 'Un paseo corto al aire libre.', 'Una sesión de fotos de la barriga.'],
     platos: ['Lentejas guisadas con arroz', 'Pollo bien cocido con verduras', 'Frutas bien lavadas con yogur'],
+    mimos: ['Un masaje suave en los pies o la espalda baja, sin presionar fuerte.', 'Ayúdala a ponerse crema en la barriga o las piernas.'],
+    cercania: null,
     evitar: 'Nada de carnes, pescados ni huevos crudos o poco cocidos, y nada de alcohol.',
   },
   posparto: {
@@ -136,6 +153,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Un rato a solas mientras alguien de confianza cuida al bebé.', 'Un paseo corto con el bebé.'],
     platos: ['Sopa o guiso nutritivo', 'Avena con fruta', 'Algo fácil de comer con una mano: frutos secos, queso o fruta'],
+    mimos: ['Un masaje de hombros y cuello: cargar al bebé cansa mucho.', 'Cuida tú al bebé y regálale una ducha larga y tranquila.'],
+    cercania: null,
     evitar: null,
   },
   meno: {
@@ -151,6 +170,8 @@ export const PAREJA: Record<FasePareja, ContenidoPareja> = {
     ],
     citas: ['Una clase de baile o yoga juntos.', 'Una cena ligera y temprano.', 'Un paseo al aire libre.'],
     platos: ['Pescado con verduras', 'Yogur o queso con fruta', 'Ensalada con garbanzos'],
+    mimos: ['Un masaje de pies antes de dormir.', 'Un masaje de cuello y hombros para ayudarla a relajarse.'],
+    cercania: null,
     evitar: 'Mejor poco alcohol, picante y café en la noche: pueden empeorar los bochornos.',
   },
 };

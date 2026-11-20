@@ -150,6 +150,9 @@ export default function Red() {
             ))}
           </View>
         )}
+        {red.on && red.compartir.includes('cercania') && (
+          <Muted>{t('«Cuándo suelo tener más ganas de cercanía» le muestra una pista general según tu fase. Nunca lo que registras.')}</Muted>
+        )}
       </Card>
 
       {red.on && (

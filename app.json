@@ -160,12 +160,12 @@
             {
               "name": "ParejaHoy",
               "label": "Savia · Tu pareja hoy",
-              "description": "En qué etapa está tu pareja y qué puedes hacer hoy",
+              "description": "En qué fase está tu pareja, cómo se siente y qué plan y comida le caen bien hoy",
               "minWidth": "250dp",
               "minHeight": "110dp",
               "targetCellWidth": 4,
-              "targetCellHeight": 2,
-              "resizeMode": "horizontal",
+              "targetCellHeight": 3,
+              "resizeMode": "horizontal|vertical",
               "updatePeriodMillis": 1800000
             }
           ]
@@ -217,6 +217,20 @@
                 "initialLayout": "./src/widget/ios/SaviaPastilla.tsx"
               },
               "android": null
+            },
+            {
+              "name": "SaviaPareja",
+              "displayName": "Tu pareja hoy",
+              "description": "En qué fase está tu pareja, cómo se siente y qué plan y comida le caen bien hoy",
+              "ios": {
+                "supportedFamilies": [
+                  "systemSmall",
+                  "systemMedium",
+                  "systemLarge"
+                ],
+                "initialLayout": "./src/widget/ios/SaviaPareja.tsx"
+              },
+              "android": null
             }
           ]
         }
@@ -224,6 +238,12 @@
     ],
     "experiments": {
       "typedRoutes": false
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "de17694e-104e-477c-9949-1edf433baa31"
+      }
+    },
+    "owner": "alirior"
   }
 }

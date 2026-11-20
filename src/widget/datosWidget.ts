@@ -2,7 +2,7 @@
 // Lógica pura en `resumenWidget` para poder probarla; `leerDatosWidget` busca los datos de la usuaria activa.
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CLAVE_ACTIVA, diaDelBlister, encabezado, estadoDelDia, normalizarBlister, normalizarTomas, type EstadoDia } from '../lib/blister';
-import { addDays, fromISO, inicialesSemana, today } from '../lib/dates';
+import { addDays, fromISO, inicialesSemana, nowTime, today } from '../lib/dates';
 import type { ISODate } from '../lib/types';
 
 export interface DiaWidget {
@@ -23,11 +23,13 @@ export type ResumenWidget =
       de: number;
       hora: string;
       estadoHoy: EstadoDia;
+      atrasada: boolean; // ya pasó su hora y todavía no la marcó: «Aún no tomaste tu pastilla»
       horaToma: string | null;
       semana: DiaWidget[]; // la fila de 7 del blíster en la que cae hoy
     };
 
-export function resumenWidget(raw: unknown, hoy: ISODate = today()): ResumenWidget {
+// `ahora` es la hora (HH:MM) con la que se mira el día: la real, o la de una entrada futura del widget de iPhone.
+export function resumenWidget(raw: unknown, hoy: ISODate = today(), ahora: string = nowTime()): ResumenWidget {
   const datos = (raw ?? {}) as { settings?: { pillMode?: boolean }; blister?: unknown; tomasPastilla?: unknown };
   const b = normalizarBlister(datos.blister);
   if (!datos.settings?.pillMode || !b) return { activo: false };
@@ -48,7 +50,8 @@ export function resumenWidget(raw: unknown, hoy: ISODate = today()): ResumenWidg
       hoy: fecha === hoy,
     });
   }
-  return { activo: true, ...enc, hora: b.hora, estadoHoy: estadoDelDia(b, tomas, hoy, hoy), horaToma: tomas[hoy]?.hora ?? null, semana };
+  const estadoHoy = estadoDelDia(b, tomas, hoy, hoy);
+  return { activo: true, ...enc, hora: b.hora, estadoHoy, atrasada: estadoHoy === 'pendiente' && ahora >= b.hora, horaToma: tomas[hoy]?.hora ?? null, semana };
 }
 
 export async function leerDatosWidget(): Promise<ResumenWidget> {

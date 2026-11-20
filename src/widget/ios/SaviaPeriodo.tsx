@@ -1,12 +1,13 @@
 // Widget de iPhone (expo-widgets): cuántos días faltan para el período, o la cuenta del blíster, el embarazo o el posparto.
 // Los textos los arma la app con `cuenta()` (src/widget/textos.ts), igual que en Android; acá solo se dibujan.
 // La función con 'widget' corre en el widget de iOS: no puede importar ni usar nada de afuera, por eso los colores van adentro.
-import { Text, VStack } from '@expo/ui/swift-ui';
+import { Image, Text, VStack } from '@expo/ui/swift-ui';
 import { containerBackground, font, foregroundStyle, lineLimit, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 
 export interface PropsPeriodo {
   grande: string;
+  flor: boolean; // sin cuenta todavía: la flor (símbolo del sistema) en lugar del número
   unidad: string;
   pie: string;
   color: 'rosa' | 'lila' | 'salvia' | 'texto';
@@ -23,11 +24,15 @@ const SaviaPeriodo = (props: PropsPeriodo, environment: WidgetEnvironment) => {
   return (
     <VStack alignment="leading" spacing={4} modifiers={[containerBackground(paleta.fondo, 'widget'), widgetURL('ciclo:///')]}>
       <Text modifiers={[font({ weight: 'bold', size: 12 }), foregroundStyle(paleta.suave)]}>Savia</Text>
-      <Text modifiers={[font({ weight: 'bold', size: props.grande.length > 4 ? 26 : mediano ? 44 : 38 }), foregroundStyle(acento), lineLimit(1)]}>{props.grande}</Text>
+      {props.flor ? (
+        <Image systemName="camera.macro" size={mediano ? 40 : 34} color={acento} />
+      ) : (
+        <Text modifiers={[font({ weight: 'bold', size: props.grande.length > 4 ? 26 : mediano ? 44 : 38 }), foregroundStyle(acento), lineLimit(1)]}>{props.grande}</Text>
+      )}
       <Text modifiers={[font({ size: mediano ? 15 : 13 }), foregroundStyle(paleta.texto), lineLimit(2)]}>{props.unidad}</Text>
       <Text modifiers={[font({ size: 12 }), foregroundStyle(paleta.suave), lineLimit(1)]}>{props.pie}</Text>
     </VStack>
   );
 };
 
-export default createWidget('SaviaPeriodo', SaviaPeriodo, { grande: '🌸', unidad: 'Abre Savia para ver tu cuenta', pie: ' ', color: 'texto' });
+export default createWidget('SaviaPeriodo', SaviaPeriodo, { grande: '', flor: true, unidad: 'Abre Savia para ver tu cuenta', pie: ' ', color: 'rosa' });

@@ -47,6 +47,7 @@
     "react-native-web": "^0.21.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.65.1",
     "@types/jest": "30.0.0",
     "@types/react": "~19.3.0",
     "eslint": "^9.0.0",
@@ -63,6 +64,8 @@
     "typecheck": "tsc --noEmit",
     "test": "jest",
     "test:husos": "node scripts/probar-husos.js",
+    "test:e2e": "expo export -p web --output-dir dist-e2e && playwright test",
+    "test:e2e:rapido": "playwright test",
     "lint": "expo lint"
   },
   "private": true,

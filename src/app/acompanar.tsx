@@ -2,7 +2,7 @@
 // y desde ahí ve en qué etapa está y qué puede hacer hoy. También alimenta el widget "Tu pareja hoy".
 import { router } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, TextInput } from 'react-native';
+import { ActivityIndicator, Platform, TextInput } from 'react-native';
 import { TarjetaPareja } from '../components/TarjetaPareja';
 import { Body, Button, Card, Label, Muted, Screen, Toggle, confirm } from '../components/ui';
 import { useAuth } from '../lib/auth';
@@ -143,7 +143,7 @@ export default function Acompanar() {
             guardar({ ...guardada, avisos });
           }}
         />
-        <Muted>Agrega el widget "Savia · Tu pareja hoy" a tu pantalla de inicio para verlo de un vistazo.</Muted>
+        {Platform.OS === 'android' && <Muted>Agrega el widget "Savia · Tu pareja hoy" a tu pantalla de inicio para verlo de un vistazo.</Muted>}
       </Card>
       <Button kind="danger" label="Dejar de acompañar" onPress={soltar} />
       {solo && <Button kind="ghost" label="Quiero usar Savia para mí también" onPress={paraMi} />}

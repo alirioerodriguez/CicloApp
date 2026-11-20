@@ -16,13 +16,30 @@ export const nubeConfigurada = !!url;
 export const WEB = 'https://cicloapp.vercel.app';
 const urlAuth = url ? defaultDeriveNeonUrls(url).auth : '';
 
-function crear() {
+function crear(auth: string) {
   const u = defaultDeriveNeonUrls(url);
   // El adaptador "Supabase" da la misma API de sesión: signInWithPassword, onAuthStateChange, etc.
-  return createClient({ auth: { adapter: SupabaseAuthAdapter(), url: u.auth }, dataApi: { url: u.dataApi } });
+  return createClient({ auth: { adapter: SupabaseAuthAdapter(), url: auth }, dataApi: { url: u.dataApi } });
 }
 
-export const neon = nubeConfigurada ? crear() : null;
+// En la web, Neon Auth va por /api/auth del propio sitio (vercel.json lo reenvía a Neon). Así la cookie de la
+// sesión es del dominio de Savia: Safari y Chrome en el iPhone borran las cookies de otros sitios, y eso cerraba
+// la sesión. La página que hace de puente para el ingreso desde la app (?ingresoApp=…) sigue yendo directo a Neon.
+const webPropia = Platform.OS === 'web' && typeof window !== 'undefined' && !/[?&]ingresoApp=/.test(window.location.search);
+const AUTH_PUENTE = webPropia ? `${window.location.origin}/api/auth` : '';
+
+export let neon = nubeConfigurada ? crear(webPropia ? AUTH_PUENTE : urlAuth) : null;
+
+/** En la web: si el puente /api/auth no contesta como Neon (por ejemplo, en desarrollo), se vuelve a ir directo. */
+async function probarPuente(): Promise<void> {
+  try {
+    const r = await fetch(`${AUTH_PUENTE}/get-session`, { credentials: 'include', cache: 'no-store' });
+    if (r.ok && /json/.test(r.headers.get('content-type') ?? '')) return;
+  } catch {}
+  neon = crear(urlAuth);
+}
+// lib/auth.tsx espera esto antes de leer la sesión
+export const nubeLista: Promise<void> = nubeConfigurada && webPropia ? probarPuente() : Promise.resolve();
 
 // Google y Apple: en la web, Neon Auth redirige al proveedor y vuelve a la página. En el celular se abre la
 // versión web en una ventana segura del sistema; esa página entra con el proveedor y vuelve a la app con un
@@ -100,6 +117,10 @@ function mensajeError(m: string): string {
 
 export async function signOut(): Promise<void> {
   await neon?.auth.signOut();
+  // Se borra la última sesión recordada (lib/auth.tsx) y se vuelve a leer: el servidor ya dice que no hay
+  const { default: AsyncStorage } = await import('@react-native-async-storage/async-storage');
+  await AsyncStorage.removeItem('ciclo:ultima-sesion').catch(() => {});
+  await refrescarSesion?.();
 }
 
 // ---------- Respaldo en la nube ----------

@@ -23,6 +23,7 @@ import { fonts, serif, useColors } from '../../lib/theme';
 import { QuizEntrada } from '../../components/QuizEntrada';
 import { TarjetaBlister } from '../../components/TarjetaBlister';
 import { t as traducir } from '../../lib/region';
+import { useAuth } from '../../lib/auth';
 
 function Status() {
   const c = useColors();
@@ -105,6 +106,7 @@ export default function Hoy() {
 
 function HoyCiclo() {
   const c = useColors();
+  const { session } = useAuth();
   const L = useLayout();
   const { data, summary: s, updateSettings } = useStore();
   const name = data.settings.name;
@@ -141,7 +143,7 @@ function HoyCiclo() {
       {firstDay && (
         <Card tint={c.lavandaSuave}>
           <Label>{VACIOS.primerDia.titulo}</Label>
-          <Body>{VACIOS.primerDia.texto}</Body>
+          <Body>{VACIOS.primerDia.texto(!!session)}</Body>
         </Card>
       )}
 

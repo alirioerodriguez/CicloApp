@@ -69,7 +69,7 @@ export function Flor({ colores, abierta = true, size = 260 }: { colores: string[
           <G transform="translate(140 140)">
             {Array.from({ length: 10 }, (_, j) => (
               <G key={`e${j}`} rotation={j * 36}>
-                <Path d={PETALO} fill={abierta ? cols[j % cols.length] : c.rosaSuave} opacity={0.92} />
+                <Path d={PETALO} fill={abierta ? cols[Math.floor((j * cols.length) / 10)] : c.rosaSuave} opacity={0.92} />
               </G>
             ))}
             {Array.from({ length: 8 }, (_, k) => (

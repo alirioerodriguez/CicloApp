@@ -2,6 +2,7 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Pressable, TextInput, View } from 'react-native';
+import { Icono } from './Icono';
 import { Text } from './Texto';
 import { FLOW_LABELS, MOODS, SYMPTOMS } from '../content/catalogo';
 import { CUIDATE } from '../content/cuidate';
@@ -75,7 +76,10 @@ export function DayEditor({ date }: { date: ISODate }) {
                 style={{ alignItems: 'center', gap: 4, flex: 1, paddingVertical: 8, borderRadius: radius.md, backgroundColor: on ? c.rosaSuave : 'transparent' }}
               >
                 <View style={{ height: 30, justifyContent: 'center' }}>
-                  <Text style={{ fontSize: i === 0 ? 18 : 11 + i * 4, opacity: i === 0 ? 0.5 : 1 }}>{i === 0 ? '○' : ''}</Text>
+                  {/* Una gota que crece con la intensidad (14, 18, 22 y 26 px); «Nada» es un círculo vacío */}
+                  {i === 0
+                    ? <Text style={{ fontSize: 18, opacity: 0.5 }}>○</Text>
+                    : <Icono e="🩸" size={10 + i * 4} color={c.rosa} strokeWidth={on ? 2.2 : 1.8} />}
                 </View>
                 <Text style={{ fontSize: 11.5, color: on ? c.text : c.muted, fontFamily: on ? fonts.bold : fonts.medium }}>{l}</Text>
               </Pressable>
@@ -105,23 +109,28 @@ export function DayEditor({ date }: { date: ISODate }) {
               key={n}
               accessibilityRole="button"
               accessibilityLabel={`Dolor ${n}`}
-              hitSlop={4}
+              accessibilityState={{ selected: n === log.pain }}
               onPress={() => {
                 tap();
                 set({ pain: n });
               }}
-              style={{
-                width: 26,
-                height: 26,
-                borderRadius: 13,
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: n > 0 && n <= log.pain ? painColor(log.pain) : c.line,
-                borderWidth: n === log.pain ? 2 : 0,
-                borderColor: c.text,
-              }}
+              // Toda la franja es tocable (44 de alto, el ancho que toca a cada número); el círculo es solo el dibujo
+              style={{ flex: 1, height: 44, alignItems: 'center', justifyContent: 'center' }}
             >
-              <Text style={{ fontSize: 11, fontFamily: fonts.bold, color: n > 0 && n <= log.pain ? c.onAccent : c.muted }}>{n}</Text>
+              <View
+                style={{
+                  width: 26,
+                  height: 26,
+                  borderRadius: 13,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: n > 0 && n <= log.pain ? painColor(log.pain) : c.line,
+                  borderWidth: n === log.pain ? 2 : 0,
+                  borderColor: c.text,
+                }}
+              >
+                <Text style={{ fontSize: 11, fontFamily: fonts.bold, color: n > 0 && n <= log.pain ? c.onAccent : c.muted }}>{n}</Text>
+              </View>
             </Pressable>
           ))}
         </View>

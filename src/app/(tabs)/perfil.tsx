@@ -517,7 +517,7 @@ export default function Perfil() {
         }
       />
 
-      {/* Otra app del mismo creador: solo un link, no comparte ningún dato */}
+      {/* Otras apps del mismo creador (VeoMás, Un nuevo comienzo, Mis Cuentas): solo links, no comparten ningún dato */}
       <Pressable
         accessibilityRole="link"
         accessibilityLabel="VeoMás: en qué plataforma está cada película o serie. Se abre en el navegador."
@@ -544,12 +544,28 @@ export default function Perfil() {
       >
         <Card tint={c.salviaSuave}>
           <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
-            <View style={{ width: 48, height: 48, borderRadius: 12, backgroundColor: c.card, alignItems: 'center', justifyContent: 'center' }}>
-              <Text style={{ fontSize: 26 }}>🌱</Text>
-            </View>
+            <Image source={require('../../../assets/un-nuevo-comienzo.png')} style={{ width: 48, height: 48, borderRadius: 12 }} accessibilityIgnoresInvertColors />
             <View style={{ flex: 1 }}>
               <Body style={{ fontWeight: '600' }}>¿Estás buscando trabajo?</Body>
               <Muted>Un nuevo comienzo te ayuda a ordenar el envío de CVs con una rutina semanal, llevar tus entrevistas, encontrar eventos de tu rubro y prepararte con tips para entrevistas y para mejorar tu CV. Gratis y sin cuenta.</Muted>
+            </View>
+            <Text style={{ fontSize: 20 }}>›</Text>
+          </View>
+        </Card>
+      </Pressable>
+
+      <Pressable
+        accessibilityRole="link"
+        accessibilityLabel="Mis Cuentas: anota tus gastos e ingresos del mes. Se abre en el navegador."
+        onPress={() => Linking.openURL('https://control-de-gastos-lyart-theta.vercel.app/?ref=savia')}
+        style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+      >
+        <Card>
+          <View style={{ flexDirection: 'row', gap: 12, alignItems: 'center' }}>
+            <Image source={require('../../../assets/mis-cuentas.png')} style={{ width: 48, height: 48, borderRadius: 12 }} accessibilityIgnoresInvertColors />
+            <View style={{ flex: 1 }}>
+              <Body style={{ fontWeight: '600' }}>¿En qué se te va el mes?</Body>
+              <Muted>Mis Cuentas te ayuda a anotar tus gastos e ingresos y ver de un vistazo cuánto te queda.</Muted>
             </View>
             <Text style={{ fontSize: 20 }}>›</Text>
           </View>

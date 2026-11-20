@@ -20,7 +20,7 @@ export function QuizEntrada() {
           <IconoBurbuja e="🌷" size={42} />
           <View style={{ flex: 1 }}>
             <Label>¿Cómo estás de verdad?</Label>
-            <Muted>{hoy ? `Hoy: ${RESULTADOS[hoy.nivel].titulo.toLowerCase()}` : '4 preguntas · 1 minuto · tu flor de hoy'}</Muted>
+            <Muted>{hoy ? `Hoy: ${RESULTADOS[hoy.nivel].titulo.toLowerCase()}` : '7 preguntas · 2 minutos · tu flor de hoy'}</Muted>
           </View>
           <Text style={{ color: c.muted, fontSize: 20 }}>›</Text>
         </Card>

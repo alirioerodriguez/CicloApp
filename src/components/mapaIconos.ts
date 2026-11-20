@@ -35,6 +35,8 @@ export const MAPA: Record<string, string> = {
   '👤': 'User', '👥': 'Users', '💬': 'MessageCircle', '💌': 'Mail', '📸': 'Camera', '📱': 'Smartphone', '📲': 'Smartphone', '🖥': 'Monitor',
   '👜': 'Briefcase', '🎁': 'Gift', '🛏': 'Bed', '🏕': 'Tent', '🧴': 'Droplets', '🩹': 'ShieldCheck', '🧊': 'Refrigerator', '👍': 'ThumbsUp',
   '🧑‍🍳': 'ChefHat', '🍖': 'Ham', '🧫': 'TestTube', '🌊': 'WavesHorizontal', '🥱': 'AlarmClock', '🦶': 'Footprints', '🤱': 'Baby',
+  // Respuestas nuevas del quiz y emojis que no tenían icono (15/11/2026, traídas de main)
+  '🍃': 'Feather', '💭': 'MessageCircleHeart', '🏝': 'User', '🌶': 'Flame', '🚬': 'Cigarette', '🥵': 'ThermometerSun', '🛠': 'Wrench',
 };
 
 // Quita los selectores de variación para encontrar el emoji en el mapa.

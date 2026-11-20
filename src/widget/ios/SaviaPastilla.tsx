@@ -3,7 +3,7 @@
 // en la línea de tiempo del widget; la app la pasa al blíster cuando se abre (o al toque, si estaba abierta):
 // ver tomasDelWidget en datosIOS.ts y el efecto de _layout.tsx. Los textos los arma la app (src/widget/textos.ts).
 // La función con 'widget' corre en el widget de iOS: no puede importar ni usar nada de afuera.
-import { Button, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { Button, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
 import { buttonStyle, containerBackground, controlSize, font, foregroundStyle, lineLimit, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 
@@ -33,20 +33,21 @@ const SaviaPastilla = (props: PropsPastilla, environment: WidgetEnvironment) => 
       </VStack>
     );
   }
-  const simbolo = props.marca === 'tomada' || props.marca === 'tarde' ? '✓' : props.marca === 'pendiente' ? '○' : '–';
+  // Sin emojis ni signos sueltos: símbolos del sistema, como los íconos de la app
+  const simbolo = props.marca === 'tomada' || props.marca === 'tarde' ? 'checkmark.circle.fill' : props.marca === 'pendiente' ? 'circle' : 'minus.circle';
   const color = props.marca === 'tomada' ? paleta.salvia : props.marca === 'tarde' ? paleta.durazno : props.marca === 'pendiente' ? paleta.rosa : paleta.suave;
   // Lo que devuelve se mezcla con las props de esta entrada y queda guardado en el widget.
   const tomar = () => {
     const d = new Date();
     const hora = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
-    return { marca: 'tomada', estado: `✓ ${hora}`, boton: false, atrasada: false, tomadaWidget: hora };
+    return { marca: 'tomada', estado: hora, boton: false, atrasada: false, tomadaWidget: hora };
   };
   return (
     <VStack alignment="leading" spacing={4} modifiers={[containerBackground(paleta.fondo, 'widget'), widgetURL('ciclo:///')]}>
       <HStack>
         <Text modifiers={[font({ weight: 'bold', size: 16 }), foregroundStyle(paleta.texto), lineLimit(1)]}>{props.titulo}</Text>
         <Spacer />
-        {props.boton ? null : <Text modifiers={[font({ weight: 'bold', size: 22 }), foregroundStyle(color)]}>{simbolo}</Text>}
+        {props.boton ? null : <Image systemName={simbolo} size={22} color={color} />}
       </HStack>
       <Text modifiers={[font({ weight: props.atrasada ? 'bold' : 'regular', size: 13 }), foregroundStyle(props.atrasada ? paleta.rosa : paleta.suave), lineLimit(2)]}>{props.estado}</Text>
       <Spacer />

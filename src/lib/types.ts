@@ -42,7 +42,8 @@ export interface Toma {
 }
 
 // Red de apoyo: qué se comparte con la pareja o alguien de confianza (nunca síntomas ni notas).
-export type CompartirRed = 'fase' | 'energia' | 'periodo' | 'ayuda';
+// 'cercania': pistas sutiles de la fase para acercarse; apagada de entrada, solo si ella la elige.
+export type CompartirRed = 'fase' | 'energia' | 'periodo' | 'ayuda' | 'cercania';
 export interface RedApoyo {
   on: boolean;
   nombre: string;

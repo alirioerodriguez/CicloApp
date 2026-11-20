@@ -40,7 +40,9 @@ describe('Widget del período (iPhone)', () => {
   });
 
   test('sin registros invita a abrir la app', () => {
-    expect(propsPeriodo(resumenCiclo(null)).grande).toBe('🌸');
+    const p = propsPeriodo(resumenCiclo(null));
+    expect(p.flor).toBe(true);
+    expect(p.grande).toBe('');
   });
 });
 

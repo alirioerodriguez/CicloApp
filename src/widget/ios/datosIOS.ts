@@ -6,6 +6,7 @@ import { region, t } from '../../lib/region';
 import type { ISODate } from '../../lib/types';
 import { resumenCiclo, type ResumenCiclo } from '../datosCiclo';
 import { resumenWidget, type ResumenWidget } from '../datosWidget';
+import { simboloDeEmoji } from '../iconos';
 import { cuenta, estadoPastilla, tituloPastilla } from '../textos';
 import type { PropsPareja } from './SaviaPareja';
 import type { PropsPastilla } from './SaviaPastilla';
@@ -15,7 +16,7 @@ export const DIAS_ADELANTE = 7;
 
 export function propsPeriodo(r: ResumenCiclo): PropsPeriodo {
   const k = cuenta(r);
-  return { grande: k.grande, unidad: k.unidad, pie: k.pie ?? ' ', color: k.color };
+  return { grande: k.grande, flor: !!k.flor, unidad: k.unidad, pie: k.pie ?? ' ', color: k.color };
 }
 
 export function propsPastilla(r: ResumenWidget, fecha: ISODate = today()): PropsPastilla {
@@ -26,12 +27,16 @@ export function propsPastilla(r: ResumenWidget, fecha: ISODate = today()): Props
 
 // Lo que ve la pareja en su iPhone. Los textos ya traducidos: el widget solo los dibuja.
 export function propsPareja(v: VistaPareja | null): PropsPareja {
-  const rotulos = { hoy: t('HOY'), como: t('CÓMO SE SIENTE'), mision: t('TU MISIÓN DE HOY'), plan: t('UN PLAN'), comer: t('PARA COMER') };
-  if (!v) return { conectada: false, emoji: '💞', titulo: t('Toca para conectar con el código de tu pareja.'), linea: '', como: '', mision: '', plan: '', plato: '', rotulos };
+  const rotulos = { hoy: t('HOY'), como: t('CÓMO SE SIENTE'), mision: t('TU MISIÓN DE HOY'), plan: t('UNA CITA'), comer: t('PARA COMER'), mimo: t('UN MIMO'), cercania: t('ENTRE USTEDES') };
+  if (!v) return { conectada: false, simbolo: 'heart', titulo: t('Toca para conectar con el código de tu pareja.'), linea: '', como: '', mision: '', plan: '', plato: '', mimo: '', cercania: '', rotulos };
   const pe = v.periodo;
   const linea = v.enPeriodo ? t('Está con su período') : pe ? (pe.enDias === 0 ? t('Su período: en cualquier momento') : pe.enDias === 1 ? t('Su período: mañana') : t(`Su período: en ${pe.enDias} días`)) : '';
   const como = v.fase !== 'general' && v.contenido.como ? t(v.contenido.como) : '';
-  return { conectada: true, emoji: v.contenido.emoji, titulo: t(v.titulo), linea, como, mision: v.mision ? t(v.mision) : '', plan: v.plan ? t(v.plan) : '', plato: v.plato ? t(v.plato) : '', rotulos };
+  return {
+    conectada: true, simbolo: simboloDeEmoji(v.contenido.emoji), titulo: t(v.titulo), linea, como,
+    mision: v.mision ? t(v.mision) : '', plan: v.plan ? t(v.plan) : '', plato: v.plato ? t(v.plato) : '',
+    mimo: v.mimo ? t(v.mimo) : '', cercania: v.cercania ? t(v.cercania) : '', rotulos,
+  };
 }
 
 // fromISO da el mediodía (para no saltar de día con los husos); el widget tiene que cambiar a las 00:00

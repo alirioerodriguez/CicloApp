@@ -53,6 +53,8 @@ export interface VistaPareja {
   mision: string | null;
   plan: string | null; // el plan del día (de `citas`), cambia cada día como la misión
   plato: string | null; // un plato recomendado del día (de `platos`)
+  mimo: string | null; // un masaje o cuidado del día (de `mimos`)
+  cercania: string | null; // pista sutil de la fase, solo si ella eligió compartirla
   citas: string[];
   platos: string[];
   ingredientes: { emoji: string; nombre: string }[];
@@ -136,6 +138,8 @@ export function vistaPareja(r: ResumenPareja, pais: Pais, hoy: ISODate = today()
     mision: ayuda ? delDia(ct.misiones, hoy) : null,
     plan: ayuda && ct.citas.length ? delDia(ct.citas, hoy) : null,
     plato: ayuda && ct.platos.length ? delDia(ct.platos, hoy) : null,
+    mimo: ayuda && ct.mimos.length ? delDia(ct.mimos, hoy) : null,
+    cercania: quiere.includes('cercania') ? ct.cercania : null,
     citas: ayuda ? ct.citas : [],
     platos: ayuda ? ct.platos : [],
     ingredientes,

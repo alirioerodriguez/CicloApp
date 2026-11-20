@@ -4,7 +4,8 @@
 // - ParejaHoy (mediano, en el teléfono de la pareja): en qué etapa está ella y la misión del día.
 // En modo discreto no dicen "período" ni "fértil". Nunca muestran registros ni intimidad.
 import type { ReactNode } from 'react';
-import { FlexWidget, TextWidget, type ColorProp, type WidgetRepresentation } from 'react-native-android-widget';
+import { FlexWidget, SvgWidget, TextWidget, type ColorProp, type WidgetRepresentation } from 'react-native-android-widget';
+import { svgDeEmoji, svgIcono } from './iconos';
 import { CUIDATE } from '../content/cuidate';
 import { shortDate } from '../lib/dates';
 import type { VistaPareja } from '../lib/pareja';
@@ -39,7 +40,11 @@ function Cuenta({ r, p }: { r: ResumenCiclo; p: Paleta }) {
     <Marco p={p}>
       <TextWidget text="Savia" style={{ fontSize: 12, color: p.suave, fontWeight: 'bold' }} />
       <FlexWidget style={{ flexDirection: 'column', flexGap: 2 }}>
-        <TextWidget text={k.grande} style={{ fontSize: k.grande.length > 4 ? 26 : 38, color: colorDe(p, k.color), fontWeight: 'bold' }} />
+        {k.flor ? (
+          <SvgWidget svg={svgIcono('Flower2', String(colorDe(p, k.color)), 36)} style={{ width: 36, height: 36 }} />
+        ) : (
+          <TextWidget text={k.grande} style={{ fontSize: k.grande.length > 4 ? 26 : 38, color: colorDe(p, k.color), fontWeight: 'bold' }} />
+        )}
         <TextWidget text={k.unidad} maxLines={2} style={{ fontSize: 12.5, color: p.texto }} />
       </FlexWidget>
       <TextWidget text={k.pie ?? ' '} maxLines={1} style={{ fontSize: 11.5, color: p.suave }} />
@@ -68,7 +73,11 @@ function Ciclo({ r, p }: { r: ResumenCiclo; p: Paleta }) {
       <Marco p={p}>
         <TextWidget text="Savia" style={{ fontSize: 12, color: p.suave, fontWeight: 'bold' }} />
         <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 12 }}>
-          <TextWidget text={k.grande} style={{ fontSize: 40, color: colorDe(p, k.color), fontWeight: 'bold' }} />
+          {k.flor ? (
+            <SvgWidget svg={svgIcono('Flower2', String(colorDe(p, k.color)), 38)} style={{ width: 38, height: 38 }} />
+          ) : (
+            <TextWidget text={k.grande} style={{ fontSize: 40, color: colorDe(p, k.color), fontWeight: 'bold' }} />
+          )}
           <FlexWidget style={{ flexDirection: 'column', flex: 1 }}>
             <TextWidget text={k.unidad} maxLines={2} style={{ fontSize: 14, color: p.texto }} />
             {k.pie ? <TextWidget text={k.pie} style={{ fontSize: 12, color: p.suave }} /> : <TextWidget text=" " style={{ fontSize: 2 }} />}
@@ -98,14 +107,40 @@ function Ciclo({ r, p }: { r: ResumenCiclo; p: Paleta }) {
   );
 }
 
-// Alto (en dp) desde el que el widget de pareja muestra los consejos: cómo se siente, plan y comida.
+// Alto (en dp) desde el que el widget de pareja muestra los consejos: cómo se siente, cita, comida, mimo…
 export const ALTO_CONSEJOS = 170;
 
-function Consejo({ titulo, texto, p }: { titulo: string; texto: string; p: Paleta }) {
+/** Los consejos del día en orden de prioridad, y cuántas líneas lleva cada uno. */
+export function consejosPareja(v: VistaPareja): { titulo: string; texto: string; lineas: number }[] {
+  const como = v.fase !== 'general' ? v.contenido.como : null;
+  return [
+    como ? { titulo: 'CÓMO SE SIENTE', texto: como, lineas: 2 } : null,
+    v.plan ? { titulo: 'UNA CITA', texto: v.plan, lineas: 1 } : null,
+    v.plato ? { titulo: 'PARA COMER', texto: v.plato, lineas: 1 } : null,
+    v.mimo ? { titulo: 'UN MIMO', texto: v.mimo, lineas: 2 } : null,
+    v.cercania ? { titulo: 'ENTRE USTEDES', texto: v.cercania, lineas: 3 } : null, // 3 líneas: el «si ella también quiere» no se corta
+    v.mision ? { titulo: 'TU MISIÓN DE HOY', texto: v.mision, lineas: 2 } : null,
+  ].filter((x): x is { titulo: string; texto: string; lineas: number } => !!x);
+}
+
+// Los que entran en el alto del widget (cada rótulo ~13 dp y cada línea ~16 dp, más el espacio entre ellos).
+export function consejosQueEntran(v: VistaPareja, alto: number) {
+  let libre = alto - 28 - 44; // márgenes y encabezado
+  const caben = [];
+  for (const c of consejosPareja(v)) {
+    const ocupa = 13 + c.lineas * 16 + 8;
+    if (ocupa > libre) break;
+    libre -= ocupa;
+    caben.push(c);
+  }
+  return caben;
+}
+
+function Consejo({ titulo, texto, lineas, p }: { titulo: string; texto: string; lineas: number; p: Paleta }) {
   return (
     <FlexWidget style={{ flexDirection: 'column', width: 'match_parent' }}>
-      <TextWidget text={titulo} style={{ fontSize: 10.5, color: p.suave, fontWeight: 'bold', letterSpacing: 0.08 }} />
-      <TextWidget text={texto} maxLines={2} truncate="END" style={{ fontSize: 12.5, color: p.texto }} />
+      <TextWidget text={t(titulo)} style={{ fontSize: 10.5, color: p.suave, fontWeight: 'bold', letterSpacing: 0.08 }} />
+      <TextWidget text={t(texto)} maxLines={lineas} truncate="END" style={{ fontSize: 12.5, color: p.texto }} />
     </FlexWidget>
   );
 }
@@ -114,7 +149,10 @@ function Pareja({ v, p, alto }: { v: VistaPareja | null; p: Paleta; alto: number
   if (!v) {
     return (
       <Marco p={p} uri="ciclo://acompanar">
-        <TextWidget text="Savia" style={{ fontSize: 13, color: p.texto, fontWeight: 'bold' }} />
+        <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 6 }}>
+          <SvgWidget svg={svgIcono('Heart', String(p.rosa), 16)} style={{ width: 16, height: 16 }} />
+          <TextWidget text="Savia" style={{ fontSize: 13, color: p.texto, fontWeight: 'bold' }} />
+        </FlexWidget>
         <TextWidget text={t('Toca para conectar con el código de tu pareja.')} maxLines={3} style={{ fontSize: 13, color: p.suave }} />
         <TextWidget text=" " style={{ fontSize: 2 }} />
       </Marco>
@@ -123,17 +161,19 @@ function Pareja({ v, p, alto }: { v: VistaPareja | null; p: Paleta; alto: number
   const pe = v.periodo;
   const linea = v.enPeriodo ? t('Está con su período') : pe ? (pe.enDias === 0 ? t('Su período: en cualquier momento') : pe.enDias === 1 ? t('Su período: mañana') : t(`Su período: en ${pe.enDias} días`)) : null;
   const encabezado = (
-    <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 8, width: 'match_parent' }}>
-      <TextWidget text={v.contenido.emoji} style={{ fontSize: 20 }} />
+    <FlexWidget style={{ flexDirection: 'row', alignItems: 'center', flexGap: 10, width: 'match_parent' }}>
+      <FlexWidget style={{ width: 34, height: 34, borderRadius: 11, backgroundColor: p.rosaSuave, alignItems: 'center', justifyContent: 'center' }}>
+        <SvgWidget svg={svgDeEmoji(v.contenido.emoji, String(p.rosa), 20)} style={{ width: 20, height: 20 }} />
+      </FlexWidget>
       <FlexWidget style={{ flexDirection: 'column', flex: 1 }}>
         <TextWidget text={t(v.titulo)} maxLines={2} truncate="END" style={{ fontSize: 14, color: p.texto, fontWeight: 'bold' }} />
         {linea ? <TextWidget text={linea} maxLines={1} style={{ fontSize: 11.5, color: p.rosa }} /> : <TextWidget text=" " style={{ fontSize: 2 }} />}
       </FlexWidget>
     </FlexWidget>
   );
-  // Agrandado hacia abajo: los consejos del día.
-  const como = v.fase !== 'general' ? v.contenido.como : null;
-  if (alto >= ALTO_CONSEJOS && (como || v.mision || v.plan || v.plato)) {
+  // Agrandado hacia abajo: los consejos del día que entren.
+  const consejos = alto >= ALTO_CONSEJOS ? consejosQueEntran(v, alto) : [];
+  if (consejos.length) {
     return (
       <FlexWidget
         clickAction="OPEN_URI"
@@ -141,10 +181,9 @@ function Pareja({ v, p, alto }: { v: VistaPareja | null; p: Paleta; alto: number
         style={{ height: 'match_parent', width: 'match_parent', backgroundColor: p.fondo, borderRadius: 22, padding: 14, flexGap: 8 }}
       >
         {encabezado}
-        {como ? <Consejo titulo={t('CÓMO SE SIENTE')} texto={t(como)} p={p} /> : null}
-        {v.mision ? <Consejo titulo={t('TU MISIÓN DE HOY')} texto={t(v.mision)} p={p} /> : null}
-        {v.plan ? <Consejo titulo={t('UN PLAN')} texto={t(v.plan)} p={p} /> : null}
-        {v.plato ? <Consejo titulo={t('PARA COMER')} texto={t(v.plato)} p={p} /> : null}
+        {consejos.map((c) => (
+          <Consejo key={c.titulo} titulo={c.titulo} texto={c.texto} lineas={c.lineas} p={p} />
+        ))}
       </FlexWidget>
     );
   }
